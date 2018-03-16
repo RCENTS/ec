@@ -1,28 +1,23 @@
 
 params.data = '/data'
 params.genomedir = '/data/genomes/'
-//params.cfg = '-s 100m -k 23'
-params.cfg = '-s 100m -k 23'
+
 // 'SRR065390'
 orgTable = [
-    'EcoliK12MG1655'  : 'E. coli K-12 MG1655',
-    'SauresMW2'       : 'S. aureus MW2',
-    'CelegansWS222'   : 'C. elegans WS222'
+    'Lactococcuslactis'  : 'Lactococcus lactis'
 ]
 
 genomeTable = [ 
-    'EcoliK12MG1655' :
-     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz', 
-    'SauresMW2'      :
-     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/011/265/GCF_000011265.1_ASM1126v1/GCF_000011265.1_ASM1126v1_genomic.fna.gz', 
-    'CelegansWS222'   :
-      'ftp://ftp.wormbase.org/pub/wormbase/species/c_elegans/sequence/genomic/c_elegans.WS222.genomic.fa.gz'
+    'Lactococcuslactis' :
+     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/025/045/GCF_000025045.1_ASM2504v1/GCF_000025045.1_ASM2504v1_genomic.fna.gz'
 ]
 
 exptTable = [
-    'EcoliK12MG1655' : ['SRR001665'],
-//    'SauresMW2'      : ['SRR022866'],
-//     'CelegansWS222' : ['SRR065390']
+    'Lactococcuslactis' : ['SRR088759']
+
+]
+genomeNumTable = [
+    'Lactococcuslactis'  : '2514220'
 ]
 
 String[] parseExptID(String tx, String vx){
@@ -112,10 +107,10 @@ process catPariedEndFiles{
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file(pairedFiles) from pseqChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fq") into fseqChan
+    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq") into fseqChan
  
     """
-    cat ${pairedFiles} > ${sraId}.fq
+    cat ${pairedFiles} > ${sraId}.fastq
     """
 }
 
@@ -142,22 +137,22 @@ process catSRAFiles{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(sraFiles) from oexptChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fq") into cseqChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fastq") into cseqChan
 
     script:
     if(sraIds.size() == 1)
         """
-        mv ${sraFiles} beforeEC.fq
+        mv ${sraFiles} beforeEC.fastq
         """
     else
         """
-        cat ${sraFiles} > beforeEC.fq
+        cat ${sraFiles} > beforeEC.fastq
         """
 }
 
 (beforeChan1, beforeChan2) = cseqChan.into(2)
 
-process runBFC{
+process runRacer{
     tag { orgExptId.replace('-SRR', ' > SRR') }
 
     input:
@@ -167,7 +162,7 @@ process runBFC{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fq") into ecChan
 
     """
-    bfc ${params.cfg} ${beforeEC} > afterEC.fq
+    RACER ${beforeEC} afterEC.fq ${genomeNumTable[orgId]}
     """ 
 }
 
