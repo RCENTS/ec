@@ -4,20 +4,25 @@ params.genomedir = '/data/genomes/'
 
 // 'SRR065390'
 orgTable = [
-    'Lactococcuslactis'  : 'Lactococcus lactis'
+    'Lactococcuslactis'  : 'Lactococcus lactis', 
+    'Treponemapallidum'  : 'Treponema pallidum'
 ]
 
 genomeTable = [ 
     'Lactococcuslactis' :
-     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/025/045/GCF_000025045.1_ASM2504v1/GCF_000025045.1_ASM2504v1_genomic.fna.gz'
+     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/025/045/GCF_000025045.1_ASM2504v1/GCF_000025045.1_ASM2504v1_genomic.fna.gz',
+    'Treponemapallidum' :
+     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/604/125/GCF_000604125.1_ASM60412v1/GCF_000604125.1_ASM60412v1_genomic.fna.gz'
 ]
 
 exptTable = [
-    'Lactococcuslactis' : ['SRR088759']
+    'Lactococcuslactis' : ['SRR088759'],
+    'Treponemapallidum' : ['SRR361468']
 
 ]
 genomeNumTable = [
-    'Lactococcuslactis'  : '2514220'
+    'Lactococcuslactis'  : '2514220',
+    'Treponemapallidum'  : '1139180'
 ]
 
 String[] parseExptID(String tx, String vx){
@@ -203,15 +208,26 @@ mergedSAMChan = beforeSAMChan
           exptId1, sraIds1, beforeEC1, beforeSAM, afterSAM  ]
     }
 
-/*
-processEvalEC{
+
+process EvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
 
     output:
-    set orgExptId, orgId, orgDesc, exptId, file("eval.json")
+    set file(result) into result_channel
+
+    """
+    samtools view -S -b $beforeSAM > beforeEC.bam
+    samtools view -S -b $afterSAM > afterEC.bam
+    python racer.py beforeEC.bam afterEC.bam ${orgTable[orgId]} > result
+    """ 
 
 }
-*/
+
+result_channel.map{
+    it.text
+}.collectFile(name: 'racer_results.txt', newLine: false)
+
+
