@@ -213,7 +213,7 @@ process EvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
     input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
 
     output:
     set file(result) into result_channel
@@ -221,6 +221,7 @@ process EvalEC{
     """
     samtools view -S -b $beforeSAM > beforeEC.bam
     samtools view -S -b $afterSAM > afterEC.bam
+    wget https://raw.githubusercontent.com/RCENTS/ec/master/eval/racer/racer.py
     python racer.py beforeEC.bam afterEC.bam ${orgTable[orgId]} > result
     """ 
 
