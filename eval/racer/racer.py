@@ -2,7 +2,7 @@ import pysam
 import samutils
 import sys
 
-def stats(before_sam, after_sam):
+def stats(before_sam, after_sam, name):
     samfile1 = pysam.AlignmentFile(before_sam, "rb")
     samfile2 = pysam.AlignmentFile(after_sam, "rb")
     samfile2_index = pysam.IndexedReads(samfile2)
@@ -10,7 +10,7 @@ def stats(before_sam, after_sam):
 
     eb = 0.0
     ea = 0.0
-
+    print("start")
     for read1 in samfile1:
         fl1 = read1.flag
         if(fl1 & (1 << 8) != (1 << 8)):
@@ -22,6 +22,8 @@ def stats(before_sam, after_sam):
                 for a,b in zip(aln1[0],aln1[1]):
                     if a != b: 
                         eb = eb + 1        #Number of errors in the before sequence
+            print("eb", eb)
+            print("ea", ea)
         else:
             continue
         read1_id = read1.query_name
@@ -41,10 +43,10 @@ def stats(before_sam, after_sam):
                             ea = ea + 1    #Number of errors in the after sequence
                 break
 
-    print(eb)
-    print(ea)
-    print((eb-ea)/eb)
+    
+    # print((eb-ea)/eb)
     return((eb-ea)/eb)
     
 if __name__ == '__main__':
-    stats(sys.argv[1], sys.argv[2])
+    org = sys.argv[3]
+    print org, stats(sys.argv[1], sys.argv[2], org)
