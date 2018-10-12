@@ -1,6 +1,6 @@
 
-params.data = '/data'
-params.genomedir = '/data/genomes/'
+params.data = '/project/schockalingam6/rcents/data'
+params.genomedir = '/project/schockalingam6/rcents/data/genomes'
 
 // 'SRR065390'
 orgTable = [
@@ -53,7 +53,7 @@ process genomeDownload {
 process bwamemIndex {
     tag{ orgDesc }
 
-storeDir "${params.genomedir}/bwa"
+    storeDir "${params.genomedir}/bwa"
 
     input:
     set orgId, orgDesc, gnmFile from orgChan
@@ -164,10 +164,10 @@ process runRacer{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fq") into ecChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fastq") into ecChan
 
     """
-    RACER ${beforeEC} afterEC.fq ${genomeNumTable[orgId]}
+    RACER ${beforeEC} afterEC.fastq ${genomeNumTable[orgId]}
     """ 
 }
 
@@ -178,10 +178,10 @@ process runBWABefore{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.bam") into beforeSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sam
+    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} | samtools view -bS - > beforeEC.bam
     """ 
 }
 
@@ -192,10 +192,10 @@ process runBWAAfter{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.sam") into afterSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.bam") into afterSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} > afterEC.sam
+    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} | samtools view -bS - > afterEC.bam
     """ 
 }
 
@@ -219,10 +219,8 @@ process EvalEC{
     set file(result) into result_channel
 
     """
-    samtools view -S -b $beforeSAM > beforeEC.bam
-    samtools view -S -b $afterSAM > afterEC.bam
-    wget https://raw.githubusercontent.com/RCENTS/ec/master/eval/racer/racer.py
-    python racer.py beforeEC.bam afterEC.bam ${orgTable[orgId]} > result
+    wget https://raw.githubusercontent.com/RCENTS/ec/master/runs/racer/racer.py
+    python racer.py $beforeSAM $afterSAM ${orgTable[orgId]} > result
     """ 
 
 }
