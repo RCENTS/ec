@@ -4,11 +4,17 @@ params.genomedir = '/project/schockalingam6/rcents/data/genomes'
 
 // 'SRR065390'
 orgTable = [
+    'EColi' : 'E. coli K-12 MG1655',
+    'Saureus' : 'S. aureus MW2',
     'Lactococcuslactis'  : 'Lactococcus lactis', 
     'Treponemapallidum'  : 'Treponema pallidum'
 ]
 
-genomeTable = [ 
+genomeTable = [
+    'EColi' : 
+    'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz',
+    'Saureus' :
+    'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/011/265/GCF_000011265.1_ASM1126v1/GCF_000011265.1_ASM1126v1_genomic.fna.gz',
     'Lactococcuslactis' :
      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/025/045/GCF_000025045.1_ASM2504v1/GCF_000025045.1_ASM2504v1_genomic.fna.gz',
     'Treponemapallidum' :
@@ -16,11 +22,15 @@ genomeTable = [
 ]
 
 exptTable = [
+    'EColi' : ['SRR001665', 'SRR022918'],
+    'Saureus' : [ 'SRR022866'],
     'Lactococcuslactis' : ['SRR088759'],
     'Treponemapallidum' : ['SRR361468']
 
 ]
 genomeNumTable = [
+    'EColi' : '4641650',
+    'Saureus' : '2820460',
     'Lactococcuslactis'  : '2514220',
     'Treponemapallidum'  : '1139180'
 ]
@@ -90,7 +100,7 @@ exptChan = idxChan.flatMap {
 // }
 
 process sraFetch {
-    tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
+    tag { orgDesc.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
 
     input:
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId from exptChan
@@ -121,7 +131,7 @@ process catPariedEndFiles{
 
 oexptChan = fseqChan.map{ 
     orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile -> 
-        [orgId.toString() + "-" + exptId.toString(),
+        [orgDesc.toString() + "-" + exptId.toString(),
          orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile] 
 }
 .groupTuple()
@@ -219,14 +229,16 @@ process EvalEC{
     set file(result) into result_channel
 
     """
-    wget https://raw.githubusercontent.com/RCENTS/ec/master/runs/racer/racer.py
-    python racer.py $beforeSAM $afterSAM ${orgTable[orgId]} > result
+    cp ${workflow.projectDir}/racer.py .
+    python racer.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result
     """ 
 
 }
 
 result_channel.map{
     it.text
-}.collectFile(name: 'racer_results.txt', newLine: false)
+}.collectFile(name: 'racer_results.txt', 
+              storeDir: "${workflow.projectDir}",
+              newLine: false)
 
 
