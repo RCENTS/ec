@@ -198,7 +198,7 @@ process runBWAAfter{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.bam") into afterSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(afterEC), file("afterEC.bam") into afterSAMChan
 
     """
     bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} | samtools view -bS - > afterEC.bam
@@ -208,33 +208,57 @@ process runBWAAfter{
 mergedSAMChan = beforeSAMChan
     .merge(afterSAMChan)
     .map {
-        orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC1, beforeSAM,
-        orgExptId2, orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, beforeEC2, afterSAM ->
+        orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
+        orgExptId2, orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC, afterSAM ->
         [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
-          exptId1, sraIds1, beforeEC1, beforeSAM, afterSAM  ]
+          exptId1, sraIds1, beforeEC, afterEC, beforeSAM, afterSAM  ]
     }
 
+
+(mergedChan1, mergedChan2) = mergedSAMChan.into(2)
 
 process EvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
     input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedChan1
 
     output:
-    file(result) into result_channel
+    file(result1) into result_channel1
 
     """
     cp ${workflow.projectDir}/racer.py .
-    python racer.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result
+    python racer.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
     """ 
 
 }
 
-result_channel.map{
+process readSearch{
+    tag{ orgExptId.replace('-SRR', ' > SRR') }
+
+    input:
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedChan2
+
+    output:
+    file(result) into result_channel2
+
+    """
+    echo ${orgExptId.replace(' ', '-')} > result2
+    readSearch $beforeEC $afterEC >> result2
+    """ 
+
+}
+
+
+result_channel1.map{
     it.text
-}.collectFile(name: 'racer_results.txt', 
+}.collectFile(name: 'racer_eval.csv', 
               storeDir: "${workflow.projectDir}",
               newLine: false)
 
 
+result_channel2.map{
+    it.text
+}.collectFile(name: 'racer_read_search.txt', 
+              storeDir: "${workflow.projectDir}",
+              newLine: false)
