@@ -1,7 +1,3 @@
-
-params.data = '/project/schockalingam6/rcents/data'
-params.genomedir = '/project/schockalingam6/rcents/data/genomes'
-
 // 'SRR065390'
 orgTable = [
     'EColi' : 'E. coli K-12 MG1655',
@@ -226,7 +222,7 @@ process EvalEC{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
 
     output:
-    set file(result) into result_channel
+    file(result) into result_channel
 
     """
     cp ${workflow.projectDir}/racer.py .
