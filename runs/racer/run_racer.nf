@@ -234,7 +234,7 @@ process runBWABefore{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.bam") into beforeSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} | samtools view -bS - > beforeEC.bam
+    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} | samtools view -bSh -F 0x900 - > beforeEC.bam
     """ 
 }
 
@@ -248,7 +248,7 @@ process runBWAAfter{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(afterEC), file("afterEC.bam") into afterSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} | samtools view -bS - > afterEC.bam
+    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} | samtools view -bSh -F 0x900 - > afterEC.bam
     """ 
 }
 
@@ -287,11 +287,11 @@ process readSearch{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedChan2
 
     output:
-    file(result) into result_channel2
+    file(result2) into result_channel2
 
     """
-    echo ${orgExptId.replace(' ', '-')} > result2
-    readSearch $beforeEC $afterEC >> result2
+    printf ${orgExptId.replace(' ', '-')} > result2
+    readSearch $beforeEC $afterEC | grep Gain | cut -d'=' -f2 | xargs >> result2
     """ 
 
 }
