@@ -1,34 +1,81 @@
-// 'SRR065390'
 orgTable = [
+    'Llactis' : 'L. lactis', 
+    'Tpallidum' : 'T. pallidum',
     'EColi' : 'E. coli K-12 MG1655',
+    'Bsubtilis' : 'B. subtilis subtilis 168',
     'Saureus' : 'S. aureus MW2',
-    'Lactococcuslactis'  : 'Lactococcus lactis', 
-    'Treponemapallidum'  : 'Treponema pallidum'
+    'Paeruginosa' : 'P. aeruginosa PAO1',
+    'Linterrogans4342' : 'L. interrogans str. 56601',
+    'Linterrogans5823' : 'L. interrogans str. Fiocruz L1-130',
+    'Hinfluenzae' : 'H. influenzae Rd KW20',
+    'Scerevisiae' : 'S. cerevisiae S288C',
+    'Celegans' : 'C. elegans WS222',
+    'Dmelanogaster' : 'D. melanogaster R6.18'
 ]
 
 genomeTable = [
-    'EColi' : 
-    'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz',
-    'Saureus' :
-    'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/011/265/GCF_000011265.1_ASM1126v1/GCF_000011265.1_ASM1126v1_genomic.fna.gz',
-    'Lactococcuslactis' :
+    'Llactis' :
      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/025/045/GCF_000025045.1_ASM2504v1/GCF_000025045.1_ASM2504v1_genomic.fna.gz',
-    'Treponemapallidum' :
-     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/604/125/GCF_000604125.1_ASM60412v1/GCF_000604125.1_ASM60412v1_genomic.fna.gz'
+    'Tpallidum' :
+     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/604/125/GCF_000604125.1_ASM60412v1/GCF_000604125.1_ASM60412v1_genomic.fna.gz',
+    'EColi' : 
+     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz',
+    'Bsubtilis' : 
+     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/009/045/GCF_000009045.1_ASM904v1/GCF_000009045.1_ASM904v1_genomic.fna.gz',
+    'Saureus' :
+     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/011/265/GCF_000011265.1_ASM1126v1/GCF_000011265.1_ASM1126v1_genomic.fna.gz',
+    'Paeruginosa' :
+      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/765/GCF_000006765.1_ASM676v1/GCF_000006765.1_ASM676v1_genomic.fna.gz',
+    'Linterrogans4342' :
+      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/092/565/GCF_000092565.1_ASM9256v1/GCF_000092565.1_ASM9256v1_genomic.fna.gz'
+    'Linterrogans5823' :
+      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/007/685/GCF_000007685.1_ASM768v1/GCF_000007685.1_ASM768v1_genomic.fna.gz',
+    'Hinfluenzae' :
+      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/027/305/GCF_000027305.1_ASM2730v1/GCF_000027305.1_ASM2730v1_genomic.fna.gz',
+    'Scerevisiae' : 
+      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz',
+    'Celegans' :
+      'ftp://ftp.wormbase.org/pub/wormbase/species/c_elegans/sequence/genomic/c_elegans.WS222.genomic.fa.gz',
+    'Dmelanogaster' :
+      'ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r6.24_FB2018_05/fasta/dmel-all-chromosome-r6.24.fasta.gz'
+]
+
+genomeNumTable = [
+    'Llactis' : '2514220',
+    'Tpallidum' : '1139180',
+    'EColi' : '4641650',
+    'Bsubtilis' : '4215610',
+    'Saureus' : '2820460',
+    'Paeruginosa' : '6264400',
+    'Linterrogans4342' : '4698130',
+    'Linterrogans5823' : '4627370',
+    'Hinfluenzae' : '1830140',
+    'Scerevisiae' : '12157100',
+    'Celegans' : '102291899',
+    'Dmelanogaster' : '120220296'
 ]
 
 exptTable = [
-    'EColi' : ['SRR001665', 'SRR022918'],
-    'Saureus' : [ 'SRR022866'],
-    'Lactococcuslactis' : ['SRR088759'],
-    'Treponemapallidum' : ['SRR361468']
-
-]
-genomeNumTable = [
-    'EColi' : '4641650',
-    'Saureus' : '2820460',
-    'Lactococcuslactis'  : '2514220',
-    'Treponemapallidum'  : '1139180'
+    'Llactis' : ['SRR088759'],
+    'Tpallidum' : ['SRR361468'],
+    'EColi' : ['SRR001665', // SRR001665 === SRX000429
+               'SRR396536', 
+               'SRR396532',
+               'SRR022918'], 
+    'Bsubtilis' : ['DRR000852'],
+    'Saureus' : ['SRR022866'],
+    'Paeruginosa' : ['SRR396641'],
+    'Linterrogans4342' : ['SRR353563'],
+    'Linterrogans5823' : ['SRR397962'],
+    'Hinfluenzae' : ['SRR065202'],
+    'Scerevisiae' : ['SRR352384'], // SRR352384 === SRX100885
+    'Celegans' : ['SRR065390'],
+    'Dmelanogaster' : [
+        'SRR018292,SRR018293,SRR018294,SRR060098' 
+            // SRR018292, SRR018293 === SRX006151 &&
+            // SRR018294 === SRX006152 & 
+            // SRR060098 === SRX023452
+    ] 
 ]
 
 String[] parseExptID(String tx, String vx){
