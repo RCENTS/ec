@@ -1,5 +1,5 @@
 import pysam
-import samutils1 as su
+import samutils as su
 import sys
 
 def stats(before_sam, after_sam, name):
@@ -55,4 +55,4 @@ def stats(before_sam, after_sam, name):
 
 if __name__ == '__main__':
     org = sys.argv[3]
-    print(org, "RACER", stats(sys.argv[1], sys.argv[2], org))
+    print org, "RACER", stats(sys.argv[1], sys.argv[2], org)

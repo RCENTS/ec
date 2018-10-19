@@ -27,7 +27,7 @@ genomeTable = [
     'Paeruginosa' :
       'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/765/GCF_000006765.1_ASM676v1/GCF_000006765.1_ASM676v1_genomic.fna.gz',
     'Linterrogans4342' :
-      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/092/565/GCF_000092565.1_ASM9256v1/GCF_000092565.1_ASM9256v1_genomic.fna.gz'
+      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/092/565/GCF_000092565.1_ASM9256v1/GCF_000092565.1_ASM9256v1_genomic.fna.gz',
     'Linterrogans5823' :
       'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/007/685/GCF_000007685.1_ASM768v1/GCF_000007685.1_ASM768v1_genomic.fna.gz',
     'Hinfluenzae' :
@@ -61,7 +61,7 @@ exptTable = [
     'EColi' : ['SRR001665', // SRR001665 === SRX000429
                'SRR396536', 
                'SRR396532',
-               'SRR022918'], 
+               'SRR022918']
     'Bsubtilis' : ['DRR000852'],
     'Saureus' : ['SRR022866'],
     'Paeruginosa' : ['SRR396641'],
@@ -138,9 +138,9 @@ exptChan = idxChan.flatMap {
             [orgId, orgDesc, gnmFile, idxFiles , exptId, it]
         }
 }
-// .subscribe{
+//.subscribe{
 //     println it
-// }
+//}
 
 process sraFetch {
     tag { orgDesc.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
@@ -184,9 +184,9 @@ oexptChan = fseqChan.map{
          idxFiles[0], exptId[0], sraIds, sraFiles]
 }
 
-// oexptChan.subscribe{
+//oexptChan.subscribe{
 //     println it
-// }
+//}
 
 process catSRAFiles{
     tag { orgExptId.replace('-SRR', ' > SRR') }
@@ -253,14 +253,18 @@ process runBWAAfter{
 }
 
 mergedSAMChan = beforeSAMChan
-    .merge(afterSAMChan)
+    .join(afterSAMChan)
     .map {
-        orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
-        orgExptId2, orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC, afterSAM ->
-        [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
+        orgExptId,  // key
+         orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
+         orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC, afterSAM ->
+        [ orgExptId, orgId1, orgDesc1, gnmFile1, idxFiles1,
           exptId1, sraIds1, beforeEC, afterEC, beforeSAM, afterSAM  ]
     }
 
+// mergedSAMChan.subscribe{
+//     println it
+// }
 
 (mergedChan1, mergedChan2) = mergedSAMChan.into(2)
 
@@ -275,7 +279,8 @@ process EvalEC{
 
     """
     cp ${workflow.projectDir}/racer.py .
-    python racer.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
+    cp ${workflow.projectDir}/racerv2.py .
+    python racerv2.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
     """ 
 
 }
@@ -291,7 +296,7 @@ process readSearch{
 
     """
     printf ${orgExptId.replace(' ', '-')} > result2
-    readSearch $beforeEC $afterEC | grep Gain | cut -d'=' -f2 | xargs >> result2
+    readSearch $gnmFile $beforeEC $afterEC | grep Gain | cut -d'=' -f2 | xargs >> result2
     """ 
 
 }
