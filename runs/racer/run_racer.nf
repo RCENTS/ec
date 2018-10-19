@@ -61,7 +61,7 @@ exptTable = [
     'EColi' : ['SRR001665', // SRR001665 === SRX000429
                'SRR396536', 
                'SRR396532',
-               'SRR022918']
+               'SRR022918'],
     'Bsubtilis' : ['DRR000852'],
     'Saureus' : ['SRR022866'],
     'Paeruginosa' : ['SRR396641'],
