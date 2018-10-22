@@ -15,9 +15,8 @@ genomeTable = [
       'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/765/GCF_000006765.1_ASM676v1/GCF_000006765.1_ASM676v1_genomic.fna.gz'
 ]
 exptTable = [
-    'Paeruginosa' : ['ERR330008']
-    // ,
-    // 'EColiK12MG1655' : ['ERR008613']
+    'Paeruginosa' : ['ERR330008'],
+    'EColiK12MG1655' : ['ERR008613']
 ]
 
 paramsTessel = [
@@ -182,7 +181,7 @@ process runBlue{
 }
 
 
-process runBWABefore{
+process runBowtieBefore{
     tag { orgExptId.replace('-SRR', ' > SRR') }
 
     input:
@@ -197,7 +196,7 @@ process runBWABefore{
     """ 
 }
 
-process runBWAAfter{
+process runBowtieAfter{
     tag { orgExptId.replace('-SRR', ' > SRR') }
 
     input:
