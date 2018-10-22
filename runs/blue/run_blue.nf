@@ -187,7 +187,7 @@ process runBlue{
 }
 
 
-process runBWABefore{
+process runBowtieBefore{
     tag { orgExptId.replace('-SRR', ' > SRR') }
 
     input:
@@ -202,7 +202,7 @@ process runBWABefore{
     """ 
 }
 
-process runBWAAfter{
+process runBowtieAfter{
     tag { orgExptId.replace('-SRR', ' > SRR') }
 
     input:
