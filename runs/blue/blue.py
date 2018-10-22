@@ -2,11 +2,9 @@ import pysam
 import samutils
 import sys
 
-def stats(sam):
-    x = same
-    samfile = pysam.AlignmentFile(x, "rb")
+def sam_stats(inFile):
+    samfile = pysam.AlignmentFile(inFile, "rb")
     edits = [0,0,0,0,0,0,0,0,0,0,0,0]
-    c = 0
     for read in samfile:
         		#print "read id : ", read.query_name
 		    #print "read    : ", read.query_alignment_sequence
@@ -31,6 +29,15 @@ def stats(sam):
 					    edits[count] = edits[count] + 1
     print edits
     return edits
+
+def main(beforeEC, afterEC, oID):
+	bstats = sam_stats(beforeEC)
+	astats = sam_stats(afterEC)
+	bstats_str = "\t".join([oID, "BLUE", "BEFORE"] + [str(x) for x in bstats])
+	astats_str = "\t".join([oID, "BLUE", "AFTER"] + [str(x) for x in astats])
+	print bstats_str
+	print astats_str
+
     
 if __name__ == '__main__':
-    stats(sys.argv[1])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

@@ -1,13 +1,9 @@
 
-params.data = '/data'
-params.genomedir = '/data/genomes'
-
-//params.cfg = '-s 100m -k 23'
-
 orgTable = [
-    'EcoliK12MG1655'  : 'E. coli K-12 MG1655',
-    'Paeruginosa'     : 'Pseudomonas aeruginosa PAO 21'
+    'EcoliK12MG1655' : 'E. coli K-12 MG1655',
+    'Paeruginosa'    : 'P. aeruginosa PAO 21'
 ]
+
 genomeTable = [ 
     'EcoliK12MG1655' :
      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz', 
@@ -15,17 +11,25 @@ genomeTable = [
       'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/765/GCF_000006765.1_ASM676v1/GCF_000006765.1_ASM676v1_genomic.fna.gz'
 ]
 exptTable = [
-    'Paeruginosa' : ['ERR330008']
-    // ,
-    // 'EColiK12MG1655' : ['ERR008613']
+    'Paeruginosa' : ['ERR330008'],
+    'EColiK12MG1655' : ['ERR008613', // ERR008613 == ERA000206
+                        'SRR001355',
+                        'SRR029323']
 ]
 
 paramsTessel = [
-    'ERR330008' : '-k 25 -g 6264400 -t 8'
+    'ERR330008' : '-k 25 -g 6264400 -t 8',
+    'ERR008613' : '-k 25 -g 4641650 -t 8',
+    'SRR001355' : '-k 25 -g 4641650 -t 8',
+    'SRR029323' : '-k 25 -g 4641650 -t 8'
+
 ]
 
 paramsBlue = [
-    'ERR330008' : '-m 30 -t 8'
+    'ERR330008' : '-m 30 -t 8',
+    'ERR008613' : '-m 50 -t 8',
+    'SRR001355' : '-m 30 -t 8 -hp',
+    'SRR029323' : '-m 30 -t 8 -hp'
 ]
 
 String[] parseExptID(String tx, String vx){
@@ -164,6 +168,7 @@ process catSRAFiles{
         cat ${sraFiles} > beforeEC.fastq
         """
 }
+
 (beforeChan1, beforeChan2) = cseqChan.into(2)
 
 process runBlue{
@@ -204,7 +209,7 @@ process runBWAAfter{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.sam") into afterSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(afterEC), file("afterEC.sam") into afterSAMChan
 
     """
     bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa -U ${afterEC} -S afterEC.sam
@@ -212,15 +217,16 @@ process runBWAAfter{
 }
 
 mergedSAMChan = beforeSAMChan
-    .merge(afterSAMChan)
+    .join(afterSAMChan)
     .map {
-        orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC1, beforeSAM,
-        orgExptId2, orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, beforeEC2, afterSAM ->
-        [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
-          exptId1, sraIds1, beforeEC1, beforeSAM, afterSAM  ]
+        orgExptId,
+         orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
+         orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC, afterSAM ->
+        [ orgExptId, orgId1, orgDesc1, gnmFile1, idxFiles1,
+          exptId1, sraIds1, beforeEC, afterEC, beforeSAM, afterSAM  ]
     }
 
-/*
+
 processEvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
@@ -228,7 +234,19 @@ processEvalEC{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
 
     output:
-    set orgExptId, orgId, orgDesc, exptId, file("eval.json")
+    file(result1) into result_channel1
+
+    """
+    cp ${workflow.projectDir}/blue.py .
+    python blue.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
+    """ 
 
 }
-*/
+
+
+result_channel1.map{
+    it.text
+}.collectFile(name: 'blue_eval.tsv', 
+              storeDir: "${workflow.projectDir}",
+              newLine: false)
+
