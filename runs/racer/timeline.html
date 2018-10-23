@@ -1,0 +1,327 @@
+<!doctype html>
+<!--
+  ~ Copyright (c) 2013-2018, Centre for Genomic Regulation (CRG).
+  ~ Copyright (c) 2013-2018, Paolo Di Tommaso and the respective authors.
+  ~
+  ~   This file is part of 'Nextflow'.
+  ~
+  ~   Nextflow is free software: you can redistribute it and/or modify
+  ~   it under the terms of the GNU General Public License as published by
+  ~   the Free Software Foundation, either version 3 of the License, or
+  ~   (at your option) any later version.
+  ~
+  ~   Nextflow is distributed in the hope that it will be useful,
+  ~   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~   GNU General Public License for more details.
+  ~
+  ~   You should have received a copy of the GNU General Public License
+  ~   along with Nextflow.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Cscript src='" + prot + "code.jquery.com/jquery-latest.min.js' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "d3js.org/d3.v3.min.js' charset='utf-8' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "cdn.rawgit.com/nextflow-io/d3-timeline/82622c4cc35bac7283b3a317826b0709ac1ae476/src/d3-timeline.js' type='text/javascript' %3E%3C/script%3E"));
+</script>
+<style type="text/css">
+* {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.axis path,
+.axis line {
+fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-size: 10px;
+}
+
+div#timeline g text {
+  font-size: 13px;
+}
+
+text.timeline-label {
+  font-size: 13px;
+}
+
+#timeline2 .axis {
+  transform: translate(0px,30px);
+  -ms-transform: translate(0px,30px); /* IE 9 */
+  -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+  -o-transform: translate(0px,30px); /* Opera */
+  -moz-transform: translate(0px,30px); /* Firefox */
+}
+
+.coloredDiv {
+  height:20px; width:20px; float:left;
+}
+
+#footer {
+  padding-top: 3em; color: #bfbfbf; font-size: 13px;
+}
+
+#footer a:visited {
+  color: #bfbfbf;
+  text-decoration: underline;
+}
+</style>
+<script type="text/javascript">
+var handler=null;
+// see https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c
+var colors = d3.scale.category20c().domain(d3.range(0,20)).range()
+
+function c0(index) { return "#9c9c9c"; }
+function c1(index) { return "#bdbdbd"; }
+function c2(index) { return colors[index % 16]; } // <-- note: uses only the first 16 colors
+
+var elapsed="8h 57m 49s"
+var beginningMillis=1540217723633;
+var endingMillis=1540249992458;
+var data=[
+{"label": "sraFetch (L. lactis > SRR088759 > SRR088759)", "times": [{"starting_time": 1540217725810, "ending_time": 1540217730137, "color":c1(0)}, {"starting_time": 1540217730137, "ending_time": 1540217750332, "color":c2(0), "label": "29.3s \/ 192.2 MB"}, {"starting_time": 1540217750332, "ending_time": 1540217755129, "color":c1(0)}]},
+{"label": "sraFetch (E. coli K-12 MG1655 > SRR396536 > SRR396536)", "times": [{"starting_time": 1540217725923, "ending_time": 1540217730345, "color":c1(0)}, {"starting_time": 1540217730345, "ending_time": 1540217749078, "color":c2(0), "label": "29.4s \/ 189.2 MB"}, {"starting_time": 1540217749078, "ending_time": 1540217755275, "color":c1(0)}]},
+{"label": "sraFetch (E. coli K-12 MG1655 > SRR001665 > SRR001665)", "times": [{"starting_time": 1540217725952, "ending_time": 1540217730347, "color":c1(0)}, {"starting_time": 1540217730347, "ending_time": 1540217864298, "color":c2(0), "label": "2m 24s \/ 164.7 MB"}, {"starting_time": 1540217864298, "ending_time": 1540217870133, "color":c1(0)}]},
+{"label": "sraFetch (E. coli K-12 MG1655 > SRR396532 > SRR396532)", "times": [{"starting_time": 1540217725992, "ending_time": 1540217730372, "color":c1(0)}, {"starting_time": 1540217730372, "ending_time": 1540217770807, "color":c2(0), "label": "49.1s \/ 189.2 MB"}, {"starting_time": 1540217770807, "ending_time": 1540217775130, "color":c1(0)}]},
+{"label": "sraFetch (E. coli K-12 MG1655 > SRR022918 > SRR022918)", "times": [{"starting_time": 1540217726025, "ending_time": 1540217730374, "color":c1(0)}, {"starting_time": 1540217730374, "ending_time": 1540217814043, "color":c2(0), "label": "1m 34s \/ 184.5 MB"}, {"starting_time": 1540217814043, "ending_time": 1540217820132, "color":c1(0)}]},
+{"label": "sraFetch (T. pallidum > SRR361468 > SRR361468)", "times": [{"starting_time": 1540217726047, "ending_time": 1540217730375, "color":c1(0)}, {"starting_time": 1540217730375, "ending_time": 1540217763699, "color":c2(0), "label": "49.1s \/ 207.2 MB"}, {"starting_time": 1540217763699, "ending_time": 1540217775163, "color":c1(0)}]},
+{"label": "sraFetch (B. subtilis subtilis 168 > DRR000852 > DRR000852)", "times": [{"starting_time": 1540217726083, "ending_time": 1540217730385, "color":c1(0)}, {"starting_time": 1540217730385, "ending_time": 1540217749029, "color":c2(0), "label": "29.2s \/ 192.4 MB"}, {"starting_time": 1540217749029, "ending_time": 1540217755299, "color":c1(0)}]},
+{"label": "sraFetch (L. interrogans str. 56601 > SRR353563 > SRR353563)", "times": [{"starting_time": 1540217726116, "ending_time": 1540217730387, "color":c1(0)}, {"starting_time": 1540217730387, "ending_time": 1540217786433, "color":c2(0), "label": "1m 9s \/ 195.5 MB"}, {"starting_time": 1540217786433, "ending_time": 1540217795179, "color":c1(0)}]},
+{"label": "sraFetch (L. interrogans str. Fiocruz L1-130 > SRR397962 > SRR397962)", "times": [{"starting_time": 1540217726158, "ending_time": 1540217730400, "color":c1(0)}, {"starting_time": 1540217730400, "ending_time": 1540217787869, "color":c2(0), "label": "1m 9s \/ 189.6 MB"}, {"starting_time": 1540217787869, "ending_time": 1540217795204, "color":c1(0)}]},
+{"label": "sraFetch (H. influenzae Rd KW20 > SRR065202 > SRR065202)", "times": [{"starting_time": 1540217726188, "ending_time": 1540217730403, "color":c1(0)}, {"starting_time": 1540217730403, "ending_time": 1540217852223, "color":c2(0), "label": "2m 14s \/ 196 MB"}, {"starting_time": 1540217852223, "ending_time": 1540217860133, "color":c1(0)}]},
+{"label": "sraFetch (S. aureus MW2 > SRR022866 > SRR022866)", "times": [{"starting_time": 1540217726233, "ending_time": 1540217730405, "color":c1(0)}, {"starting_time": 1540217730405, "ending_time": 1540217852287, "color":c2(0), "label": "2m 14s \/ 195.3 MB"}, {"starting_time": 1540217852287, "ending_time": 1540217860151, "color":c1(0)}]},
+{"label": "sraFetch (P. aeruginosa PAO1 > SRR396641 > SRR396641)", "times": [{"starting_time": 1540217726266, "ending_time": 1540217730410, "color":c1(0)}, {"starting_time": 1540217730410, "ending_time": 1540217785477, "color":c2(0), "label": "1m 9s \/ 192.1 MB"}, {"starting_time": 1540217785477, "ending_time": 1540217795209, "color":c1(0)}]},
+{"label": "sraFetch (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098 > SRR018293)", "times": [{"starting_time": 1540217726298, "ending_time": 1540217730414, "color":c1(0)}, {"starting_time": 1540217730414, "ending_time": 1540217818303, "color":c2(0), "label": "1m 39s \/ 180.8 MB"}, {"starting_time": 1540217818303, "ending_time": 1540217825133, "color":c1(0)}]},
+{"label": "sraFetch (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098 > SRR018292)", "times": [{"starting_time": 1540217726326, "ending_time": 1540217730419, "color":c1(0)}, {"starting_time": 1540217730419, "ending_time": 1540217852870, "color":c2(0), "label": "2m 14s \/ 181 MB"}, {"starting_time": 1540217852870, "ending_time": 1540217860154, "color":c1(0)}]},
+{"label": "sraFetch (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098 > SRR018294)", "times": [{"starting_time": 1540217726365, "ending_time": 1540217730428, "color":c1(0)}, {"starting_time": 1540217730428, "ending_time": 1540217840259, "color":c2(0), "label": "2m 4s \/ 191.5 MB"}, {"starting_time": 1540217840259, "ending_time": 1540217850133, "color":c1(0)}]},
+{"label": "sraFetch (C. elegans WS222 > SRR065390 > SRR065390)", "times": [{"starting_time": 1540217726432, "ending_time": 1540217730429, "color":c1(0)}, {"starting_time": 1540217730429, "ending_time": 1540218026375, "color":c2(0), "label": "5m 9s \/ 181.5 MB"}, {"starting_time": 1540218026375, "ending_time": 1540218035141, "color":c1(0)}]},
+{"label": "sraFetch (S. cerevisiae S288C > SRR352384 > SRR352384)", "times": [{"starting_time": 1540217726457, "ending_time": 1540217730431, "color":c1(0)}, {"starting_time": 1540217730431, "ending_time": 1540217958922, "color":c2(0), "label": "3m 59s \/ 191.6 MB"}, {"starting_time": 1540217958922, "ending_time": 1540217965136, "color":c1(0)}]},
+{"label": "sraFetch (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098 > SRR060098)", "times": [{"starting_time": 1540217726483, "ending_time": 1540217730433, "color":c1(0)}, {"starting_time": 1540217730433, "ending_time": 1540217902530, "color":c2(0), "label": "3m 9s \/ 181.8 MB"}, {"starting_time": 1540217902530, "ending_time": 1540217915166, "color":c1(0)}]},
+{"label": "catPariedEndFiles (Llactis > SRR088759 > SRR088759)", "times": [{"starting_time": 1540217756100, "ending_time": 1540217760131, "color":c1(1)}, {"starting_time": 1540217760131, "ending_time": 1540217761509, "color":c2(1), "label": "9s \/ 25.7 MB"}, {"starting_time": 1540217761509, "ending_time": 1540217765132, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Bsubtilis > DRR000852 > DRR000852)", "times": [{"starting_time": 1540217756164, "ending_time": 1540217760145, "color":c1(1)}, {"starting_time": 1540217760145, "ending_time": 1540217761685, "color":c2(1), "label": "9s \/ 25.6 MB"}, {"starting_time": 1540217761685, "ending_time": 1540217765167, "color":c1(1)}]},
+{"label": "catPariedEndFiles (EColi > SRR396536 > SRR396536)", "times": [{"starting_time": 1540217756203, "ending_time": 1540217760146, "color":c1(1)}, {"starting_time": 1540217760146, "ending_time": 1540217761662, "color":c2(1), "label": "9s \/ 25.7 MB"}, {"starting_time": 1540217761662, "ending_time": 1540217765179, "color":c1(1)}]},
+{"label": "catPariedEndFiles (EColi > SRR396532 > SRR396532)", "times": [{"starting_time": 1540217775200, "ending_time": 1540217780132, "color":c1(1)}, {"starting_time": 1540217780132, "ending_time": 1540217781925, "color":c2(1), "label": "9.9s \/ 25.7 MB"}, {"starting_time": 1540217781925, "ending_time": 1540217785132, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Tpallidum > SRR361468 > SRR361468)", "times": [{"starting_time": 1540217775299, "ending_time": 1540217780137, "color":c1(1)}, {"starting_time": 1540217780137, "ending_time": 1540217782117, "color":c2(1), "label": "9.9s \/ 25.7 MB"}, {"starting_time": 1540217782117, "ending_time": 1540217785161, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Linterrogans4342 > SRR353563 > SRR353563)", "times": [{"starting_time": 1540217795308, "ending_time": 1540217800133, "color":c1(1)}, {"starting_time": 1540217800133, "ending_time": 1540217803291, "color":c2(1), "label": "9.8s \/ 25.6 MB"}, {"starting_time": 1540217803291, "ending_time": 1540217805133, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Linterrogans5823 > SRR397962 > SRR397962)", "times": [{"starting_time": 1540217795356, "ending_time": 1540217800135, "color":c1(1)}, {"starting_time": 1540217800135, "ending_time": 1540217803307, "color":c2(1), "label": "9.8s \/ 25.6 MB"}, {"starting_time": 1540217803307, "ending_time": 1540217805156, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Paeruginosa > SRR396641 > SRR396641)", "times": [{"starting_time": 1540217795414, "ending_time": 1540217800151, "color":c1(1)}, {"starting_time": 1540217800151, "ending_time": 1540217802513, "color":c2(1), "label": "9.8s \/ 25.7 MB"}, {"starting_time": 1540217802513, "ending_time": 1540217805167, "color":c1(1)}]},
+{"label": "catPariedEndFiles (EColi > SRR022918 > SRR022918)", "times": [{"starting_time": 1540217820259, "ending_time": 1540217825155, "color":c1(1)}, {"starting_time": 1540217825155, "ending_time": 1540217828851, "color":c2(1), "label": "9.9s \/ 25.6 MB"}, {"starting_time": 1540217828851, "ending_time": 1540217830133, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Dmelanogaster > SRR018292,SRR018293,SRR018294,SRR060098 > SRR018293)", "times": [{"starting_time": 1540217825206, "ending_time": 1540217830151, "color":c1(1)}, {"starting_time": 1540217830151, "ending_time": 1540217834583, "color":c2(1), "label": "9.9s \/ 25.6 MB"}, {"starting_time": 1540217834583, "ending_time": 1540217835133, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Dmelanogaster > SRR018292,SRR018293,SRR018294,SRR060098 > SRR018294)", "times": [{"starting_time": 1540217850231, "ending_time": 1540217855167, "color":c1(1)}, {"starting_time": 1540217855167, "ending_time": 1540217860980, "color":c2(1), "label": "14.9s \/ 25.6 MB"}, {"starting_time": 1540217860980, "ending_time": 1540217865134, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Hinfluenzae > SRR065202 > SRR065202)", "times": [{"starting_time": 1540217860282, "ending_time": 1540217865160, "color":c1(1)}, {"starting_time": 1540217865160, "ending_time": 1540217871100, "color":c2(1), "label": "9.9s \/ 25.6 MB"}]},
+{"label": "catPariedEndFiles (Saureus > SRR022866 > SRR022866)", "times": [{"starting_time": 1540217860322, "ending_time": 1540217865161, "color":c1(1)}, {"starting_time": 1540217865161, "ending_time": 1540217874461, "color":c2(1), "label": "19.8s \/ 25.6 MB"}, {"starting_time": 1540217874461, "ending_time": 1540217880134, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Dmelanogaster > SRR018292,SRR018293,SRR018294,SRR060098 > SRR018292)", "times": [{"starting_time": 1540217860355, "ending_time": 1540217865163, "color":c1(1)}, {"starting_time": 1540217865163, "ending_time": 1540217872229, "color":c2(1), "label": "19.8s \/ 25.6 MB"}, {"starting_time": 1540217872229, "ending_time": 1540217880145, "color":c1(1)}]},
+{"label": "catPariedEndFiles (EColi > SRR001665 > SRR001665)", "times": [{"starting_time": 1540217870206, "ending_time": 1540217875134, "color":c1(1)}, {"starting_time": 1540217875134, "ending_time": 1540217879613, "color":c2(1), "label": "10s \/ 25.6 MB"}, {"starting_time": 1540217879613, "ending_time": 1540217880161, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Dmelanogaster > SRR018292,SRR018293,SRR018294,SRR060098 > SRR060098)", "times": [{"starting_time": 1540217915232, "ending_time": 1540217920136, "color":c1(1)}, {"starting_time": 1540217920136, "ending_time": 1540217932653, "color":c2(1), "label": "24.9s \/ 25.6 MB"}, {"starting_time": 1540217932653, "ending_time": 1540217940136, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Scerevisiae > SRR352384 > SRR352384)", "times": [{"starting_time": 1540217965224, "ending_time": 1540217970136, "color":c1(1)}, {"starting_time": 1540217970136, "ending_time": 1540217983203, "color":c2(1), "label": "19.9s \/ 25.6 MB"}, {"starting_time": 1540217983203, "ending_time": 1540217985137, "color":c1(1)}]},
+{"label": "catPariedEndFiles (Celegans > SRR065390 > SRR065390)", "times": [{"starting_time": 1540218035290, "ending_time": 1540218040140, "color":c1(1)}, {"starting_time": 1540218040140, "ending_time": 1540218061220, "color":c2(1), "label": "29.9s \/ 25.6 MB"}, {"starting_time": 1540218061220, "ending_time": 1540218065142, "color":c1(1)}]},
+{"label": "catSRAFiles (L. lactis > SRR088759)", "times": [{"starting_time": 1540218065218, "ending_time": 1540218070142, "color":c1(2)}, {"starting_time": 1540218070142, "ending_time": 1540218070311, "color":c2(2), "label": "4.9s \/ 0"}]},
+{"label": "catSRAFiles (B. subtilis subtilis 168-DRR000852)", "times": [{"starting_time": 1540218065345, "ending_time": 1540218070156, "color":c1(2)}, {"starting_time": 1540218070156, "ending_time": 1540218070324, "color":c2(2), "label": "4.8s \/ 0"}]},
+{"label": "catSRAFiles (E. coli K-12 MG1655 > SRR396536)", "times": [{"starting_time": 1540218065383, "ending_time": 1540218070196, "color":c1(2)}, {"starting_time": 1540218070196, "ending_time": 1540218070365, "color":c2(2), "label": "4.8s \/ 0"}]},
+{"label": "catSRAFiles (T. pallidum > SRR361468)", "times": [{"starting_time": 1540218065465, "ending_time": 1540218070389, "color":c1(2)}, {"starting_time": 1540218070389, "ending_time": 1540218070558, "color":c2(2), "label": "4.9s \/ 0"}]},
+{"label": "catSRAFiles (E. coli K-12 MG1655 > SRR396532)", "times": [{"starting_time": 1540218065505, "ending_time": 1540218070408, "color":c1(2)}, {"starting_time": 1540218070408, "ending_time": 1540218070577, "color":c2(2), "label": "4.9s \/ 0"}]},
+{"label": "catSRAFiles (L. interrogans str. 56601 > SRR353563)", "times": [{"starting_time": 1540218065594, "ending_time": 1540218070994, "color":c1(2)}, {"starting_time": 1540218070994, "ending_time": 1540218071036, "color":c2(2), "label": "9.5s \/ 0"}, {"starting_time": 1540218071036, "ending_time": 1540218075142, "color":c1(2)}]},
+{"label": "catSRAFiles (L. interrogans str. Fiocruz L1-130 > SRR397962)", "times": [{"starting_time": 1540218065622, "ending_time": 1540218070994, "color":c1(2)}, {"starting_time": 1540218070994, "ending_time": 1540218071026, "color":c2(2), "label": "9.5s \/ 0"}, {"starting_time": 1540218071026, "ending_time": 1540218075145, "color":c1(2)}]},
+{"label": "catSRAFiles (P. aeruginosa PAO1 > SRR396641)", "times": [{"starting_time": 1540218065684, "ending_time": 1540218070995, "color":c1(2)}, {"starting_time": 1540218070995, "ending_time": 1540218071036, "color":c2(2), "label": "9.5s \/ 0"}, {"starting_time": 1540218071036, "ending_time": 1540218075175, "color":c1(2)}]},
+{"label": "catSRAFiles (E. coli K-12 MG1655 > SRR022918)", "times": [{"starting_time": 1540218065728, "ending_time": 1540218070996, "color":c1(2)}, {"starting_time": 1540218070996, "ending_time": 1540218071038, "color":c2(2), "label": "9.6s \/ 0"}, {"starting_time": 1540218071038, "ending_time": 1540218075296, "color":c1(2)}]},
+{"label": "catSRAFiles (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098)", "times": [{"starting_time": 1540218065778, "ending_time": 1540218071018, "color":c1(2)}, {"starting_time": 1540218071018, "ending_time": 1540218103936, "color":c2(2), "label": "44.4s \/ 25.7 MB"}, {"starting_time": 1540218103936, "ending_time": 1540218110145, "color":c1(2)}]},
+{"label": "catSRAFiles (H. influenzae Rd KW20 > SRR065202)", "times": [{"starting_time": 1540218065859, "ending_time": 1540218071019, "color":c1(2)}, {"starting_time": 1540218071019, "ending_time": 1540218071059, "color":c2(2), "label": "9.5s \/ 0"}, {"starting_time": 1540218071059, "ending_time": 1540218075325, "color":c1(2)}]},
+{"label": "catSRAFiles (S. aureus MW2 > SRR022866)", "times": [{"starting_time": 1540218065881, "ending_time": 1540218071020, "color":c1(2)}, {"starting_time": 1540218071020, "ending_time": 1540218071069, "color":c2(2), "label": "9.7s \/ 0"}, {"starting_time": 1540218071069, "ending_time": 1540218075561, "color":c1(2)}]},
+{"label": "catSRAFiles (S. cerevisiae S288C > SRR352384)", "times": [{"starting_time": 1540218065913, "ending_time": 1540218071020, "color":c1(2)}, {"starting_time": 1540218071020, "ending_time": 1540218071065, "color":c2(2), "label": "9.7s \/ 0"}, {"starting_time": 1540218071065, "ending_time": 1540218075563, "color":c1(2)}]},
+{"label": "catSRAFiles (E. coli K-12 MG1655 > SRR001665)", "times": [{"starting_time": 1540218065937, "ending_time": 1540218071021, "color":c1(2)}, {"starting_time": 1540218071021, "ending_time": 1540218071064, "color":c2(2), "label": "9.6s \/ 0"}, {"starting_time": 1540218071064, "ending_time": 1540218075567, "color":c1(2)}]},
+{"label": "catSRAFiles (C. elegans WS222 > SRR065390)", "times": [{"starting_time": 1540218065962, "ending_time": 1540218071022, "color":c1(2)}, {"starting_time": 1540218071022, "ending_time": 1540218071071, "color":c2(2), "label": "9.6s \/ 0"}, {"starting_time": 1540218071071, "ending_time": 1540218075611, "color":c1(2)}]},
+{"label": "runRacer (L. lactis > SRR088759)", "times": [{"starting_time": 1540218070374, "ending_time": 1540218076944, "color":c1(3)}, {"starting_time": 1540218076944, "ending_time": 1540218267337, "color":c2(3), "label": "3m 25s \/ 312.9 MB"}, {"starting_time": 1540218267337, "ending_time": 1540218275154, "color":c1(3)}]},
+{"label": "runBWABefore (L. lactis > SRR088759)", "times": [{"starting_time": 1540218070514, "ending_time": 1540218076945, "color":c1(4)}, {"starting_time": 1540218076945, "ending_time": 1540218230960, "color":c2(4), "label": "2m 50s \/ 554.7 MB"}, {"starting_time": 1540218230960, "ending_time": 1540218240153, "color":c1(4)}]},
+{"label": "runBWABefore (B. subtilis subtilis 168-DRR000852)", "times": [{"starting_time": 1540218070671, "ending_time": 1540218076973, "color":c1(4)}, {"starting_time": 1540218076973, "ending_time": 1540218299419, "color":c2(4), "label": "3m 54s \/ 390.1 MB"}, {"starting_time": 1540218299419, "ending_time": 1540218305157, "color":c1(4)}]},
+{"label": "runRacer (B. subtilis subtilis 168-DRR000852)", "times": [{"starting_time": 1540218070790, "ending_time": 1540218076973, "color":c1(3)}, {"starting_time": 1540218076973, "ending_time": 1540218418613, "color":c2(3), "label": "5m 59s \/ 1.1 GB"}, {"starting_time": 1540218418613, "ending_time": 1540218430165, "color":c1(3)}]},
+{"label": "runRacer (E. coli K-12 MG1655 > SRR396536)", "times": [{"starting_time": 1540218070934, "ending_time": 1540218076974, "color":c1(3)}, {"starting_time": 1540218076974, "ending_time": 1540218418675, "color":c2(3), "label": "5m 59s \/ 661.6 MB"}, {"starting_time": 1540218418675, "ending_time": 1540218430184, "color":c1(3)}]},
+{"label": "runBWABefore (E. coli K-12 MG1655 > SRR396536)", "times": [{"starting_time": 1540218070990, "ending_time": 1540218076979, "color":c1(4)}, {"starting_time": 1540218076979, "ending_time": 1540218311482, "color":c2(4), "label": "4m 9s \/ 390.8 MB"}, {"starting_time": 1540218311482, "ending_time": 1540218320159, "color":c1(4)}]},
+{"label": "runBWABefore (T. pallidum > SRR361468)", "times": [{"starting_time": 1540218071058, "ending_time": 1540218076979, "color":c1(4)}, {"starting_time": 1540218076979, "ending_time": 1540218288735, "color":c2(4), "label": "3m 44s \/ 552.2 MB"}, {"starting_time": 1540218288735, "ending_time": 1540218295156, "color":c1(4)}]},
+{"label": "runRacer (T. pallidum > SRR361468)", "times": [{"starting_time": 1540218071109, "ending_time": 1540218076980, "color":c1(3)}, {"starting_time": 1540218076980, "ending_time": 1540218302252, "color":c2(3), "label": "3m 59s \/ 546.6 MB"}, {"starting_time": 1540218302252, "ending_time": 1540218310159, "color":c1(3)}]},
+{"label": "runBWABefore (E. coli K-12 MG1655 > SRR396532)", "times": [{"starting_time": 1540218071196, "ending_time": 1540218076981, "color":c1(4)}, {"starting_time": 1540218076981, "ending_time": 1540218354927, "color":c2(4), "label": "4m 49s \/ 390.1 MB"}, {"starting_time": 1540218354927, "ending_time": 1540218360163, "color":c1(4)}]},
+{"label": "runRacer (E. coli K-12 MG1655 > SRR396532)", "times": [{"starting_time": 1540218071362, "ending_time": 1540218076981, "color":c1(3)}, {"starting_time": 1540218076981, "ending_time": 1540218499539, "color":c2(3), "label": "7m 14s \/ 1.1 GB"}, {"starting_time": 1540218499539, "ending_time": 1540218505170, "color":c1(3)}]},
+{"label": "runBWABefore (L. interrogans str. 56601 > SRR353563)", "times": [{"starting_time": 1540218075291, "ending_time": 1540218080144, "color":c1(4)}, {"starting_time": 1540218080144, "ending_time": 1540218669471, "color":c2(4), "label": "9m 55s \/ 378.1 MB"}, {"starting_time": 1540218669471, "ending_time": 1540218670178, "color":c1(4)}]},
+{"label": "runRacer (L. interrogans str. 56601 > SRR353563)", "times": [{"starting_time": 1540218075360, "ending_time": 1540218080145, "color":c1(3)}, {"starting_time": 1540218080145, "ending_time": 1540218989067, "color":c2(3), "label": "15m 20s \/ 880.8 MB"}, {"starting_time": 1540218989067, "ending_time": 1540218995192, "color":c1(3)}]},
+{"label": "runBWABefore (L. interrogans str. Fiocruz L1-130 > SRR397962)", "times": [{"starting_time": 1540218075430, "ending_time": 1540218080146, "color":c1(4)}, {"starting_time": 1540218080146, "ending_time": 1540218653843, "color":c2(4), "label": "9m 40s \/ 378 MB"}, {"starting_time": 1540218653843, "ending_time": 1540218655178, "color":c1(4)}]},
+{"label": "runRacer (L. interrogans str. Fiocruz L1-130 > SRR397962)", "times": [{"starting_time": 1540218075555, "ending_time": 1540218080147, "color":c1(3)}, {"starting_time": 1540218080147, "ending_time": 1540218983796, "color":c2(3), "label": "15m 15s \/ 883.2 MB"}, {"starting_time": 1540218983796, "ending_time": 1540218990192, "color":c1(3)}]},
+{"label": "runRacer (E. coli K-12 MG1655 > SRR022918)", "times": [{"starting_time": 1540218075727, "ending_time": 1540218080148, "color":c1(3)}, {"starting_time": 1540218080148, "ending_time": 1540218926221, "color":c2(3), "label": "14m 19s \/ 4.1 GB"}, {"starting_time": 1540218926221, "ending_time": 1540218935189, "color":c1(3)}]},
+{"label": "runBWABefore (E. coli K-12 MG1655 > SRR022918)", "times": [{"starting_time": 1540218075818, "ending_time": 1540218080149, "color":c1(4)}, {"starting_time": 1540218080149, "ending_time": 1540218613280, "color":c2(4), "label": "8m 59s \/ 392.6 MB"}, {"starting_time": 1540218613280, "ending_time": 1540218615175, "color":c1(4)}]},
+{"label": "runRacer (P. aeruginosa PAO1 > SRR396641)", "times": [{"starting_time": 1540218075950, "ending_time": 1540218080150, "color":c1(3)}, {"starting_time": 1540218080150, "ending_time": 1540218424583, "color":c2(3), "label": "5m 54s \/ 640.5 MB"}, {"starting_time": 1540218424583, "ending_time": 1540218430186, "color":c1(3)}]},
+{"label": "runBWABefore (P. aeruginosa PAO1 > SRR396641)", "times": [{"starting_time": 1540218076938, "ending_time": 1540218085145, "color":c1(4)}, {"starting_time": 1540218085145, "ending_time": 1540218445912, "color":c2(4), "label": "6m 18s \/ 560.8 MB"}, {"starting_time": 1540218445912, "ending_time": 1540218455168, "color":c1(4)}]},
+{"label": "runRacer (H. influenzae Rd KW20 > SRR065202)", "times": [{"starting_time": 1540218077063, "ending_time": 1540218085147, "color":c1(3)}, {"starting_time": 1540218085147, "ending_time": 1540219061153, "color":c2(3), "label": "16m 28s \/ 1.5 GB"}, {"starting_time": 1540219061153, "ending_time": 1540219065192, "color":c1(3)}]},
+{"label": "runBWABefore (S. aureus MW2 > SRR022866)", "times": [{"starting_time": 1540218077137, "ending_time": 1540218085157, "color":c1(4)}, {"starting_time": 1540218085157, "ending_time": 1540219713765, "color":c2(4), "label": "27m 18s \/ 387.7 MB"}, {"starting_time": 1540219713765, "ending_time": 1540219715226, "color":c1(4)}]},
+{"label": "runBWABefore (H. influenzae Rd KW20 > SRR065202)", "times": [{"starting_time": 1540218077221, "ending_time": 1540218085158, "color":c1(4)}, {"starting_time": 1540218085158, "ending_time": 1540218960380, "color":c2(4), "label": "14m 53s \/ 501.4 MB"}, {"starting_time": 1540218960380, "ending_time": 1540218970190, "color":c1(4)}]},
+{"label": "runRacer (S. aureus MW2 > SRR022866)", "times": [{"starting_time": 1540218077320, "ending_time": 1540218085159, "color":c1(3)}, {"starting_time": 1540218085159, "ending_time": 1540220576851, "color":c2(3), "label": "41m 48s \/ 2.6 GB"}, {"starting_time": 1540220576851, "ending_time": 1540220585252, "color":c1(3)}]},
+{"label": "runRacer (S. cerevisiae S288C > SRR352384)", "times": [{"starting_time": 1540218077386, "ending_time": 1540218085172, "color":c1(3)}, {"starting_time": 1540218085172, "ending_time": 1540222754302, "color":c2(3), "label": "1h 18m 8s \/ 3.7 GB"}, {"starting_time": 1540222754302, "ending_time": 1540222765318, "color":c1(3)}]},
+{"label": "runRacer (E. coli K-12 MG1655 > SRR001665)", "times": [{"starting_time": 1540218077465, "ending_time": 1540218085173, "color":c1(3)}, {"starting_time": 1540218085173, "ending_time": 1540218795618, "color":c2(3), "label": "12m 3s \/ 1.4 GB"}, {"starting_time": 1540218795618, "ending_time": 1540218800181, "color":c1(3)}]},
+{"label": "runBWABefore (S. cerevisiae S288C > SRR352384)", "times": [{"starting_time": 1540218077514, "ending_time": 1540218085177, "color":c1(4)}, {"starting_time": 1540218085177, "ending_time": 1540221982071, "color":c2(4), "label": "1h 5m 8s \/ 403.3 MB"}, {"starting_time": 1540221982071, "ending_time": 1540221985292, "color":c1(4)}]},
+{"label": "runBWABefore (E. coli K-12 MG1655 > SRR001665)", "times": [{"starting_time": 1540218077556, "ending_time": 1540218085178, "color":c1(4)}, {"starting_time": 1540218085178, "ending_time": 1540218780482, "color":c2(4), "label": "11m 53s \/ 558.2 MB"}, {"starting_time": 1540218780482, "ending_time": 1540218790182, "color":c1(4)}]},
+{"label": "runBWABefore (C. elegans WS222 > SRR065390)", "times": [{"starting_time": 1540218077621, "ending_time": 1540218085179, "color":c1(4)}, {"starting_time": 1540218085179, "ending_time": 1540227502946, "color":c2(4), "label": "2h 37m 8s \/ 589.8 MB"}, {"starting_time": 1540227502946, "ending_time": 1540227505481, "color":c1(4)}]},
+{"label": "runRacer (C. elegans WS222 > SRR065390)", "times": [{"starting_time": 1540218077712, "ending_time": 1540218085179, "color":c1(3)}, {"starting_time": 1540218085179, "ending_time": 1540227435447, "color":c2(3), "label": "2h 36m 3s \/ 13.6 GB"}, {"starting_time": 1540227435447, "ending_time": 1540227440478, "color":c1(3)}]},
+{"label": "runBWABefore (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098)", "times": [{"starting_time": 1540218110266, "ending_time": 1540218115148, "color":c1(4)}, {"starting_time": 1540218115148, "ending_time": 1540232942149, "color":c2(4), "label": "4h 7m 10s \/ 1 GB"}]},
+{"label": "runRacer (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098)", "times": [{"starting_time": 1540218110325, "ending_time": 1540218115149, "color":c1(3)}, {"starting_time": 1540218115149, "ending_time": 1540227061537, "color":c2(3), "label": "2h 29m 20s \/ 29 GB"}, {"starting_time": 1540227061537, "ending_time": 1540227070465, "color":c1(3)}]},
+{"label": "runBWAAfter (L. lactis > SRR088759)", "times": [{"starting_time": 1540218275355, "ending_time": 1540218280190, "color":c1(5)}, {"starting_time": 1540218280190, "ending_time": 1540218428536, "color":c2(5), "label": "2m 40s \/ 554.8 MB"}, {"starting_time": 1540218428536, "ending_time": 1540218435167, "color":c1(5)}]},
+{"label": "runBWAAfter (T. pallidum > SRR361468)", "times": [{"starting_time": 1540218310255, "ending_time": 1540218315161, "color":c1(5)}, {"starting_time": 1540218315161, "ending_time": 1540218498661, "color":c2(5), "label": "3m 10s \/ 552.2 MB"}, {"starting_time": 1540218498661, "ending_time": 1540218500172, "color":c1(5)}]},
+{"label": "runBWAAfter (B. subtilis subtilis 168-DRR000852)", "times": [{"starting_time": 1540218430285, "ending_time": 1540218435203, "color":c1(5)}, {"starting_time": 1540218435203, "ending_time": 1540218600408, "color":c2(5), "label": "2m 55s \/ 390.1 MB"}, {"starting_time": 1540218600408, "ending_time": 1540218605175, "color":c1(5)}]},
+{"label": "runBWAAfter (E. coli K-12 MG1655 > SRR396536)", "times": [{"starting_time": 1540218430359, "ending_time": 1540218435203, "color":c1(5)}, {"starting_time": 1540218435203, "ending_time": 1540218613958, "color":c2(5), "label": "3m 5s \/ 390.8 MB"}, {"starting_time": 1540218613958, "ending_time": 1540218615187, "color":c1(5)}]},
+{"label": "runBWAAfter (P. aeruginosa PAO1 > SRR396641)", "times": [{"starting_time": 1540218430440, "ending_time": 1540218435204, "color":c1(5)}, {"starting_time": 1540218435204, "ending_time": 1540218762749, "color":c2(5), "label": "5m 35s \/ 560.9 MB"}, {"starting_time": 1540218762749, "ending_time": 1540218765182, "color":c1(5)}]},
+{"label": "readSearch (L. lactis > SRR088759)", "times": [{"starting_time": 1540218435266, "ending_time": 1540218440168, "color":c1(6)}, {"starting_time": 1540218440168, "ending_time": 1540218459622, "color":c2(6), "label": "24.9s \/ 388.5 MB"}, {"starting_time": 1540218459622, "ending_time": 1540218460205, "color":c1(6)}]},
+{"label": "EvalEC (L. lactis > SRR088759)", "times": [{"starting_time": 1540218435321, "ending_time": 1540218440169, "color":c1(7)}, {"starting_time": 1540218440169, "ending_time": 1540218656612, "color":c2(7), "label": "3m 45s \/ 100.2 MB"}, {"starting_time": 1540218656612, "ending_time": 1540218660179, "color":c1(7)}]},
+{"label": "readSearch (T. pallidum > SRR361468)", "times": [{"starting_time": 1540218500271, "ending_time": 1540218505183, "color":c1(6)}, {"starting_time": 1540218505183, "ending_time": 1540218531316, "color":c2(6), "label": "34.9s \/ 535.4 MB"}, {"starting_time": 1540218531316, "ending_time": 1540218535174, "color":c1(6)}]},
+{"label": "EvalEC (T. pallidum > SRR361468)", "times": [{"starting_time": 1540218500343, "ending_time": 1540218505184, "color":c1(7)}, {"starting_time": 1540218505184, "ending_time": 1540218830776, "color":c2(7), "label": "5m 35s \/ 100.2 MB"}, {"starting_time": 1540218830776, "ending_time": 1540218835184, "color":c1(7)}]},
+{"label": "runBWAAfter (E. coli K-12 MG1655 > SRR396532)", "times": [{"starting_time": 1540218505268, "ending_time": 1540218510173, "color":c1(5)}, {"starting_time": 1540218510173, "ending_time": 1540218726144, "color":c2(5), "label": "3m 40s \/ 390.8 MB"}]},
+{"label": "readSearch (B. subtilis subtilis 168-DRR000852)", "times": [{"starting_time": 1540218605311, "ending_time": 1540218610176, "color":c1(6)}, {"starting_time": 1540218610176, "ending_time": 1540218628823, "color":c2(6), "label": "24.9s \/ 524.8 MB"}, {"starting_time": 1540218628823, "ending_time": 1540218630178, "color":c1(6)}]},
+{"label": "EvalEC (B. subtilis subtilis 168-DRR000852)", "times": [{"starting_time": 1540218605408, "ending_time": 1540218610177, "color":c1(7)}, {"starting_time": 1540218610177, "ending_time": 1540218853900, "color":c2(7), "label": "4m 10s \/ 100.2 MB"}, {"starting_time": 1540218853900, "ending_time": 1540218855185, "color":c1(7)}]},
+{"label": "EvalEC (E. coli K-12 MG1655 > SRR396536)", "times": [{"starting_time": 1540218615269, "ending_time": 1540218620176, "color":c1(7)}, {"starting_time": 1540218620176, "ending_time": 1540218876651, "color":c2(7), "label": "4m 25s \/ 100.1 MB"}, {"starting_time": 1540218876651, "ending_time": 1540218880308, "color":c1(7)}]},
+{"label": "readSearch (E. coli K-12 MG1655 > SRR396536)", "times": [{"starting_time": 1540218615332, "ending_time": 1540218620177, "color":c1(6)}, {"starting_time": 1540218620177, "ending_time": 1540218640095, "color":c2(6), "label": "29.8s \/ 525.4 MB"}, {"starting_time": 1540218640095, "ending_time": 1540218645180, "color":c1(6)}]},
+{"label": "readSearch (E. coli K-12 MG1655 > SRR396532)", "times": [{"starting_time": 1540218726425, "ending_time": 1540218730182, "color":c1(6)}, {"starting_time": 1540218730182, "ending_time": 1540218754226, "color":c2(6), "label": "28.8s \/ 621.8 MB"}, {"starting_time": 1540218754226, "ending_time": 1540218755182, "color":c1(6)}]},
+{"label": "EvalEC (E. coli K-12 MG1655 > SRR396532)", "times": [{"starting_time": 1540218727654, "ending_time": 1540218730183, "color":c1(7)}, {"starting_time": 1540218730183, "ending_time": 1540219047726, "color":c2(7), "label": "5m 28s \/ 100.2 MB"}, {"starting_time": 1540219047726, "ending_time": 1540219055193, "color":c1(7)}]},
+{"label": "readSearch (P. aeruginosa PAO1 > SRR396641)", "times": [{"starting_time": 1540218765398, "ending_time": 1540218770182, "color":c1(6)}, {"starting_time": 1540218770182, "ending_time": 1540218814473, "color":c2(6), "label": "59.8s \/ 765.1 MB"}, {"starting_time": 1540218814473, "ending_time": 1540218825183, "color":c1(6)}]},
+{"label": "EvalEC (P. aeruginosa PAO1 > SRR396641)", "times": [{"starting_time": 1540218765526, "ending_time": 1540218770183, "color":c1(7)}, {"starting_time": 1540218770183, "ending_time": 1540219216457, "color":c2(7), "label": "7m 35s \/ 100.2 MB"}, {"starting_time": 1540219216457, "ending_time": 1540219220196, "color":c1(7)}]},
+{"label": "runBWAAfter (E. coli K-12 MG1655 > SRR001665)", "times": [{"starting_time": 1540218800356, "ending_time": 1540218805182, "color":c1(5)}, {"starting_time": 1540218805182, "ending_time": 1540219391138, "color":c2(5), "label": "9m 50s \/ 558.1 MB"}]},
+{"label": "runBWAAfter (E. coli K-12 MG1655 > SRR022918)", "times": [{"starting_time": 1540218935289, "ending_time": 1540218940237, "color":c1(5)}, {"starting_time": 1540218940237, "ending_time": 1540219426719, "color":c2(5), "label": "8m 15s \/ 430.2 MB"}, {"starting_time": 1540219426719, "ending_time": 1540219430209, "color":c1(5)}]},
+{"label": "runBWAAfter (L. interrogans str. Fiocruz L1-130 > SRR397962)", "times": [{"starting_time": 1540218990326, "ending_time": 1540218995195, "color":c1(5)}, {"starting_time": 1540218995195, "ending_time": 1540219424093, "color":c2(5), "label": "7m 20s \/ 378 MB"}, {"starting_time": 1540219424093, "ending_time": 1540219430213, "color":c1(5)}]},
+{"label": "runBWAAfter (L. interrogans str. 56601 > SRR353563)", "times": [{"starting_time": 1540218995244, "ending_time": 1540219000223, "color":c1(5)}, {"starting_time": 1540219000223, "ending_time": 1540219426111, "color":c2(5), "label": "7m 15s \/ 378.2 MB"}, {"starting_time": 1540219426111, "ending_time": 1540219430215, "color":c1(5)}]},
+{"label": "runBWAAfter (H. influenzae Rd KW20 > SRR065202)", "times": [{"starting_time": 1540219065362, "ending_time": 1540219070193, "color":c1(5)}, {"starting_time": 1540219070193, "ending_time": 1540219844177, "color":c2(5), "label": "13m \/ 489.5 MB"}, {"starting_time": 1540219844177, "ending_time": 1540219845350, "color":c1(5)}]},
+{"label": "readSearch (E. coli K-12 MG1655 > SRR001665)", "times": [{"starting_time": 1540219390294, "ending_time": 1540219395206, "color":c1(6)}, {"starting_time": 1540219395206, "ending_time": 1540219478712, "color":c2(6), "label": "1m 30s \/ 882.4 MB"}, {"starting_time": 1540219478712, "ending_time": 1540219480266, "color":c1(6)}]},
+{"label": "EvalEC (E. coli K-12 MG1655 > SRR001665)", "times": [{"starting_time": 1540219390364, "ending_time": 1540219395208, "color":c1(7)}, {"starting_time": 1540219395208, "ending_time": 1540220357575, "color":c2(7), "label": "16m 10s \/ 100.2 MB"}, {"starting_time": 1540220357575, "ending_time": 1540220360243, "color":c1(7)}]},
+{"label": "readSearch (E. coli K-12 MG1655 > SRR022918)", "times": [{"starting_time": 1540219430396, "ending_time": 1540219435210, "color":c1(6)}, {"starting_time": 1540219435210, "ending_time": 1540219486933, "color":c2(6), "label": "59.8s \/ 973.9 MB"}, {"starting_time": 1540219486933, "ending_time": 1540219490213, "color":c1(6)}]},
+{"label": "readSearch (L. interrogans str. Fiocruz L1-130 > SRR397962)", "times": [{"starting_time": 1540219430548, "ending_time": 1540219435211, "color":c1(6)}, {"starting_time": 1540219435211, "ending_time": 1540219474427, "color":c2(6), "label": "49.7s \/ 1 GB"}, {"starting_time": 1540219474427, "ending_time": 1540219480269, "color":c1(6)}]},
+{"label": "readSearch (L. interrogans str. 56601 > SRR353563)", "times": [{"starting_time": 1540219430698, "ending_time": 1540219435212, "color":c1(6)}, {"starting_time": 1540219435212, "ending_time": 1540219474380, "color":c2(6), "label": "49.6s \/ 1 GB"}, {"starting_time": 1540219474380, "ending_time": 1540219480271, "color":c1(6)}]},
+{"label": "EvalEC (L. interrogans str. Fiocruz L1-130 > SRR397962)", "times": [{"starting_time": 1540219430837, "ending_time": 1540219435212, "color":c1(7)}, {"starting_time": 1540219435212, "ending_time": 1540220060627, "color":c2(7), "label": "10m 34s \/ 100.1 MB"}, {"starting_time": 1540220060627, "ending_time": 1540220065233, "color":c1(7)}]},
+{"label": "EvalEC (L. interrogans str. 56601 > SRR353563)", "times": [{"starting_time": 1540219430878, "ending_time": 1540219435213, "color":c1(7)}, {"starting_time": 1540219435213, "ending_time": 1540220045113, "color":c2(7), "label": "10m 19s \/ 100.2 MB"}, {"starting_time": 1540220045113, "ending_time": 1540220050233, "color":c1(7)}]},
+{"label": "EvalEC (E. coli K-12 MG1655 > SRR022918)", "times": [{"starting_time": 1540219430906, "ending_time": 1540219435214, "color":c1(7)}, {"starting_time": 1540219435214, "ending_time": 1540219905724, "color":c2(7), "label": "7m 59s \/ 100.2 MB"}, {"starting_time": 1540219905724, "ending_time": 1540219910229, "color":c1(7)}]},
+{"label": "readSearch (H. influenzae Rd KW20 > SRR065202)", "times": [{"starting_time": 1540219845491, "ending_time": 1540219850228, "color":c1(6)}, {"starting_time": 1540219850228, "ending_time": 1540219928528, "color":c2(6), "label": "1m 25s \/ 1013.8 MB"}, {"starting_time": 1540219928528, "ending_time": 1540219930229, "color":c1(6)}]},
+{"label": "EvalEC (H. influenzae Rd KW20 > SRR065202)", "times": [{"starting_time": 1540219845604, "ending_time": 1540219850229, "color":c1(7)}, {"starting_time": 1540219850229, "ending_time": 1540220981233, "color":c2(7), "label": "19m \/ 100.2 MB"}, {"starting_time": 1540220981233, "ending_time": 1540220985265, "color":c1(7)}]},
+{"label": "runBWAAfter (S. aureus MW2 > SRR022866)", "times": [{"starting_time": 1540220585356, "ending_time": 1540220590251, "color":c1(5)}, {"starting_time": 1540220590251, "ending_time": 1540221757295, "color":c2(5), "label": "19m 35s \/ 387.7 MB"}, {"starting_time": 1540221757295, "ending_time": 1540221760282, "color":c1(5)}]},
+{"label": "readSearch (S. aureus MW2 > SRR022866)", "times": [{"starting_time": 1540221760374, "ending_time": 1540221765282, "color":c1(6)}, {"starting_time": 1540221765282, "ending_time": 1540221872165, "color":c2(6), "label": "1m 55s \/ 1.3 GB"}, {"starting_time": 1540221872165, "ending_time": 1540221875285, "color":c1(6)}]},
+{"label": "EvalEC (S. aureus MW2 > SRR022866)", "times": [{"starting_time": 1540221760474, "ending_time": 1540221765283, "color":c1(7)}, {"starting_time": 1540221765283, "ending_time": 1540222952073, "color":c2(7), "label": "19m 55s \/ 100.1 MB"}, {"starting_time": 1540222952073, "ending_time": 1540222955324, "color":c1(7)}]},
+{"label": "runBWAAfter (S. cerevisiae S288C > SRR352384)", "times": [{"starting_time": 1540222765420, "ending_time": 1540222770319, "color":c1(5)}, {"starting_time": 1540222770319, "ending_time": 1540225442341, "color":c2(5), "label": "44m 40s \/ 403.3 MB"}, {"starting_time": 1540225442341, "ending_time": 1540225445410, "color":c1(5)}]},
+{"label": "readSearch (S. cerevisiae S288C > SRR352384)", "times": [{"starting_time": 1540225445543, "ending_time": 1540225450410, "color":c1(6)}, {"starting_time": 1540225450410, "ending_time": 1540225729960, "color":c2(6), "label": "4m 45s \/ 1.7 GB"}, {"starting_time": 1540225729960, "ending_time": 1540225730418, "color":c1(6)}]},
+{"label": "EvalEC (S. cerevisiae S288C > SRR352384)", "times": [{"starting_time": 1540225445627, "ending_time": 1540225450411, "color":c1(7)}, {"starting_time": 1540225450411, "ending_time": 1540228861443, "color":c2(7), "label": "57m \/ 100.2 MB"}, {"starting_time": 1540228861443, "ending_time": 1540228865546, "color":c1(7)}]},
+{"label": "runBWAAfter (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098)", "times": [{"starting_time": 1540227070537, "ending_time": 1540227075466, "color":c1(5)}, {"starting_time": 1540227075466, "ending_time": 1540243826143, "color":c2(5), "label": "4h 39m 20s \/ 1 GB"}, {"starting_time": 1540243826143, "ending_time": 1540243831005, "color":c1(5)}]},
+{"label": "runBWAAfter (C. elegans WS222 > SRR065390)", "times": [{"starting_time": 1540227440564, "ending_time": 1540227445478, "color":c1(5)}, {"starting_time": 1540227445478, "ending_time": 1540237936955, "color":c2(5), "label": "2h 55m \/ 595.7 MB"}, {"starting_time": 1540237936955, "ending_time": 1540237940823, "color":c1(5)}]},
+{"label": "readSearch (C. elegans WS222 > SRR065390)", "times": [{"starting_time": 1540237941011, "ending_time": 1540237945823, "color":c1(6)}, {"starting_time": 1540237945823, "ending_time": 1540238830256, "color":c2(6), "label": "14m 55s \/ 3.6 GB"}, {"starting_time": 1540238830256, "ending_time": 1540238835849, "color":c1(6)}]},
+{"label": "EvalEC (C. elegans WS222 > SRR065390)", "times": [{"starting_time": 1540237941136, "ending_time": 1540237945824, "color":c1(7)}, {"starting_time": 1540237945824, "ending_time": 1540242971955, "color":c2(7), "label": "1h 23m 55s \/ 100.2 MB"}, {"starting_time": 1540242971955, "ending_time": 1540242975978, "color":c1(7)}]},
+{"label": "EvalEC (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098)", "times": [{"starting_time": 1540243831085, "ending_time": 1540243836005, "color":c1(7)}, {"starting_time": 1540243836005, "ending_time": 1540249989793, "color":c2(7), "label": "1h 42m 40s \/ 100.2 MB"}, {"starting_time": 1540249989793, "ending_time": 1540249991150, "color":c1(7)}]},
+{"label": "readSearch (D. melanogaster R6.18 > SRR018292,SRR018293,SRR018294,SRR060098)", "times": [{"starting_time": 1540243831147, "ending_time": 1540243836007, "color":c1(6)}, {"starting_time": 1540243836007, "ending_time": 1540245058213, "color":c2(6), "label": "20m 30s \/ 4.6 GB"}, {"starting_time": 1540245058213, "ending_time": 1540245061047, "color":c1(6)}]}
+]
+
+
+function getTickFormat() {
+  var MIN = 1000 * 60
+  var HOUR = MIN * 60
+  var DAY = HOUR * 24
+  var delta = (endingMillis - beginningMillis)
+
+  if( delta < 2 * MIN ) {
+    return {
+      format: d3.time.format("%S"),
+      tickTime: d3.time.seconds,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * HOUR ) {
+    return {
+      format: d3.time.format("%M"),
+      tickTime: d3.time.minutes,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * DAY ) {
+    return {
+      format: d3.time.format("%H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 1,
+      tickSize: 6
+    }
+  }
+
+  if( delta <= 7 * DAY ) {
+    return {
+      format: d3.time.format("%b %e %H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 6,
+      tickSize: 6
+    }
+  }
+
+  return {
+    format: d3.time.format("%b %e"),
+    tickTime: d3.time.days,
+    tickInterval: 1,
+    tickSize: 6
+  }
+}
+
+function getLabelMargin(scale) {
+    $('<span class="labelSpan" style="display: none"></span>').appendTo('body');
+
+    var labelMargin = 0
+    $.each(data, function (key, value) {
+      labelMargin = Math.max(labelMargin, $('.labelSpan').html(value.label).width());
+    });
+
+    $('.labelSpan').remove();
+
+    return (labelMargin * scale);
+}
+
+function render() {
+  handler=null;
+  $("#timeline").empty()
+  $('#label_elapsed').text(elapsed)
+  $('#label_launch').text( d3.time.format('%d %b %Y %H:%M')(new Date(beginningMillis)) )
+
+  var width = $(window).width();
+  var chart = d3.timeline()
+    .stack() // toggles graph stacking
+    .margin({left:getLabelMargin(0.85), right:100, top:0, bottom:0})
+    .tickFormat( getTickFormat() )
+    .rowSeperators('#f5f5f5')
+    .showTimeAxisTick()
+    ;
+  var svg = d3.select("#timeline").append("svg").attr("width", width).datum(data).call(chart);
+}
+
+function hrz() {
+if( handler != null ) clearTimeout(handler)
+  handler = setTimeout(render, 150);
+}
+
+$(document).ready(render)
+$(window).resize(hrz); // resize the applet on window resize
+</script>
+</head>
+
+<body>
+<div>
+  <h3>Processes execution timeline</h3>
+  <p>
+    Launch time: <span id='label_launch'> </span><br>
+    Elapsed time: <span id='label_elapsed'> </span>
+  </p>
+  <div id="timeline"></div>
+</div>
+
+<div id='footer'>
+  Created with Nextflow -- <a href='http://www.nextflow.io' target='_blank'>http://nextflow.io</a>
+</div>
+
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Clink href='" + prot + "fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css' %3E%3C/link%3E"));
+</script>
+</body>
+</html>

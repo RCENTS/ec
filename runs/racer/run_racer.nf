@@ -296,6 +296,7 @@ process readSearch{
 
     """
     printf ${orgExptId.replace(' ', '-')} > result2
+    printf " " >> result2
     readSearch $gnmFile $beforeEC $afterEC | grep Gain | cut -d'=' -f2 | xargs >> result2
     """ 
 
@@ -311,6 +312,6 @@ result_channel1.map{
 
 result_channel2.map{
     it.text
-}.collectFile(name: 'racer_read_search.txt', 
+}.collectFile(name: 'racer_gain.txt', 
               storeDir: "${workflow.projectDir}",
               newLine: false)
