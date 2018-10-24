@@ -1,20 +1,20 @@
 
 orgTable = [
-    'EcoliK12MG1655' : 'E. coli K-12 MG1655',
+    'Ecoli' : 'E. coli K-12 MG1655',
     'Paeruginosa'    : 'P. aeruginosa PAO 21'
 ]
 
 genomeTable = [ 
-    'EcoliK12MG1655' :
+    'Ecoli' :
      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz', 
     'Paeruginosa'   :
       'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/765/GCF_000006765.1_ASM676v1/GCF_000006765.1_ASM676v1_genomic.fna.gz'
 ]
 exptTable = [
     'Paeruginosa' : ['ERR330008'],
-    'EColiK12MG1655' : ['ERR008613', // ERR008613 == ERA000206
-                        'SRR001355',
-                        'SRR029323']
+    'Ecoli' : ['ERR008613', // ERR008613 == ERA000206
+               'SRR001355',
+               'SRR029323']
 ]
 
 paramsTessel = [
@@ -39,16 +39,15 @@ String[] parseExptID(String tx, String vx){
 orgIds = Channel.from(exptTable.keySet()).map{
     org -> [org, orgTable[org], genomeTable[org]]
 }
-/*
-params = Channel.from(exptTable.keySet()).map{
-    par -> [org, paramsTessel[org], paramsBlue[org]]
-}
-*/
+
+// orgIds.subscribe{
+//     println it
+// }
 
 process genomeDownload {
     tag{ orgDesc }
 
-    storeDir params.genomedir
+    storeDir "${params.genomedir}"
 
     input:
     set orgId, orgDesc, gnmURL from orgIds
@@ -68,7 +67,7 @@ process bowtie2Index {
     storeDir "${params.genomedir}/bowtie2"
 
     input:
-    set orgId, orgDesc, file(gnmFile) from orgChan
+    set orgId, orgDesc, gnmFile from orgChan
 
     output:
     set orgId, orgDesc, gnmFile, file("${orgId}.fa.*") into idxChan
@@ -111,7 +110,7 @@ process sraFetch {
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}*.fastq") into pseqChan
 
     """
-    prefetch ${sraId}
+    prefetch '${sraId}'
     vdb-validate '${sraId}'
     fastq-dump -I --split-files '${sraId}'
     """
@@ -150,7 +149,7 @@ oexptChan = fseqChan.map{
 
 
 process catSRAFiles{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId.replace('-SRR', ' > SRR').replace('-ERR', ' > ERR') }
     
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(sraFiles) from oexptChan
@@ -172,7 +171,7 @@ process catSRAFiles{
 (beforeChan1, beforeChan2) = cseqChan.into(2)
 
 process runBlue{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId.replace('-SRR', ' > SRR').replace('-ERR', ' > ERR') }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
@@ -188,7 +187,7 @@ process runBlue{
 
 
 process runBowtieBefore{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId.replace('-SRR', ' > SRR').replace('-ERR', ' > ERR') }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
@@ -203,7 +202,7 @@ process runBowtieBefore{
 }
 
 process runBowtieAfter{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId.replace('-SRR', ' > SRR').replace('-ERR', ' > ERR') }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
@@ -227,8 +226,8 @@ mergedSAMChan = beforeSAMChan
     }
 
 
-processEvalEC{
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
+process EvalEC{
+    tag { orgExptId.replace('-SRR', ' > SRR').replace('-ERR', ' > ERR') }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
@@ -249,4 +248,3 @@ result_channel1.map{
 }.collectFile(name: 'blue_eval.tsv', 
               storeDir: "${workflow.projectDir}",
               newLine: false)
-
