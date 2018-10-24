@@ -41,7 +41,7 @@ process genomeDownload {
 process bwamemIndex {
     tag{ orgDesc }
 
-storeDir "${params.genomedir}/bwa"
+    storeDir "${params.genomedir}/bwa"
 
     input:
     set orgId, orgDesc, gnmFile from orgChan
@@ -130,16 +130,16 @@ process catSRAFiles{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(sraFiles) from oexptChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fq") into cseqChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fastq") into cseqChan
 
     script:
     if(sraIds.size() == 1)
         """
-        mv ${sraFiles} beforeEC.fq
+        mv ${sraFiles} beforeEC.fastq
         """
     else
         """
-        cat ${sraFiles} > beforeEC.fq
+        cat ${sraFiles} > beforeEC.fastq
         """
 }
 
@@ -152,10 +152,10 @@ process runBFC{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fq") into ecChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fastq") into ecChan
 
     """
-    bfc ${params.cfg} ${beforeEC} > afterEC.fq
+    bfc ${params.cfg} ${beforeEC} > afterEC.fastq
     """ 
 }
 
@@ -196,7 +196,6 @@ mergedSAMChan = beforeSAMChan
           exptId1, sraIds1, beforeEC1, beforeSAM, afterSAM  ]
     }
 
-/*
 processEvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
@@ -204,7 +203,18 @@ processEvalEC{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
 
     output:
-    set orgExptId, orgId, orgDesc, exptId, file("eval.json")
+    file("result1") into result1_channel
+
+    """
+    cp ${workflow.projectDir}/bfc.py .
+    python bfc.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
+    """ 
 
 }
-*/
+
+result_channel1.map{
+    it.text
+}.collectFile(name: 'bfc_eval.tsv', 
+              storeDir: "${workflow.projectDir}",
+              newLine: false)
+
