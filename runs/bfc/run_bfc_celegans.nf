@@ -166,10 +166,11 @@ process runBWABefore{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.bam") into beforeSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sam
+    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} | samtools view -bSh -F 0x900 - > bx.bam
+    samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam 
     """ 
 }
 
@@ -180,30 +181,32 @@ process runBWAAfter{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.sam") into afterSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(afterEC), file("afterEC.bam") into afterSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} > afterEC.sam
+    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} | samtools view -bSh -F 0x900 - > ax.bam
+    samtools sort -T bx.sorted -n -o afterEC.bam ax.bam
     """ 
 }
 
 mergedSAMChan = beforeSAMChan
     .join(afterSAMChan)
     .map {
-        orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC1, beforeSAM,
-        orgExptId2, orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, beforeEC2, afterSAM ->
+        orgExptId1, 
+            orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
+            orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC, afterSAM ->
         [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
-          exptId1, sraIds1, beforeEC1, beforeSAM, afterSAM  ]
+          exptId1, sraIds1, beforeEC, afterEC, beforeSAM, afterSAM  ]
     }
 
-processEvalEC{
+process EvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
 
     output:
-    file("result1") into result1_channel
+    file("result1") into result_channel1
 
     """
     cp ${workflow.projectDir}/bfc.py .
@@ -214,7 +217,7 @@ processEvalEC{
 
 result_channel1.map{
     it.text
-}.collectFile(name: 'bfc_eval.tsv', 
+}.collectFile(name: 'bfc_eval_celegans.tsv', 
               storeDir: "${workflow.projectDir}",
               newLine: false)
 
