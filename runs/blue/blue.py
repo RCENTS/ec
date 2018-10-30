@@ -1,5 +1,4 @@
 import pysam
-import samutils as su
 import sys
 
 def zdiv(x, nr):
@@ -24,17 +23,18 @@ def sam_stats(inFile):
             if(fl & (1 << 2) == (1 << 2)):   #checks to see if the read is unmapped
                 edits[11] = edits[11] + 1    
             else:
-                aln = su.getSAMAlignment(read.query_alignment_sequence,read.cigarstring,read.get_tag("MD"))
-                #print aln[0]
-                #print aln[1]
-                count = 0
-                for a,b in zip(aln[0],aln[1]):        #loops through and counts how many edits need to be made
-                    if a != b:
-                        count = count + 1
-                if(count >= 10):
+                berr = 0
+                rbp = read.get_aligned_pairs(matches_only=True, with_seq=True)
+                for _,_,c in rbp:
+                    if c.islower():
+                        berr = berr + 1 # no. of mismatch bases
+                cgx = read.get_cigar_stats()[0]
+                berr = berr + cgx[1] # no. of insertions
+                berr = berr + cgx[2] # no. of deletions
+                if(berr >= 10):
                     edits[10] = edits[10] + 1
                 else:
-                    edits[count] = edits[count] + 1
+                    edits[berr] = edits[berr] + 1
     #print edits
     return [nreads] + edits + [zdiv(x, nreads) for x in edits]
 
