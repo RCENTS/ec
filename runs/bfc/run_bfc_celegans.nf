@@ -185,7 +185,7 @@ process runBWAAfter{
 
     """
     bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} | samtools view -bSh -F 0x900 - > ax.bam
-    samtools sort -T bx.sorted -n -o afterEC.bam ax.bam
+    samtools sort -T ax.sorted -n -o afterEC.bam ax.bam
     """ 
 }
 
