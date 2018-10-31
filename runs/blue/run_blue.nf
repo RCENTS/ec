@@ -193,11 +193,11 @@ process runBowtieBefore{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.bam") into beforeSAMChan
 
     """
-    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa  -U ${beforeEC} -S beforeEC.sam
-
+    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa  -U ${beforeEC} | samtools view -bSh -F 0x900 - > bx.bam
+    samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam 
     """ 
 }
 
@@ -208,10 +208,11 @@ process runBowtieAfter{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(afterEC), file("afterEC.sam") into afterSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(afterEC), file("afterEC.bam") into afterSAMChan
 
     """
-    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa -U ${afterEC} -S afterEC.sam
+    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa -U ${afterEC} | samtools view -bSh -F 0x900 - > ax.bam
+    samtools sort -T ax.sorted -n -o afterEC.bam ax.bam 
     """ 
 }
 
@@ -237,7 +238,7 @@ process EvalEC{
 
     """
     cp ${workflow.projectDir}/blue.py .
-    python blue.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
+    python bluev2.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
     """ 
 
 }
