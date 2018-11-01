@@ -238,6 +238,7 @@ process EvalEC{
 
     """
     cp ${workflow.projectDir}/blue.py .
+    cp ${workflow.projectDir}/bluev2.py .
     python bluev2.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
     """ 
 

@@ -36,6 +36,7 @@ def sam_stats(inFile):
                 else:
                     edit_histo[read_error] = edit_histo[read_error] + 1
     #print edits
+    samfile.close()
     return [nreads] + edit_histo + [zdiv(x, nreads) for x in edit_histo]
 
 def main(beforeEC, afterEC, oID):
