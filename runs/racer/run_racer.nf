@@ -236,6 +236,7 @@ process runBWABefore{
     """
     bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} | samtools view -bSh -F 0x900 - > bx.bam
     samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam
+    rm -rf bx.bam bx.sorted*
     """ 
 }
 
@@ -251,6 +252,7 @@ process runBWAAfter{
     """
     bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} | samtools view -bSh -F 0x900 - > ax.bam
     samtools sort -T ax.sorted -n -o afterEC.bam ax.bam
+    rm -rf ax.bam ax.sorted*
     """ 
 }
 
