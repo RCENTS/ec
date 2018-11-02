@@ -309,13 +309,13 @@ process readSearch{
 
 result_channel1.map{
     it.text
-}.collectFile(name: 'racer_eval.csv', 
+}.collectFile(name: 'racer_evalv2.csv',
               storeDir: "${workflow.projectDir}",
               newLine: false)
 
 
 result_channel2.map{
     it.text
-}.collectFile(name: 'racer_gain.txt', 
+}.collectFile(name: 'racer_gainv2.txt',
               storeDir: "${workflow.projectDir}",
               newLine: false)
