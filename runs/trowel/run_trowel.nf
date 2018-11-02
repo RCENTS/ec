@@ -7,7 +7,8 @@ params.cfg = '-g 73247'
 orgTable = [
     'EcoliK12MG1655'  : 'E. coli K-12 MG1655',
     'SauresMW2'       : 'S. aureus MW2',
-    'ScerevisiaeS288C'   : 'S. cerevisiae S288C'
+    'ScerevisiaeS288C'   : 'S. cerevisiae S288C', 
+    'Dmelanogaster' : 'D. melanogaster R6.18'
 ]
 
 genomeTable = [ 
@@ -16,13 +17,30 @@ genomeTable = [
     'SauresMW2'      :
      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/011/265/GCF_000011265.1_ASM1126v1/GCF_000011265.1_ASM1126v1_genomic.fna.gz', 
     'ScerevisiaeS288C'   :
-      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz'
+      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz',
+    'Dmelanogaster' :
+      'ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r6.24_FB2018_05/fasta/dmel-all-chromosome-r6.24.fasta.gz'
 ]
 
 exptTable = [
     'EcoliK12MG1655' : ['SRR001665', 'ERR022075', 'SRR022918'],
     'SauresMW2'      : ['SRR022866'],
-    'ScerevisiaeS288C' : ['SRR352384']
+    'ScerevisiaeS288C' : ['SRR352384'],
+    'Dmelanogaster' : [
+        'SRR018292','SRR018293','SRR018294','SRR060098' 
+    ]
+]
+
+paramsTrowel = [
+    'SRR001665' : '-k 15',
+    'ERR022075' : '-k 15',
+    'SRR022918' : '-k 15',
+    'SRR022866' : '-k 15',
+    'SRR352384' : '-k 19',
+    'SRR018292' : '-k 19',
+    'SRR018293' : '-k 19',
+    'SRR018294' : '-k 19',
+    'SRR060098' : '-k 19'
 ]
 
 
@@ -97,12 +115,12 @@ process sraFetch {
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId from exptChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}*.fastq") into pseqChan
+    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}*.fastq.gz") into pseqChan
 
     """
     prefetch ${sraId}
     vdb-validate '${sraId}'
-    fastq-dump -I --split-files '${sraId}'
+    fastq-dump -I --split-files --gzip '${sraId}'
     """
 }
 
@@ -113,10 +131,10 @@ process catPariedEndFiles{
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file(pairedFiles) from pseqChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fq") into fseqChan
+    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq.gz") into fseqChan
  
     """
-    cat ${pairedFiles} > ${sraId}.fq
+    gunzip -c ${pairedFiles} | gzip -1 > ${sraId}.fastq.gz
     """
 }
 
@@ -143,17 +161,12 @@ process catSRAFiles{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(sraFiles) from oexptChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fq") into cseqChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fastq") into cseqChan
 
     script:
-    if(sraIds.size() == 1)
-        """
-        mv ${sraFiles} beforeEC.fq
-        """
-    else
-        """
-        cat ${sraFiles} > beforeEC.fq
-        """
+    """
+    gunzip -c ${sraFiles} > beforeEC.fastq
+    """
 }
 
 (beforeChan1, beforeChan2) = cseqChan.into(2)
@@ -165,11 +178,11 @@ process runTrowel{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fq") into ecChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fastq") into ecChan
 
     """
-    echo “${input file1} ${input file2}” >./file list.txt
-    ./trowel -f ./file list.txt -k ${kmer size} -t ${num threads} -ntr
+    echo ${beforeEC} > inlist.txt
+    trowel -f inlist.txt ${paramsTrowel[exptId]} -t ${param.nthreads} -ntr > afterEC.fastq
     """ 
 }
 
@@ -180,10 +193,12 @@ process runBWABefore{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.bam") into beforeSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sam
+    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} | samtools view -bSh -F 0x900 - > bx.bam
+    samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam
+    rm -rf bx.bam bx.sorted*
     """ 
 }
 
@@ -194,31 +209,45 @@ process runBWAAfter{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.sam") into afterSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(afterEC), file("afterEC.bam") into afterSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} > afterEC.sam
+    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} | samtools view -bSh -F 0x900 - > ax.bam
+    samtools sort -T ax.sorted -n -o afterEC.bam ax.bam
+    rm -rf ax.bam ax.sorted*
     """ 
 }
 
 mergedSAMChan = beforeSAMChan
-    .merge(afterSAMChan)
+    .join(afterSAMChan)
     .map {
-        orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC1, beforeSAM,
-        orgExptId2, orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, beforeEC2, afterSAM ->
-        [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
-          exptId1, sraIds1, beforeEC1, beforeSAM, afterSAM  ]
+        orgExptId,
+          orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
+          orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC, afterSAM ->
+        [ orgExptId, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, 
+          beforeEC, afterEC, beforeSAM, afterSAM  ]
     }
 
-/*
 processEvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
     input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
+        file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
 
     output:
-    set orgExptId, orgId, orgDesc, exptId, file("eval.json")
+    file("result1") into result1_channel
+
+    """
+    cp ${workflow.projectDir}/trowel.py .
+    python trowel.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result1
+    """
 
 }
-*/
+
+result_channel1.map{
+    it.text
+}.collectFile(name: 'trowel_eval.tsv',
+              storeDir: "${workflow.projectDir}",
+              newLine: false)
+

@@ -1,57 +1,77 @@
 import pysam
-import samutils
 import sys
+
+def eval_record(read_before, read_after):
+    before = True
+    after = True
+    fl1 = read_before.flag
+    fl2 = read_after.flag
+    if(fl1 & (1 << 8) != (1 << 8)):            #checks to see if this is the best version of the read
+        if(fl1 & (1 << 2) == (1 << 2)):        #checks to see if the read is unmapped
+            before = False
+            if(fl2 & (1 << 8) != (1 << 8)):
+                if(fl2 & (1 << 2) == (1 << 2)):
+                    after = False
+                if(not before and after):
+                    return (1, 0, 0, 0) # TP
+                if(before and not after):
+                    return (0, 1, 0, 1) # FP
+                if(before and after):
+                    return (0, 0, 1, 0) # TN
+                if(not before and not after):
+                    return (0, 0, 0, 1) # FN
+    return (0, 0, 0, 0)
+
 
 def stats(before_sam, after_sam):
     samfile1 = pysam.AlignmentFile(before_sam, "rb")
     samfile2 = pysam.AlignmentFile(after_sam, "rb")    #converting bam to sam
-    samfile2_index = pysam.IndexedReads(samfile2)
-    samfile2_index.build()
-
-    fp = 0.0
-    tp = 0.0
-    fn = 0.0
-    tn = 0.0
-    count = 0
-    for read1 in samfile1:
-        before = True
-        after = True
-        fl1 = read1.flag
-        if(fl1 & (1 << 8) != (1 << 8)):            #checks to see if this is the best version of the read
-            if(fl1 & (1 << 2) == (1 << 2)):        #checks to see if the read is unmapped
-                before = False
-            read1_id = read1.query_name
-            try:
-                read2_found = samfile2_index.find(read1_id)
-            except KeyError:
-                count = count + 1
-                continue
-            for read2 in read2_found:        #loops through all versions with the same read id
-                fl2 = read2.flag
-                if(fl2 & (1 << 8) != (1 << 8)):
-                    if(fl2 & (1 << 2) == (1 << 2)):
-                        after = False
-                    if(before and not after):    #checks each condition and increments accordingly
-                        fp = fp + 1.0
-                    if(not before and after):
-                        tp = tp + 1.0
-                    if(not before and not after):
-                        fn = fn + 1.0
-                    if(before and after):
-                        tn = tn + 1.0
-                    break
-
-    print("tp: ", tp)
-    print("fp: ", fp)
-    print("tn: ", tn)
-    print("fn: ", fn)
+    tp = 0
+    fp = 0
+    tn = 0
+    fn = 0
+    rid1 = ''
+    rid2 = ''
+    try:
+        while True:
+            rx1 = samfile1.next()
+            rid1 = rx1.query_name
+            while rid2 != rid1:
+                rx2 = samfile2.next()
+                rid2 = rx2.query_name
+            if rid1 == rid2:
+                rtp, rfp, rtn, rfn = eval_record(rx1, rx2)
+                tp = tp + rtp
+                fp = fp + rfp
+                tn = tn + rtn
+                fn = fn + rfn
+    except StopIteration as e:
+        pass
+    except IOError as e:
+        print str(e)
+    samfile1.close()
+    samfile2.close()
+    #
+    # print("tp: ", tp)
+    # print("fp: ", fp)
+    # print("tn: ", tn)
+    # print("fn: ", fn)
     #print("count: ", count)
+    sensitivity = float(tp)/float((tp+fn))
+    specificity = float(tn)/float((tn+fp))
+    precision = float(tp)/float((tp+fp))
+    gain = float((tp-fp))/float((tp+fn))
+    #
+    # print("sensitivity: ", sensitivity)
+    # print("specificity: ", specificity)
+    # print("precision: ", precision)
+    # print("gains: ", gain)
+    return [tp, fp, tn, fn, 
+            sensitivity, specificity, precision, gain]
 
-    print("sensitivity: ", tp/(tp+fn))
-    print("specificity: ", tn/(tn+fp))
-    print("precision: ", tp/(tp+fp))
-    print("gains: ", (tp-fp)/(tp+fn))
-    return {'TP': tp}
+def main(before_sam, after_sam, run_id):
+    eval_result = stats(before_sam, after_sam)
+    print "\t".join([run_id] + [str(x) for x in eval_result])
 
 if __name__ == '__main__':
-    stats(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
