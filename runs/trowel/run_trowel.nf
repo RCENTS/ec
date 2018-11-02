@@ -52,7 +52,7 @@ orgIds = Channel.from(exptTable.keySet()).map{
     org -> [org, orgTable[org], genomeTable[org]]
 }
 
-process genomeDownload {
+process GenomeDownload {
     tag{ orgDesc }
 
     storeDir params.genomedir
@@ -69,10 +69,10 @@ process genomeDownload {
     """
 }
 
-process bwamemIndex {
+process GenomeIndexBWA {
     tag{ orgDesc }
 
-storeDir "${params.genomedir}/bwa"
+    storeDir "${params.genomedir}/bwa"
 
     input:
     set orgId, orgDesc, gnmFile from orgChan
@@ -108,7 +108,7 @@ exptChan = idxChan.flatMap {
 //     println it
 // }
 
-process sraFetch {
+process FetchSRA {
     tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
 
     input:
@@ -124,7 +124,7 @@ process sraFetch {
     """
 }
 
-process catPariedEndFiles{
+process CombinePariedEndFiles {
     tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
 
     input:
@@ -154,7 +154,7 @@ oexptChan = fseqChan.map{
 //     println it
 // }
 
-process catSRAFiles{
+process CombineSRAFiles{
     tag { orgExptId.replace('-SRR', ' > SRR') }
     
     input:
@@ -171,7 +171,7 @@ process catSRAFiles{
 
 (beforeChan1, beforeChan2) = cseqChan.into(2)
 
-process runTrowel{
+process Trowel{
     tag { orgExptId.replace('-SRR', ' > SRR') }
 
     input:
@@ -186,7 +186,7 @@ process runTrowel{
     """ 
 }
 
-process runBWABefore{
+process BWABeforeEC{
     tag { orgExptId.replace('-SRR', ' > SRR') }
 
     input:
@@ -202,7 +202,7 @@ process runBWABefore{
     """ 
 }
 
-process runBWAAfter{
+process BWAAfterEC{
     tag { orgExptId.replace('-SRR', ' > SRR') }
 
     input:
@@ -228,12 +228,14 @@ mergedSAMChan = beforeSAMChan
           beforeEC, afterEC, beforeSAM, afterSAM  ]
     }
 
-processEvalEC{
+(mergedChan1, mergedChan2) = mergedSAMChan.into(2)
+
+process EvalECReads{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
-        file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
+        file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedChan1
 
     output:
     file("result1") into result1_channel
@@ -245,9 +247,31 @@ processEvalEC{
 
 }
 
+process EvalECBases{
+    tag{ orgExptId.replace('-SRR', ' > SRR') }
+
+    input:
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
+        file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedChan2
+
+    output:
+    file("result2") into result2_channel
+
+    """
+    cp ${workflow.projectDir}/trowelbr.py .
+    python trowelbr.py $beforeSAM $afterSAM ${orgExptId.replace(' ', '-')} > result2
+    """
+
+}
+
 result_channel1.map{
     it.text
-}.collectFile(name: 'trowel_eval.tsv',
+}.collectFile(name: 'trowel_eval_reads.tsv',
               storeDir: "${workflow.projectDir}",
               newLine: false)
 
+result_channel2.map{
+    it.text
+}.collectFile(name: 'trowel_eval_bases.tsv',
+              storeDir: "${workflow.projectDir}",
+              newLine: false)
