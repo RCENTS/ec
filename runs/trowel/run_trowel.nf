@@ -1,8 +1,4 @@
 
-params.data = '/data'
-params.genomedir = '/data/genomes/'
-//params.cfg = '-s 100m -k 23'
-params.cfg = '-g 73247'
 
 orgTable = [
     'EcoliK12MG1655'  : 'E. coli K-12 MG1655',
@@ -23,12 +19,10 @@ genomeTable = [
 ]
 
 exptTable = [
-    'EcoliK12MG1655' : ['SRR001665', 'ERR022075', 'SRR022918'],
-    'SauresMW2'      : ['SRR022866'],
-    'ScerevisiaeS288C' : ['SRR352384'],
-    'Dmelanogaster' : [
-        'SRR018292','SRR018293','SRR018294','SRR060098' 
-    ]
+    // 'EcoliK12MG1655' : ['SRR001665', 'ERR022075', 'SRR022918'],
+    'SauresMW2'      : ['SRR022866']
+    // 'ScerevisiaeS288C' : ['SRR352384'],
+    // 'Dmelanogaster' : [ 'SRR018292','SRR018293','SRR018294','SRR060098' ]
 ]
 
 paramsTrowel = [
@@ -178,11 +172,11 @@ process Trowel{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fastq") into ecChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.fastq.out") into ecChan
 
     """
     echo ${beforeEC} > inlist.txt
-    trowel -f inlist.txt ${paramsTrowel[exptId]} -t ${param.nthreads} -ntr > afterEC.fastq
+    trowel -f inlist.txt ${paramsTrowel[exptId]} -t ${params.nthreads} -ntr
     """ 
 }
 
@@ -238,7 +232,7 @@ process EvalECReads{
         file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedChan1
 
     output:
-    file("result1") into result1_channel
+    file("result1") into result_channel1
 
     """
     cp ${workflow.projectDir}/trowel.py .
@@ -255,7 +249,7 @@ process EvalECBases{
         file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedChan2
 
     output:
-    file("result2") into result2_channel
+    file("result2") into result_channel2
 
     """
     cp ${workflow.projectDir}/trowelbr.py .

@@ -1,25 +1,31 @@
 import pysam
 import sys
 
+
+def zdiv(x, nr):
+    if nr > 0:
+        return float(x)/float(nr)
+    else:
+        return 0.0
+
 def eval_record(read_before, read_after):
     before = True
     after = True
     fl1 = read_before.flag
     fl2 = read_after.flag
-    if(fl1 & (1 << 8) != (1 << 8)):            #checks to see if this is the best version of the read
+    if(fl1 & (1 << 8) != (1 << 8)) and (fl2 & (1 << 8) != (1 << 8)):  #primary alignment
         if(fl1 & (1 << 2) == (1 << 2)):        #checks to see if the read is unmapped
             before = False
-            if(fl2 & (1 << 8) != (1 << 8)):
-                if(fl2 & (1 << 2) == (1 << 2)):
-                    after = False
-                if(not before and after):
-                    return (1, 0, 0, 0) # TP
-                if(before and not after):
-                    return (0, 1, 0, 1) # FP
-                if(before and after):
-                    return (0, 0, 1, 0) # TN
-                if(not before and not after):
-                    return (0, 0, 0, 1) # FN
+        if(fl2 & (1 << 2) == (1 << 2)):
+            after = False
+        if (not before) and after:
+            return (1, 0, 0, 0) # TP
+        if before and (not after):
+            return (0, 1, 0, 0) # FP
+        if before and after:
+            return (0, 0, 1, 0) # TN
+        if (not before) and (not after):
+            return (0, 0, 0, 1) # FN
     return (0, 0, 0, 0)
 
 
@@ -52,15 +58,15 @@ def stats(before_sam, after_sam):
     samfile1.close()
     samfile2.close()
     #
-    # print("tp: ", tp)
-    # print("fp: ", fp)
-    # print("tn: ", tn)
-    # print("fn: ", fn)
+    print("tp: ", tp)
+    print("fp: ", fp)
+    print("tn: ", tn)
+    print("fn: ", fn)
     #print("count: ", count)
-    sensitivity = float(tp)/float((tp+fn))
-    specificity = float(tn)/float((tn+fp))
-    precision = float(tp)/float((tp+fp))
-    gain = float((tp-fp))/float((tp+fn))
+    sensitivity = zdiv(float(tp), float((tp+fn)))
+    specificity = zdiv(float(tn), float((tn+fp)))
+    precision = zdiv(float(tp), float((tp+fp)))
+    gain = zdiv(float((tp-fp)), float((tp+fn)))
     #
     # print("sensitivity: ", sensitivity)
     # print("specificity: ", specificity)
