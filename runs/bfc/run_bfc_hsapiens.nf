@@ -1,5 +1,4 @@
 
-// 'SRR065390'
 orgTable = [
     'HSapiens37d5'   : 'H. sapiens hs37d5'
 ]
@@ -74,7 +73,7 @@ process catExptFiles{
     storeDir params.hs37d5datadir
 
     input:
-    set orgId, orgDesc, gnmFile, idxFiles, exptFile, file(exptFilePaths) from oexptChan
+    set orgId, orgDesc, gnmFile, idxFiles, exptFile, file(exptFilePaths) from exptChan
 
     output:
     set orgId, orgDesc, gnmFile, idxFiles, exptFile, file("HSapiens37d5.fastq.gz") into cseqChan
