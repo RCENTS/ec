@@ -19,22 +19,31 @@ genomeTable = [
 ]
 
 exptTable = [
-    // 'EcoliK12MG1655' : ['SRR001665', 'ERR022075', 'SRR022918'],
-    'SauresMW2'      : ['SRR022866']
-    // 'ScerevisiaeS288C' : ['SRR352384'],
-    // 'Dmelanogaster' : [ 'SRR018292','SRR018293','SRR018294','SRR060098' ]
+    'EcoliK12MG1655' : [
+                           'SRR001665', //D1
+                           'ERR022075', //D2
+                           'SRR022918'  //D3
+                        ],
+    'ScerevisiaeS288C' : ['SRR352384'], //D4
+    'SauresMW2'      : ['SRR022866'], // D5
+    'Dmelanogaster' : [
+                           'SRR060098', //D6_1
+                           'SRR018294', //D6_2
+                           'SRR018292', //D6_3
+                           'SRR018293'  //D6_4
+                        ]
 ]
 
-paramsTrowel = [
-    'SRR001665' : '-k 15',
-    'ERR022075' : '-k 15',
-    'SRR022918' : '-k 15',
-    'SRR022866' : '-k 15',
+paramsTrowel = [ // parameters based on supplementary material
+    'SRR001665' : '-k 19',
+    'ERR022075' : '-k 19',
+    'SRR022918' : '-k 19',
     'SRR352384' : '-k 19',
-    'SRR018292' : '-k 19',
-    'SRR018293' : '-k 19',
+    'SRR022866' : '-k 17',
+    'SRR060098' : '-k 19',
     'SRR018294' : '-k 19',
-    'SRR060098' : '-k 19'
+    'SRR018292' : '-k 19',
+    'SRR018293' : '-k 19'
 ]
 
 
@@ -94,8 +103,9 @@ exptChan = idxChan.flatMap {
 }.flatMap{
     orgId, orgDesc, gnmFile, idxFiles , exptId  ->
         sraIds = parseExptID(exptId, ',')
+        orgExptId = orgId.toString() + "-" + exptId.toString()
         sraIds.collect{
-            [orgId, orgDesc, gnmFile, idxFiles , exptId, it]
+            [orgExptId, orgId, orgDesc, gnmFile, idxFiles , exptId, it]
         }
 }
 // .subscribe{
@@ -106,64 +116,21 @@ process FetchSRA {
     tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
 
     input:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId from exptChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraId from exptChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}*.fastq.gz") into pseqChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, 
+        exptId, sraId, file("${sraId}*.fastq") into pseqChan
 
     """
     prefetch ${sraId}
     vdb-validate '${sraId}'
-    fastq-dump -I --split-files --gzip '${sraId}'
+    fastq-dump --split-files '${sraId}'
     """
 }
+//    fastq-dump -I --split-files '${sraId}'
 
-process CombinePariedEndFiles {
-    tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
-
-    input:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file(pairedFiles) from pseqChan
-
-    output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq.gz") into fseqChan
- 
-    """
-    gunzip -c ${pairedFiles} | gzip -1 > ${sraId}.fastq.gz
-    """
-}
-
-oexptChan = fseqChan.map{ 
-    orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile -> 
-        [orgId.toString() + "-" + exptId.toString(),
-         orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile] 
-}
-.groupTuple()
-.map{
-    orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, sraFiles -> 
-        [orgExptId, orgId[0], orgDesc[0], gnmFile[0],
-         idxFiles[0], exptId[0], sraIds, sraFiles]
-}
-
-// oexptChan.subscribe{
-//     println it
-// }
-
-process CombineSRAFiles{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
-    
-    input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(sraFiles) from oexptChan
-
-    output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fastq") into cseqChan
-
-    script:
-    """
-    gunzip -c ${sraFiles} > beforeEC.fastq
-    """
-}
-
-(beforeChan1, beforeChan2) = cseqChan.into(2)
+(beforeChan1, beforeChan2) = pseqChan.into(2)
 
 process Trowel{
     tag { orgExptId.replace('-SRR', ' > SRR') }
@@ -172,11 +139,11 @@ process Trowel{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.fastq.out") into ecChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("*.fastq.out") into ecChan
 
     """
     echo ${beforeEC} > inlist.txt
-    trowel -f inlist.txt ${paramsTrowel[exptId]} -t ${params.nthreads} -ntr
+    trowel -f inlist.txt ${paramsTrowel[exptId]} -t ${params.nthreads} 
     """ 
 }
 
@@ -269,3 +236,4 @@ result_channel2.map{
 }.collectFile(name: 'trowel_eval_bases.tsv',
               storeDir: "${workflow.projectDir}",
               newLine: false)
+

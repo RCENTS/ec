@@ -9,22 +9,14 @@ def zdiv(x, nr):
         return 0.0
 
 def eval_record(read_before, read_after):
-    before = True
-    after = True
-    fl1 = read_before.flag
-    fl2 = read_after.flag
-    if(fl1 & (1 << 8) != (1 << 8)) and (fl2 & (1 << 8) != (1 << 8)):  #primary alignment
-        if(fl1 & (1 << 2) == (1 << 2)):        #checks to see if the read is unmapped
-            before = False
-        if(fl2 & (1 << 2) == (1 << 2)):
-            after = False
-        if (not before) and after:
+    if (read_before.is_secondary is False) and (read_after.is_secondary is False):  #primary alignment
+        if (read_before.is_unmapped) and (not read_after.is_unmapped):
             return (1, 0, 0, 0) # TP
-        if before and (not after):
+        if (not read_before.is_unmapped) and (read_after.is_unmapped):
             return (0, 1, 0, 0) # FP
-        if before and after:
+        if (not read_before.is_unmapped) and (not read_after.is_unmapped):
             return (0, 0, 1, 0) # TN
-        if (not before) and (not after):
+        if (read_before.is_unmapped) and (read_after.is_unmapped):
             return (0, 0, 0, 1) # FN
     return (0, 0, 0, 0)
 
@@ -36,21 +28,30 @@ def stats(before_sam, after_sam):
     fp = 0
     tn = 0
     fn = 0
-    rid1 = ''
-    rid2 = ''
+    nreads = 0
     try:
+        rx1 = samfile1.next()
+        rx2 = samfile2.next()
+        rid1 = rx1.query_name
+        rid2 = rx2.query_name
         while True:
-            rx1 = samfile1.next()
-            rid1 = rx1.query_name
-            while rid2 != rid1:
+            while rid1 < rid2:
+                rx1 = samfile2.next()
+                rid1 = rx1.query_name
+            while rid2 < rid1:
                 rx2 = samfile2.next()
                 rid2 = rx2.query_name
             if rid1 == rid2:
+                nreads += 1
                 rtp, rfp, rtn, rfn = eval_record(rx1, rx2)
                 tp = tp + rtp
                 fp = fp + rfp
                 tn = tn + rtn
                 fn = fn + rfn
+            rx1 = samfile1.next()
+            rid1 = rx1.query_name
+            rx2 = samfile2.next()
+            rid2 = rx2.query_name
     except StopIteration as e:
         pass
     except IOError as e:
@@ -58,10 +59,10 @@ def stats(before_sam, after_sam):
     samfile1.close()
     samfile2.close()
     #
-    print("tp: ", tp)
-    print("fp: ", fp)
-    print("tn: ", tn)
-    print("fn: ", fn)
+    #print("tp: ", tp)
+    #print("fp: ", fp)
+    #print("tn: ", tn)
+    #print("fn: ", fn)
     #print("count: ", count)
     sensitivity = zdiv(float(tp), float((tp+fn)))
     specificity = zdiv(float(tn), float((tn+fp)))
@@ -72,7 +73,8 @@ def stats(before_sam, after_sam):
     # print("specificity: ", specificity)
     # print("precision: ", precision)
     # print("gains: ", gain)
-    return [tp, fp, tn, fn, 
+    # print "Nreads", nreads
+    return [nreads, tp, fp, tn, fn, 
             sensitivity, specificity, precision, gain]
 
 def main(before_sam, after_sam, run_id):
