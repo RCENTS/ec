@@ -1,5 +1,4 @@
 
-
 orgTable = [
     'EcoliK12MG1655'  : 'E. coli K-12 MG1655',
     'CelegansWS222'   : 'C. elegans WS222'
@@ -127,7 +126,7 @@ process ConcatenateInput {
 (beforeChan1, beforeChan2) = catseqChan.into(2)
 
 process Lighter{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId } 
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
@@ -141,7 +140,7 @@ process Lighter{
 }
 
 process BowtieBeforeEC{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
@@ -157,7 +156,7 @@ process BowtieBeforeEC{
 }
 
 process BowtieAfterEC{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
@@ -185,7 +184,7 @@ mergedSAMChan = beforeSAMChan
 (mergedChan1, mergedChan2) = mergedSAMChan.into(2)
 
 process EvalECReads{
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
+    tag{ orgExptId }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
@@ -202,7 +201,7 @@ process EvalECReads{
 }
 
 process EvalECBases{
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
+    tag{ orgExptId }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
