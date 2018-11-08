@@ -10,12 +10,12 @@ genomeTable = [
 
 
 exptTable = [
-     'HSapiensChr14' : [params.gagedata]
+     'HSapiensChr14' : params.gagedata
 ]
 
 
 orgIds = Channel.from(exptTable.keySet()).map{
-    org -> [org, orgTable[org], genomeTable[org]]
+    org -> [org, orgTable[org], genomeTable[org], exptTable[org]]
 }
 
 process GenomeDownload {
@@ -24,10 +24,10 @@ process GenomeDownload {
     storeDir params.genomedir
 
     input:
-    set orgId, orgDesc, gnmURL from orgIds
+    set orgId, orgDesc, gnmURL, exptFile from orgIds
 
     output:
-    set orgId, orgDesc, file("${orgId}.fa") into orgChan
+    set orgId, orgDesc, exptFile, file("${orgId}.fa") into orgChan
 
     """
     wget ${gnmURL} -O ${orgId}.fa.gz
@@ -41,10 +41,10 @@ process GenomeIndexBowtie {
     storeDir "${params.genomedir}/bowtie2"
 
     input:
-    set orgId, orgDesc, gnmFile from orgChan
+    set orgId, orgDesc, exptFile, gnmFile from orgChan
 
     output:
-    set orgId, orgDesc, gnmFile, file("${orgId}.fa.*") into idxChan
+    set orgId, orgDesc, exptFile, gnmFile, file("${orgId}.fa.*") into idxChan
 
     """
     bowtie2-build ${params.genomedir}/${orgId}.fa /tmp/${orgId}.fa
@@ -59,22 +59,14 @@ process GenomeIndexBowtie {
 
 }
 
-exptChan = idxChan.flatMap {
-    orgId, orgDesc, gnmFile, idxFiles -> 
-        exptFile = exptTable[orgId]
-        [orgId, orgDesc, gnmFile, idxFiles , exptFile]
-    
-}
-
-
-(beforeChan1, beforeChan2) = exptChan.into(2)
+(beforeChan1, beforeChan2) = idxChan.into(2)
 
 
 process BowtieBefore{
     tag { 'BWA Before Lighter' }
 
     input:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC) from beforeChan1
+    set orgId, orgDesc, file(beforeEC), gnmFile, idxFiles from beforeChan1
 
     output:
     set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC), file("beforeEC.bam") into beforeSAMChan
@@ -92,13 +84,13 @@ process Lighter{
     storeDir params.gagedatadir
 
     input:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC) from beforeChan2
+    set orgId, orgDesc, file(beforeEC), gnmFile, idxFiles from beforeChan1
 
     output:
     set orgId, orgDesc, gnmFile, idxFiles, file("*.cor.*") into ecChan
 
     """
-    lighter -r ${beforeEC} -K 19  107043718 -t ${params.nthreads} 
+    lighter -r ${beforeEC} -K 19  107043718 -t ${params.nthreads}
     """ 
 }
 
