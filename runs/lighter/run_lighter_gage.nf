@@ -9,13 +9,8 @@ genomeTable = [
 ]
 
 
-exptTable = [
-     'HSapiensChr14' : params.gagedata
-]
-
-
-orgIds = Channel.from(exptTable.keySet()).map{
-    org -> [org, orgTable[org], genomeTable[org], exptTable[org]]
+orgIds = Channel.from(orgTable.keySet()).map{
+    org -> [org, orgTable[org], genomeTable[org] ]
 }
 
 process GenomeDownload {
@@ -24,10 +19,10 @@ process GenomeDownload {
     storeDir params.genomedir
 
     input:
-    set orgId, orgDesc, gnmURL, exptFile from orgIds
+    set orgId, orgDesc, gnmURL  from orgIds
 
     output:
-    set orgId, orgDesc, exptFile, file("${orgId}.fa") into orgChan
+    set orgId, orgDesc, file("${orgId}.fa") into orgChan
 
     """
     wget ${gnmURL} -O ${orgId}.fa.gz
@@ -41,10 +36,10 @@ process GenomeIndexBowtie {
     storeDir "${params.genomedir}/bowtie2"
 
     input:
-    set orgId, orgDesc, exptFile, gnmFile from orgChan
+    set orgId, orgDesc, gnmFile from orgChan
 
     output:
-    set orgId, orgDesc, exptFile, gnmFile, file("${orgId}.fa.*") into idxChan
+    set orgId, orgDesc,  gnmFile, file("${orgId}.fa.*") into idxChan
 
     """
     bowtie2-build ${params.genomedir}/${orgId}.fa /tmp/${orgId}.fa
@@ -66,14 +61,14 @@ process BowtieBefore{
     tag { 'BWA Before Lighter' }
 
     input:
-    set orgId, orgDesc, file(beforeEC), gnmFile, idxFiles from beforeChan1
+    set orgId, orgDesc, gnmFile, idxFiles from beforeChan1
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC), file("beforeEC.bam") into beforeSAMChan
+    set orgId, orgDesc, gnmFile, idxFiles, file("beforeEC.bam") into beforeSAMChan
 
     """
-    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa  -U ${beforeEC} | samtools view -bSh -F 0x900 - > bx.bam
-    samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam
+    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa -p ${params.nthreads} -U ${params.gagedatadir}/${params.gagedata} | samtools view -bSh -F 0x900 - > bx.bam
+    samtools sort -T bx.sorted -n -@ ${params.nthreads} -o beforeEC.bam bx.bam
     rm -rf bx.bam bx.sorted*
     """ 
 }
@@ -84,13 +79,13 @@ process Lighter{
     storeDir params.gagedatadir
 
     input:
-    set orgId, orgDesc, file(beforeEC), gnmFile, idxFiles from beforeChan1
+    set orgId, orgDesc, gnmFile, idxFiles from beforeChan2
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, file("*.cor.*") into ecChan
+    set orgId, orgDesc, gnmFile, idxFiles, file("*.cor.fq") into ecChan
 
     """
-    lighter -r ${beforeEC} -K 19  107043718 -t ${params.nthreads}
+    lighter -r ${params.gagedatadir}/${params.gagedata} -K 19  107043718 -t ${params.nthreads}
     """ 
 }
 
@@ -104,8 +99,8 @@ process BowtieAfter{
     set orgId, orgDesc, gnmFile, idxFiles, file(afterEC), file("afterEC.bam") into afterSAMChan
 
     """
-    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa  -U ${afterEC} |  samtools view -bSh -F 0x900 - > ax.bam
-    samtools sort -T ax.sorted -n -o afterEC.bam ax.bam
+    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa -p ${params.nthreads} -U ${afterEC} |  samtools view -bSh -F 0x900 - > ax.bam
+    samtools sort -T ax.sorted -n -@ ${params.nthreads} -o afterEC.bam ax.bam
     rm -rf ax.bam ax.sorted*
     """ 
 }
@@ -115,10 +110,10 @@ mergedSAMChan = beforeSAMChan
     .join(afterSAMChan)
     .map {
         orgId1, 
-            orgDesc1, gnmFile1, idxFiles1, beforeEC, beforeSAM,
+            orgDesc1, gnmFile1, idxFiles1, beforeSAM,
             orgDesc2, gnmFile2, idxFiles2, afterEC, afterSAM ->
         [ orgId1, orgDesc1, gnmFile1, idxFiles1,
-          beforeEC, beforeSAM, afterEC, afterSAM  ]
+          beforeSAM, afterEC, afterSAM  ]
     }
 
 
@@ -130,7 +125,7 @@ process EvalECReads{
 
     input:
     set orgId, orgDesc, gnmFile, idxFiles, 
-        file(beforeEC), file(beforeSAM), file(afterEC), file(afterSAM) from mergedChan1
+         file(beforeSAM), file(afterEC), file(afterSAM) from mergedChan1
 
     output:
     file("result1") into result_channel1
@@ -147,7 +142,7 @@ process EvalECBases{
 
     input:
     set orgId, orgDesc, gnmFile, idxFiles, 
-        file(beforeEC), file(beforeSAM), file(afterEC), file(afterSAM) from mergedChan2
+         file(beforeSAM), file(afterEC), file(afterSAM) from mergedChan2
 
     output:
     file("result2") into result_channel2

@@ -1,0 +1,6 @@
+task_id	tag	name	cpus	status	exit	duration	realtime	%cpu	rss
+4	Lighter Run	Lighter (Lighter Run)	9	COMPLETED	0	4m 49s	4m 31s	801.5%	570.9 MB
+3	BWA Before Lighter	BowtieBefore (BWA Before Lighter)	9	COMPLETED	0	15m 29s	15m 26s	945.4%	6.7 GB
+5	Bowtie After Lighter	BowtieAfter (Bowtie After Lighter)	9	COMPLETED	0	15m 25s	15m 15s	902.9%	6.4 GB
+6	Lighter Eval Read	EvalECReads (Lighter Eval Read)	9	COMPLETED	0	2m 25s	2m 15s	100.7%	13.1 MB
+7	Lighter Eval Bases	EvalECBases (Lighter Eval Bases)	9	COMPLETED	0	23m 45s	23m 40s	101.2%	13.2 MB
