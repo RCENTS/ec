@@ -38,7 +38,7 @@ def stats(before_sam, after_sam):
         totalBases += len(rx1.query_sequence)
         albases, _ = eval_record(rx1)
         beforeCount += albases
-    for rx2 in samfile1:
+    for rx2 in samfile2:
         albases, _ = eval_record(rx2)
         afterCount += albases
     samfile1.close()
@@ -49,4 +49,4 @@ def stats(before_sam, after_sam):
     
 if __name__ == '__main__':
     lst = stats(sys.argv[1], sys.argv[2])
-    print "\t".join([sys.argv[2]] + [str(x) for x in lst])
+    print "\t".join([sys.argv[3]] + [str(x) for x in lst])

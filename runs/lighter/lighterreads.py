@@ -34,7 +34,7 @@ def stats(before_sam, after_sam):
     #print("% Increase: ", (afterCount - beforeCount)/total)
     
 if __name__ == '__main__':
-    lst = stats(sys.argv[0], sys.argv[1])
-    print "\t".join([sys.argv[2]] + [str(x) for x in lst])
+    lst = stats(sys.argv[1], sys.argv[2])
+    print "\t".join([sys.argv[3]] + [str(x) for x in lst])
                 
     

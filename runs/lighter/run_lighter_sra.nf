@@ -1,5 +1,4 @@
 
-
 orgTable = [
     'EcoliK12MG1655'  : 'E. coli K-12 MG1655',
     'CelegansWS222'   : 'C. elegans WS222'
@@ -108,12 +107,26 @@ process FetchSRA {
     fastq-dump -I --split-files '${sraId}'
     """
 }
-//    fastq-dump -I --split-files '${sraId}'
 
-(beforeChan1, beforeChan2) = pseqChan.into(2)
+process ConcatenateInput {
+    tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
+
+    input:
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file(sraFiles)  from pseqChan
+
+    output:
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, 
+        exptId, sraId, file("${sraId}.fastq") into catseqChan
+
+    """
+    cat ${sraFiles} > ${sraId}.fastq
+    """
+}
+
+(beforeChan1, beforeChan2) = catseqChan.into(2)
 
 process Lighter{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId } 
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
@@ -127,7 +140,7 @@ process Lighter{
 }
 
 process BowtieBeforeEC{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
@@ -143,7 +156,7 @@ process BowtieBeforeEC{
 }
 
 process BowtieAfterEC{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgExptId }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
@@ -152,7 +165,7 @@ process BowtieAfterEC{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(afterEC), file("afterEC.bam") into afterSAMChan
 
     """
-    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa  -U ${beforeEC} |  samtools view -bSh -F 0x900 - > ax.bam
+    bowtie2 -x  ${params.genomedir}/bowtie2/${orgId}.fa  -U ${afterEC} |  samtools view -bSh -F 0x900 - > ax.bam
     samtools sort -T ax.sorted -n -o afterEC.bam ax.bam
     rm -rf ax.bam ax.sorted*
     """ 
@@ -171,7 +184,7 @@ mergedSAMChan = beforeSAMChan
 (mergedChan1, mergedChan2) = mergedSAMChan.into(2)
 
 process EvalECReads{
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
+    tag{ orgExptId }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
@@ -188,7 +201,7 @@ process EvalECReads{
 }
 
 process EvalECBases{
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
+    tag{ orgExptId }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
