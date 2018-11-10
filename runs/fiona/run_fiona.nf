@@ -39,10 +39,10 @@ exptTable = [
     //     'ERR161541'
     // ],
     'EcoliK12MG1655'  : [
-        'SRR620425',
-        'SRR000868',
-        'ERR039477',
-        'SRR611140',
+//        'SRR620425',
+//        'SRR000868',
+//        'ERR039477',
+//        'SRR611140',
         'ERR022075'
     ]
     // ,
@@ -75,8 +75,8 @@ exptTable = [
     // ]
 ]
 
-runFiona = {
-    'ERR161541' : 'fiona -g 4043846 '
+runFiona = [
+    'ERR161541' : 'fiona -g 4043846 ',
     'ERR022075' : 'fiona_illumina -g 4639675 ',
     'SRR000868' : 'fiona -g 4639675 ',
     'ERR039477' : 'fiona -g 4639675 ',
@@ -85,19 +85,18 @@ runFiona = {
     'SRR254209' : 'fiona -g 5273097 ',
     'SRR1238539' : 'fiona -g 2861343787 ',
     'ERR005143' : 'fiona_illumina -g 6093698 ',
-    'ERR161543' : 'fiona -g  23264338 '
-    'SRR031259' : 'fiona_illumina -g 12156676 '
+    'ERR161543' : 'fiona -g  23264338 ',
+    'SRR031259' : 'fiona_illumina -g 12156676 ',
     'SRR096469,SRR096470' : 'fiona -g 12156676 ', // SRX039441
     'ERR236069' : 'fiona -g 2799725 ',
     'SRR070596' : 'fiona -g 2799725 ',
     'SRR443373' : 'fiona_illumina -g 100286070 ',
     'SRR492060' : 'fiona_illumina -g 120381546 ',
-    'SRR034841,SRR034842,SRR034843,SRR034844' : : 'fiona -g 120381546 ' // SRX016210
+    'SRR034841,SRR034842,SRR034843,SRR034844' : 'fiona -g 120381546 ' // SRX016210
+]
 
-}
-
-runBWA = {
-    'ERR161541' : 'bwa bwasw '
+runBWA = [
+    'ERR161541' : 'bwa bwasw ',
     'ERR022075' : 'bwa mem ',
     'SRR000868' : 'bwa bwasw ',
     'ERR039477' : 'bwa bwasw ',
@@ -106,16 +105,15 @@ runBWA = {
     'SRR254209' : 'bwa bwasw ',
     'SRR1238539' : 'bwa bwasw ',
     'ERR005143' : 'bwa mem  ',
-    'ERR161543' : 'bwa bwasw '
-    'SRR031259' : 'bwa mem  '
+    'ERR161543' : 'bwa bwasw ',
+    'SRR031259' : 'bwa mem  ',
     'SRR096469,SRR096470' : 'bwa bwasw ', // SRX039441
     'ERR236069' : 'bwa bwasw ',
     'SRR070596' : 'bwa bwasw ',
     'SRR443373' : 'bwa mem  ',
     'SRR492060' : 'bwa mem  ',
-    'SRR034841,SRR034842,SRR034843,SRR034844' : : 'bwa bwasw ' // SRX016210
-
-}
+    'SRR034841,SRR034842,SRR034843,SRR034844' : 'bwa bwasw ' // SRX016210
+]
 
 String[] parseExptID(String tx, String vx){
     tx.split(vx)
@@ -265,7 +263,7 @@ process BWABefore{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.bam") into beforeSAMChan
 
     """
     ${runBWA[exptId]} -t ${params.nthreads} ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} | samtools view -bSh -F 0x900 - > bx.bam
@@ -298,11 +296,11 @@ mergedSAMChan = beforeSAMChan
         orgExptId,
            orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
            orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC, afterSAM ->
-        [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
+        [ orgExptId, orgId1, orgDesc1, gnmFile1, idxFiles1,
           exptId1, sraIds1, beforeEC, afterEC, beforeSAM, afterSAM  ]
     }
 
-processEvalEC{
+process EvalEC{
     tag { orgId.toString() + " > " + exptId.toString() }
 
     input:
@@ -313,13 +311,14 @@ processEvalEC{
     file("result1") into result_channel1
 
     """
-    compute_gain -g $gnmFile --pre $beforeSAM --post $afterSAM  > result2
+    echo "DATASET : " $exptId  " ORGANISM : " $orgDesc  > result1
+    compute_gain -g $gnmFile --pre $beforeSAM --post-sam $afterSAM -nt ${params.nthreads}  >> result1
     """
 
 }
 
 result_channel1.map{
     it.text
-}.collectFile(name: 'fiona_gain.txt',
+}.collectFile(name: 'fiona_compute_gain_output.txt',
               storeDir: "${workflow.projectDir}",
               newLine: false)
