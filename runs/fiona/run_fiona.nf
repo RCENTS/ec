@@ -35,44 +35,43 @@ genomeTable = [
 ]
 
 exptTable = [
-    // 'Bpertussis18323' : [
-    //     'ERR161541'
-    // ],
+     'Bpertussis18323' : [
+         'ERR161541'
+     ],
     'EcoliK12MG1655'  : [
-//        'SRR620425',
-//        'SRR000868',
-//        'ERR039477',
-//        'SRR611140',
+        'SRR620425',
+        'SRR000868',
+        'ERR039477',
+        'SRR611140',
         'ERR022075'
+    ],
+    'EcoliO104H4'     : [
+        'SRR254209'
+    ],
+    'HSapiensGRCh38'    : [
+        'SRR1238539'
+    ],
+    'PsyringaeB728a'    : [
+        'ERR005143'
+    ],
+    'Pfalciparum3D7'  : [
+       'ERR161543'
+    ],
+    'Scerevisae'      : [
+        'SRR031259',
+        'SRR096469,SRR096470' // SRX039441
+    ],
+    'SauresLGA251'    : [
+        'ERR236069',
+        'SRR070596'
+    ],
+    'Celegans'        : [
+         'SRR443373'
+    ],
+    'Dmelanogaster'   : [
+         'SRR492060',
+         'SRR034841,SRR034842,SRR034843,SRR034844' // SRX016210
     ]
-    // ,
-    // 'EcoliO104H4'     : [
-    //     'SRR254209'
-    // ],
-    // 'HSapiensGRCh38'    : [
-    //     'SRR1238539'
-    // ],
-    // 'PsyringaeB728a'    : [
-    //     'ERR005143'
-    // ],
-    // 'Pfalciparum3D7'  : [
-    //     'ERR161543'
-    // ],
-    // 'Scerevisae'      : [
-    //     'SRR031259',
-    //     'SRR096469,SRR096470' // SRX039441
-    // ],
-    // 'SauresLGA251'    : [
-    //     'ERR236069',
-    //     'SRR070596'
-    // ],
-    // 'Celegans'        : [
-    //     'SRR443373'
-    // ],
-    // 'Dmelanogaster'   : [
-    //     'SRR492060',
-    //     'SRR034841,SRR034842,SRR034843,SRR034844' // SRX016210
-    // ]
 ]
 
 runFiona = [
