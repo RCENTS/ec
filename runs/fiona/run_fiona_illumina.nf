@@ -44,9 +44,9 @@ exptTable = [
     'Scerevisae'      : [
         'SRR031259'
     ],
-    'Celegans'        : [
-         'SRR443373'
-    ],
+//    'Celegans'        : [
+//         'SRR443373'
+//    ],
     'Dmelanogaster'   : [
          'SRR492060'
     ]
@@ -158,7 +158,7 @@ process ConcatPariedEndFiles{
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq") into fseqChan
  
     """
-    gunzip -c ${pairedFiles}  ${sraId}.fastq
+    gunzip -c ${pairedFiles} > ${sraId}.fastq
     """
 }
 
