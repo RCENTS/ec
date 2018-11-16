@@ -1,0 +1,126 @@
+DATASET :  SRR023794,SRR023796  ORGANISM :  H. pylori v225d
+Whole Read Statistics:
+TN) num_correct_stayed_correct      = 497378 [of 687500] (72.345891 %)
+TP) num_wrong_correctly_fixed       = 175937 [of 687500] (25.590836 %)
+FP) num_correct_wrongly_fixed       = 33 [of 687500] (0.004800 %)
+FN) num_wrong_stayed_wrong          = 14152 [of 687500] (2.058473 %)
+*) Recall (Sensitivity)             = 92.555066 %
+*) Precision                        = 99.981247 %
+*) FScore                           = 96.124942 %
+*) Gain                             = 92.537706 %
+-------------------------------------------------------------------------------
+Bases Statistics:
+TN) num_correct_stayed_correct      = 69240842 [of 71078267] (97.414927 %)
+TP) num_wrong_correctly_fixed       = 1732632 [of 71078267] (2.437640 %)
+FP) num_correct_wrongly_fixed       = 12102 [of 71078267] (0.017026 %)
+FN) num_wrong_stayed_wrong          = 92691 [of 71078267] (0.130407 %)
+*) Recall (Sensitivity)             = 94.921940 %
+*) Precision                        = 99.306370 %
+*) FScore                           = 97.064669 %
+*) Gain                             = 94.258934 %
+-------------------------------------------------------------------------------
+DATASET :  SRR352384  ORGANISM :  Saccharomyces cerevisiae S288C
+Whole Read Statistics:
+TN) num_correct_stayed_correct      = 30801606 [of 46301154] (66.524489 %)
+TP) num_wrong_correctly_fixed       = 2733248 [of 46301154] (5.903196 %)
+FP) num_correct_wrongly_fixed       = 24521 [of 46301154] (0.052960 %)
+FN) num_wrong_stayed_wrong          = 12741779 [of 46301154] (27.519355 %)
+*) Recall (Sensitivity)             = 17.662315 %
+*) Precision                        = 99.110839 %
+*) FScore                           = 29.981666 %
+*) Gain                             = 17.503860 %
+-------------------------------------------------------------------------------
+Bases Statistics:
+TN) num_correct_stayed_correct      = 3490514608 [of 3518887704] (99.193691 %)
+TP) num_wrong_correctly_fixed       = 8367800 [of 3518887704] (0.237797 %)
+FP) num_correct_wrongly_fixed       = 162267 [of 3518887704] (0.004611 %)
+FN) num_wrong_stayed_wrong          = 19843029 [of 3518887704] (0.563901 %)
+*) Recall (Sensitivity)             = 29.661659 %
+*) Precision                        = 98.097705 %
+*) FScore                           = 45.550332 %
+*) Gain                             = 29.086465 %
+-------------------------------------------------------------------------------
+DATASET :  SRR022866  ORGANISM :  S. aureus subsp. aureus USA300_TCH1516
+Whole Read Statistics:
+TN) num_correct_stayed_correct      = 11159304 [of 19137431] (58.311400 %)
+TP) num_wrong_correctly_fixed       = 7781878 [of 19137431] (40.663128 %)
+FP) num_correct_wrongly_fixed       = 17 [of 19137431] (0.000089 %)
+FN) num_wrong_stayed_wrong          = 196232 [of 19137431] (1.025383 %)
+*) Recall (Sensitivity)             = 97.540370 %
+*) Precision                        = 99.999782 %
+*) FScore                           = 98.754766 %
+*) Gain                             = 97.540157 %
+-------------------------------------------------------------------------------
+Bases Statistics:
+TN) num_correct_stayed_correct      = 1426581569 [of 1454444756] (98.084273 %)
+TP) num_wrong_correctly_fixed       = 27468524 [of 1454444756] (1.888592 %)
+FP) num_correct_wrongly_fixed       = 18504 [of 1454444756] (0.001272 %)
+FN) num_wrong_stayed_wrong          = 376159 [of 1454444756] (0.025863 %)
+*) Recall (Sensitivity)             = 98.649081 %
+*) Precision                        = 99.932681 %
+*) FScore                           = 99.286733 %
+*) Gain                             = 98.582627 %
+-------------------------------------------------------------------------------
+DATASET :  SRR065390  ORGANISM :  C. elegans WS241
+Whole Read Statistics:
+TN) num_correct_stayed_correct      = 47723176 [of 61341381] (77.799318 %)
+TP) num_wrong_correctly_fixed       = 11732076 [of 61341381] (19.125875 %)
+FP) num_correct_wrongly_fixed       = 12905 [of 61341381] (0.021038 %)
+FN) num_wrong_stayed_wrong          = 1873224 [of 61341381] (3.053769 %)
+*) Recall (Sensitivity)             = 86.231660 %
+*) Precision                        = 99.890123 %
+*) FScore                           = 92.559731 %
+*) Gain                             = 86.136807 %
+-------------------------------------------------------------------------------
+Bases Statistics:
+TN) num_correct_stayed_correct      = 6096162380 [of 6134138100] (99.380912 %)
+TP) num_wrong_correctly_fixed       = 33293364 [of 6134138100] (0.542755 %)
+FP) num_correct_wrongly_fixed       = 422523 [of 6134138100] (0.006888 %)
+FN) num_wrong_stayed_wrong          = 4259833 [of 6134138100] (0.069445 %)
+*) Recall (Sensitivity)             = 88.656537 %
+*) Precision                        = 98.746813 %
+*) FScore                           = 93.430032 %
+*) Gain                             = 87.531405 %
+-------------------------------------------------------------------------------
+DATASET :  ERR008613  ORGANISM :  E. coli str. K-12 substr. MG1655
+Whole Read Statistics:
+TN) num_correct_stayed_correct      = 16191948 [of 27719198] (58.414201 %)
+TP) num_wrong_correctly_fixed       = 11464646 [of 27719198] (41.359948 %)
+FP) num_correct_wrongly_fixed       = 39 [of 27719198] (0.000141 %)
+FN) num_wrong_stayed_wrong          = 62565 [of 27719198] (0.225710 %)
+*) Recall (Sensitivity)             = 99.457241 %
+*) Precision                        = 99.999660 %
+*) FScore                           = 99.727713 %
+*) Gain                             = 99.456902 %
+-------------------------------------------------------------------------------
+Bases Statistics:
+TN) num_correct_stayed_correct      = 2737814824 [of 2771919800] (98.769626 %)
+TP) num_wrong_correctly_fixed       = 33981099 [of 2771919800] (1.225905 %)
+FP) num_correct_wrongly_fixed       = 21483 [of 2771919800] (0.000775 %)
+FN) num_wrong_stayed_wrong          = 102394 [of 2771919800] (0.003694 %)
+*) Recall (Sensitivity)             = 99.699579 %
+*) Precision                        = 99.936820 %
+*) FScore                           = 99.818058 %
+*) Gain                             = 99.636548 %
+-------------------------------------------------------------------------------
+DATASET :  SRR017972,SRR029606  ORGANISM :  Z. mobilis subsp. mobilis ATCC 31821
+Whole Read Statistics:
+TN) num_correct_stayed_correct      = 237395 [of 392362] (60.504075 %)
+TP) num_wrong_correctly_fixed       = 141635 [of 392362] (36.098042 %)
+FP) num_correct_wrongly_fixed       = 63 [of 392362] (0.016057 %)
+FN) num_wrong_stayed_wrong          = 13269 [of 392362] (3.381826 %)
+*) Recall (Sensitivity)             = 91.434049 %
+*) Precision                        = 99.955539 %
+*) FScore                           = 95.505088 %
+*) Gain                             = 91.393379 %
+-------------------------------------------------------------------------------
+Bases Statistics:
+TN) num_correct_stayed_correct      = 43008523 [of 44389577] (96.888788 %)
+TP) num_wrong_correctly_fixed       = 1299517 [of 44389577] (2.927527 %)
+FP) num_correct_wrongly_fixed       = 5432 [of 44389577] (0.012237 %)
+FN) num_wrong_stayed_wrong          = 76105 [of 44389577] (0.171448 %)
+*) Recall (Sensitivity)             = 94.467594 %
+*) Precision                        = 99.583739 %
+*) FScore                           = 96.958223 %
+*) Gain                             = 94.072718 %
+-------------------------------------------------------------------------------

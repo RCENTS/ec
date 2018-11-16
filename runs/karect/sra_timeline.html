@@ -1,0 +1,245 @@
+<!doctype html>
+<!--
+  ~ Copyright (c) 2013-2018, Centre for Genomic Regulation (CRG).
+  ~ Copyright (c) 2013-2018, Paolo Di Tommaso and the respective authors.
+  ~
+  ~   This file is part of 'Nextflow'.
+  ~
+  ~   Nextflow is free software: you can redistribute it and/or modify
+  ~   it under the terms of the GNU General Public License as published by
+  ~   the Free Software Foundation, either version 3 of the License, or
+  ~   (at your option) any later version.
+  ~
+  ~   Nextflow is distributed in the hope that it will be useful,
+  ~   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~   GNU General Public License for more details.
+  ~
+  ~   You should have received a copy of the GNU General Public License
+  ~   along with Nextflow.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Cscript src='" + prot + "code.jquery.com/jquery-latest.min.js' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "d3js.org/d3.v3.min.js' charset='utf-8' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "cdn.rawgit.com/nextflow-io/d3-timeline/82622c4cc35bac7283b3a317826b0709ac1ae476/src/d3-timeline.js' type='text/javascript' %3E%3C/script%3E"));
+</script>
+<style type="text/css">
+* {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.axis path,
+.axis line {
+fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-size: 10px;
+}
+
+div#timeline g text {
+  font-size: 13px;
+}
+
+text.timeline-label {
+  font-size: 13px;
+}
+
+#timeline2 .axis {
+  transform: translate(0px,30px);
+  -ms-transform: translate(0px,30px); /* IE 9 */
+  -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+  -o-transform: translate(0px,30px); /* Opera */
+  -moz-transform: translate(0px,30px); /* Firefox */
+}
+
+.coloredDiv {
+  height:20px; width:20px; float:left;
+}
+
+#footer {
+  padding-top: 3em; color: #bfbfbf; font-size: 13px;
+}
+
+#footer a:visited {
+  color: #bfbfbf;
+  text-decoration: underline;
+}
+</style>
+<script type="text/javascript">
+var handler=null;
+// see https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c
+var colors = d3.scale.category20c().domain(d3.range(0,20)).range()
+
+function c0(index) { return "#9c9c9c"; }
+function c1(index) { return "#bdbdbd"; }
+function c2(index) { return colors[index % 16]; } // <-- note: uses only the first 16 colors
+
+var elapsed="3h 9m 3s"
+var beginningMillis=1542381689349;
+var endingMillis=1542393032472;
+var data=[
+{"label": "SRAFetch (Zmobilis > SRR017972,SRR029606 > SRR029606)", "times": [{"starting_time": 1542381691358, "ending_time": 1542381695841, "color":c1(0)}, {"starting_time": 1542381695841, "ending_time": 1542381704123, "color":c2(0), "label": "14.5s \/ 171.8 MB"}, {"starting_time": 1542381704123, "ending_time": 1542381705827, "color":c1(0)}]},
+{"label": "GenomeDownload (C. elegans WS241)", "times": [{"starting_time": 1542381691435, "ending_time": 1542381695912, "color":c1(1)}, {"starting_time": 1542381695912, "ending_time": 1542381698350, "color":c2(1), "label": "14.5s \/ 69.5 MB"}, {"starting_time": 1542381698350, "ending_time": 1542381705951, "color":c1(1)}]},
+{"label": "GenomeDownload (E. coli str. K-12 substr. MG1655)", "times": [{"starting_time": 1542381691470, "ending_time": 1542381695918, "color":c1(1)}, {"starting_time": 1542381695918, "ending_time": 1542381696550, "color":c2(1), "label": "14.5s \/ 69.5 MB"}, {"starting_time": 1542381696550, "ending_time": 1542381705969, "color":c1(1)}]},
+{"label": "SRAFetch (Zmobilis > SRR017972,SRR029606 > SRR017972)", "times": [{"starting_time": 1542381691515, "ending_time": 1542381695928, "color":c1(0)}, {"starting_time": 1542381695928, "ending_time": 1542381705463, "color":c2(0), "label": "19.3s \/ 97 MB"}, {"starting_time": 1542381705463, "ending_time": 1542381710828, "color":c1(0)}]},
+{"label": "SRAFetch (HPylori > SRR023794,SRR023796 > SRR023794)", "times": [{"starting_time": 1542381705958, "ending_time": 1542381710863, "color":c1(0)}, {"starting_time": 1542381710863, "ending_time": 1542381732024, "color":c2(0), "label": "34.9s \/ 172.2 MB"}, {"starting_time": 1542381732024, "ending_time": 1542381740829, "color":c1(0)}]},
+{"label": "GenomeDownload (S. aureus subsp. aureus USA300_TCH1516)", "times": [{"starting_time": 1542381706057, "ending_time": 1542381710865, "color":c1(1)}, {"starting_time": 1542381710865, "ending_time": 1542381711513, "color":c2(1), "label": "14.8s \/ 69.5 MB"}, {"starting_time": 1542381711513, "ending_time": 1542381720828, "color":c1(1)}]},
+{"label": "GenomeDownload (Saccharomyces cerevisiae S288C)", "times": [{"starting_time": 1542381706091, "ending_time": 1542381710882, "color":c1(1)}, {"starting_time": 1542381710882, "ending_time": 1542381711649, "color":c2(1), "label": "9.7s \/ 69.5 MB"}, {"starting_time": 1542381711649, "ending_time": 1542381715828, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (Zmobilis > SRR017972,SRR029606 > SRR029606)", "times": [{"starting_time": 1542381706148, "ending_time": 1542381710884, "color":c1(2)}, {"starting_time": 1542381710884, "ending_time": 1542381711464, "color":c2(2), "label": "14.7s \/ 25.9 MB"}, {"starting_time": 1542381711464, "ending_time": 1542381720856, "color":c1(2)}]},
+{"label": "SRAFetch (HPylori > SRR023794,SRR023796 > SRR023796)", "times": [{"starting_time": 1542381710929, "ending_time": 1542381715844, "color":c1(0)}, {"starting_time": 1542381715844, "ending_time": 1542381726836, "color":c2(0), "label": "19.9s \/ 173.6 MB"}, {"starting_time": 1542381726836, "ending_time": 1542381730828, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (Zmobilis > SRR017972,SRR029606 > SRR017972)", "times": [{"starting_time": 1542381710989, "ending_time": 1542381720873, "color":c1(2)}, {"starting_time": 1542381720873, "ending_time": 1542381721552, "color":c2(2), "label": "14.8s \/ 25.9 MB"}, {"starting_time": 1542381721552, "ending_time": 1542381725828, "color":c1(2)}]},
+{"label": "ConcatPariedEndFiles (HPylori > SRR023794,SRR023796 > SRR023796)", "times": [{"starting_time": 1542381730919, "ending_time": 1542381735828, "color":c1(2)}, {"starting_time": 1542381735828, "ending_time": 1542381736851, "color":c2(2), "label": "10s \/ 25.9 MB"}, {"starting_time": 1542381736851, "ending_time": 1542381740884, "color":c1(2)}]},
+{"label": "SRAFetch (CelegansWS241 > SRR065390 > SRR065390)", "times": [{"starting_time": 1542381730974, "ending_time": 1542381735833, "color":c1(0)}, {"starting_time": 1542381735833, "ending_time": 1542384006707, "color":c2(0), "label": "38m \/ 182.8 MB"}, {"starting_time": 1542384006707, "ending_time": 1542384010925, "color":c1(0)}]},
+{"label": "SRAFetch (EColiMG1655 > ERR008613 > ERR008613)", "times": [{"starting_time": 1542381740923, "ending_time": 1542381745829, "color":c1(0)}, {"starting_time": 1542381745829, "ending_time": 1542382806497, "color":c2(0), "label": "17m 50s \/ 165.6 MB"}, {"starting_time": 1542382806497, "ending_time": 1542382810873, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (HPylori > SRR023794,SRR023796 > SRR023794)", "times": [{"starting_time": 1542381740982, "ending_time": 1542381745833, "color":c1(2)}, {"starting_time": 1542381745833, "ending_time": 1542381747217, "color":c2(2), "label": "9.8s \/ 25.9 MB"}, {"starting_time": 1542381747217, "ending_time": 1542381750830, "color":c1(2)}]},
+{"label": "SRAFetch (ScerevisiaeNCBI > SRR352384 > SRR352384)", "times": [{"starting_time": 1542382810958, "ending_time": 1542382815873, "color":c1(0)}, {"starting_time": 1542382815873, "ending_time": 1542384194442, "color":c2(0), "label": "24m 5s \/ 192.2 MB"}, {"starting_time": 1542384194442, "ending_time": 1542384255935, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (EColiMG1655 > ERR008613 > ERR008613)", "times": [{"starting_time": 1542382811084, "ending_time": 1542382815877, "color":c1(2)}, {"starting_time": 1542382815877, "ending_time": 1542382886199, "color":c2(2), "label": "2m 20s \/ 25.9 MB"}, {"starting_time": 1542382886199, "ending_time": 1542382950878, "color":c1(2)}]},
+{"label": "SRAFetch (SaureusUSA300 > SRR022866 > SRR022866)", "times": [{"starting_time": 1542384011116, "ending_time": 1542384015925, "color":c1(0)}, {"starting_time": 1542384015925, "ending_time": 1542384632695, "color":c2(0), "label": "12m 20s \/ 196 MB"}, {"starting_time": 1542384632695, "ending_time": 1542384750944, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (CelegansWS241 > SRR065390 > SRR065390)", "times": [{"starting_time": 1542384011266, "ending_time": 1542384015929, "color":c1(2)}, {"starting_time": 1542384015929, "ending_time": 1542384183080, "color":c2(2), "label": "4m 50s \/ 25.9 MB"}, {"starting_time": 1542384183080, "ending_time": 1542384300935, "color":c1(2)}]},
+{"label": "ConcatPariedEndFiles (ScerevisiaeNCBI > SRR352384 > SRR352384)", "times": [{"starting_time": 1542384256056, "ending_time": 1542384260934, "color":c1(2)}, {"starting_time": 1542384260934, "ending_time": 1542384352237, "color":c2(2), "label": "1m 40s \/ 25.9 MB"}, {"starting_time": 1542384352237, "ending_time": 1542384355936, "color":c1(2)}]},
+{"label": "ConcatPariedEndFiles (SaureusUSA300 > SRR022866 > SRR022866)", "times": [{"starting_time": 1542384751072, "ending_time": 1542384755943, "color":c1(2)}, {"starting_time": 1542384755943, "ending_time": 1542384820241, "color":c2(2), "label": "1m 20s \/ 25.9 MB"}, {"starting_time": 1542384820241, "ending_time": 1542384830948, "color":c1(2)}]},
+{"label": "ConcatSRAFiles (Zmobilis>SRR017972,SRR029606)", "times": [{"starting_time": 1542384831176, "ending_time": 1542384835947, "color":c1(3)}, {"starting_time": 1542384835947, "ending_time": 1542384836131, "color":c2(3), "label": "9.8s \/ 25.6 MB"}, {"starting_time": 1542384836131, "ending_time": 1542384840948, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (HPylori>SRR023794,SRR023796)", "times": [{"starting_time": 1542384831342, "ending_time": 1542384836003, "color":c1(3)}, {"starting_time": 1542384836003, "ending_time": 1542384836373, "color":c2(3), "label": "9.6s \/ 25.6 MB"}, {"starting_time": 1542384836373, "ending_time": 1542384840973, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (CelegansWS241>SRR065390)", "times": [{"starting_time": 1542384841100, "ending_time": 1542384845948, "color":c1(3)}, {"starting_time": 1542384845948, "ending_time": 1542384845974, "color":c2(3), "label": "9.8s \/ 0"}, {"starting_time": 1542384845974, "ending_time": 1542384850948, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (EColiMG1655>ERR008613)", "times": [{"starting_time": 1542384841150, "ending_time": 1542384845951, "color":c1(3)}, {"starting_time": 1542384845951, "ending_time": 1542384845974, "color":c2(3), "label": "9.8s \/ 0"}, {"starting_time": 1542384845974, "ending_time": 1542384850951, "color":c1(3)}]},
+{"label": "KarectAlignBefore (Zmobilis>SRR017972,SRR029606)", "times": [{"starting_time": 1542384841235, "ending_time": 1542384845962, "color":c1(4)}, {"starting_time": 1542384845962, "ending_time": 1542385075410, "color":c2(4), "label": "4m \/ 1001.3 MB"}, {"starting_time": 1542385075410, "ending_time": 1542385080956, "color":c1(4)}]},
+{"label": "Karect (HPylori>SRR023794,SRR023796)", "times": [{"starting_time": 1542384841268, "ending_time": 1542384845965, "color":c1(5)}, {"starting_time": 1542384845965, "ending_time": 1542385157871, "color":c2(5), "label": "5m 20s \/ 3.5 GB"}, {"starting_time": 1542385157871, "ending_time": 1542385160959, "color":c1(5)}]},
+{"label": "Karect (Zmobilis>SRR017972,SRR029606)", "times": [{"starting_time": 1542384841330, "ending_time": 1542384845967, "color":c1(5)}, {"starting_time": 1542384845967, "ending_time": 1542385348949, "color":c2(5), "label": "8m 35s \/ 2 GB"}, {"starting_time": 1542385348949, "ending_time": 1542385355965, "color":c1(5)}]},
+{"label": "KarectAlignBefore (HPylori>SRR023794,SRR023796)", "times": [{"starting_time": 1542384841452, "ending_time": 1542384850975, "color":c1(4)}, {"starting_time": 1542384850975, "ending_time": 1542385659370, "color":c2(4), "label": "13m 40s \/ 968.2 MB"}, {"starting_time": 1542385659370, "ending_time": 1542385660976, "color":c1(4)}]},
+{"label": "ConcatSRAFiles (ScerevisiaeNCBI>SRR352384)", "times": [{"starting_time": 1542384851038, "ending_time": 1542384855947, "color":c1(3)}, {"starting_time": 1542384855947, "ending_time": 1542384855972, "color":c2(3), "label": "4.9s \/ 0"}]},
+{"label": "ConcatSRAFiles (SaureusUSA300>SRR022866)", "times": [{"starting_time": 1542384851097, "ending_time": 1542384860948, "color":c1(3)}, {"starting_time": 1542384860948, "ending_time": 1542384860971, "color":c2(3), "label": "9.9s \/ 0"}]},
+{"label": "KarectAlignBefore (CelegansWS241>SRR065390)", "times": [{"starting_time": 1542385081063, "ending_time": 1542385085956, "color":c1(4)}, {"starting_time": 1542385085956, "ending_time": 1542388053885, "color":c2(4), "label": "50m 55s \/ 7.9 GB"}, {"starting_time": 1542388053885, "ending_time": 1542388136056, "color":c1(4)}]},
+{"label": "Karect (CelegansWS241>SRR065390)", "times": [{"starting_time": 1542385161053, "ending_time": 1542385165958, "color":c1(5)}, {"starting_time": 1542385165958, "ending_time": 1542390225932, "color":c2(5), "label": "1h 24m 30s \/ 148.7 GB"}, {"starting_time": 1542390225932, "ending_time": 1542390231104, "color":c1(5)}]},
+{"label": "Karect (EColiMG1655>ERR008613)", "times": [{"starting_time": 1542385356064, "ending_time": 1542385360964, "color":c1(5)}, {"starting_time": 1542385360964, "ending_time": 1542386805355, "color":c2(5), "label": "24m 15s \/ 64.5 GB"}, {"starting_time": 1542386805355, "ending_time": 1542386811022, "color":c1(5)}]},
+{"label": "EvalEC (Zmobilis > SRR017972,SRR029606)", "times": [{"starting_time": 1542385356159, "ending_time": 1542385360967, "color":c1(6)}, {"starting_time": 1542385360967, "ending_time": 1542385377998, "color":c2(6), "label": "29.8s \/ 216.7 MB"}, {"starting_time": 1542385377998, "ending_time": 1542385386002, "color":c1(6)}]},
+{"label": "KarectAlignBefore (EColiMG1655>ERR008613)", "times": [{"starting_time": 1542385661135, "ending_time": 1542385665977, "color":c1(4)}, {"starting_time": 1542385665977, "ending_time": 1542386324439, "color":c2(4), "label": "11m 10s \/ 1.2 GB"}, {"starting_time": 1542386324439, "ending_time": 1542386331001, "color":c1(4)}]},
+{"label": "EvalEC (HPylori > SRR023794,SRR023796)", "times": [{"starting_time": 1542385661267, "ending_time": 1542385665979, "color":c1(6)}, {"starting_time": 1542385665979, "ending_time": 1542385688500, "color":c2(6), "label": "34.7s \/ 215.8 MB"}, {"starting_time": 1542385688500, "ending_time": 1542385695980, "color":c1(6)}]},
+{"label": "KarectAlignBefore (ScerevisiaeNCBI>SRR352384)", "times": [{"starting_time": 1542386331101, "ending_time": 1542386336001, "color":c1(4)}, {"starting_time": 1542386336001, "ending_time": 1542387520962, "color":c2(4), "label": "20m 55s \/ 1.7 GB"}, {"starting_time": 1542387520962, "ending_time": 1542387586047, "color":c1(4)}]},
+{"label": "Karect (ScerevisiaeNCBI>SRR352384)", "times": [{"starting_time": 1542386811104, "ending_time": 1542386816022, "color":c1(5)}, {"starting_time": 1542386816022, "ending_time": 1542389550803, "color":c2(5), "label": "45m 45s \/ 85.5 GB"}, {"starting_time": 1542389550803, "ending_time": 1542389556085, "color":c1(5)}]},
+{"label": "EvalEC (EColiMG1655-ERR008613)", "times": [{"starting_time": 1542386811193, "ending_time": 1542386816024, "color":c1(6)}, {"starting_time": 1542386816024, "ending_time": 1542387044439, "color":c2(6), "label": "4m \/ 220.6 MB"}, {"starting_time": 1542387044439, "ending_time": 1542387051025, "color":c1(6)}]},
+{"label": "KarectAlignBefore (SaureusUSA300>SRR022866)", "times": [{"starting_time": 1542387586192, "ending_time": 1542387591047, "color":c1(4)}, {"starting_time": 1542387591047, "ending_time": 1542388463776, "color":c2(4), "label": "16m 55s \/ 1 GB"}, {"starting_time": 1542388463776, "ending_time": 1542388601071, "color":c1(4)}]},
+{"label": "Karect (SaureusUSA300>SRR022866)", "times": [{"starting_time": 1542389556196, "ending_time": 1542389561085, "color":c1(5)}, {"starting_time": 1542389561085, "ending_time": 1542392650913, "color":c2(5), "label": "53m 10s \/ 39.4 GB"}, {"starting_time": 1542392650913, "ending_time": 1542392746187, "color":c1(5)}]},
+{"label": "EvalEC (ScerevisiaeNCBI > SRR352384)", "times": [{"starting_time": 1542389556262, "ending_time": 1542389561087, "color":c1(6)}, {"starting_time": 1542389561087, "ending_time": 1542389837489, "color":c2(6), "label": "6m 15s \/ 235.2 MB"}, {"starting_time": 1542389837489, "ending_time": 1542389931096, "color":c1(6)}]},
+{"label": "EvalEC (CelegansWS241 > SRR065390)", "times": [{"starting_time": 1542390231293, "ending_time": 1542390236105, "color":c1(6)}, {"starting_time": 1542390236105, "ending_time": 1542390714523, "color":c2(6), "label": "8m 10s \/ 404.6 MB"}, {"starting_time": 1542390714523, "ending_time": 1542390721123, "color":c1(6)}]},
+{"label": "EvalEC (SaureusUSA300 > SRR022866)", "times": [{"starting_time": 1542392746344, "ending_time": 1542392751188, "color":c1(6)}, {"starting_time": 1542392751188, "ending_time": 1542392894339, "color":c2(6), "label": "4m 45s \/ 217.2 MB"}, {"starting_time": 1542392894339, "ending_time": 1542393031197, "color":c1(6)}]}
+]
+
+
+function getTickFormat() {
+  var MIN = 1000 * 60
+  var HOUR = MIN * 60
+  var DAY = HOUR * 24
+  var delta = (endingMillis - beginningMillis)
+
+  if( delta < 2 * MIN ) {
+    return {
+      format: d3.time.format("%S"),
+      tickTime: d3.time.seconds,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * HOUR ) {
+    return {
+      format: d3.time.format("%M"),
+      tickTime: d3.time.minutes,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * DAY ) {
+    return {
+      format: d3.time.format("%H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 1,
+      tickSize: 6
+    }
+  }
+
+  if( delta <= 7 * DAY ) {
+    return {
+      format: d3.time.format("%b %e %H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 6,
+      tickSize: 6
+    }
+  }
+
+  return {
+    format: d3.time.format("%b %e"),
+    tickTime: d3.time.days,
+    tickInterval: 1,
+    tickSize: 6
+  }
+}
+
+function getLabelMargin(scale) {
+    $('<span class="labelSpan" style="display: none"></span>').appendTo('body');
+
+    var labelMargin = 0
+    $.each(data, function (key, value) {
+      labelMargin = Math.max(labelMargin, $('.labelSpan').html(value.label).width());
+    });
+
+    $('.labelSpan').remove();
+
+    return (labelMargin * scale);
+}
+
+function render() {
+  handler=null;
+  $("#timeline").empty()
+  $('#label_elapsed').text(elapsed)
+  $('#label_launch').text( d3.time.format('%d %b %Y %H:%M')(new Date(beginningMillis)) )
+
+  var width = $(window).width();
+  var chart = d3.timeline()
+    .stack() // toggles graph stacking
+    .margin({left:getLabelMargin(0.85), right:100, top:0, bottom:0})
+    .tickFormat( getTickFormat() )
+    .rowSeperators('#f5f5f5')
+    .showTimeAxisTick()
+    ;
+  var svg = d3.select("#timeline").append("svg").attr("width", width).datum(data).call(chart);
+}
+
+function hrz() {
+if( handler != null ) clearTimeout(handler)
+  handler = setTimeout(render, 150);
+}
+
+$(document).ready(render)
+$(window).resize(hrz); // resize the applet on window resize
+</script>
+</head>
+
+<body>
+<div>
+  <h3>Processes execution timeline</h3>
+  <p>
+    Launch time: <span id='label_launch'> </span><br>
+    Elapsed time: <span id='label_elapsed'> </span>
+  </p>
+  <div id="timeline"></div>
+</div>
+
+<div id='footer'>
+  Created with Nextflow -- <a href='http://www.nextflow.io' target='_blank'>http://nextflow.io</a>
+</div>
+
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Clink href='" + prot + "fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css' %3E%3C/link%3E"));
+</script>
+</body>
+</html>
