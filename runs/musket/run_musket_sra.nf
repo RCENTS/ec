@@ -163,7 +163,7 @@ process BWABefore{
 
     """
     bwa aln -t ${params.nthreads} -n 4 -o 0 ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sai
-    bwa samse -t ${params.nthreads}  ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai | samtools view -bSh -F 0x900 - > bx.bam
+    bwa samse ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai | samtools view -bSh -F 0x900 - > bx.bam
     samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam
     rm -rf bx.bam bx.sorted* beforeEC.sai 
     samtools view -h  -o beforeEC.sam
@@ -182,18 +182,28 @@ mergedSAMChan = beforeSAMChan
     }
 
 process EvalEC{
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgId.toString() + " > " + exptId.toString() }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
         file(beforeEC), file(beforeSAM), file(afterEC) from mergedSAMChan
 
     output:
-    file("result.txt") into result_channel1
+    file("result1") into result_channel1
 
     """
-    cat x > result.txt
+    sam-analysis.py -a ambig.lst -t alntrim.lst $beforeSAM align.tef unmapped.lst
+    quake-analy.py -f $beforeEC -c $afterEC -o correction.tef -t cortrim.lst
+    comp2pcalign correction.tef align.tef unmapped.lst 4 result.txt trim.lst 
+    echo "DATASET : " $exptId  " ORGANISM : " $orgDesc  > result1
+    cat result.txt >> result1
     """
 
 }
-/**/
+
+result_channel1.map{
+    it.text
+}.collectFile(name: 'musket_eval_sra.txt',
+              storeDir: "${workflow.projectDir}",
+              newLine: false)
+
