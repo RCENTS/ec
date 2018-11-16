@@ -1,28 +1,19 @@
 
-params.data = '/data'
-params.genomedir = '/data/genomes/'
-//params.cfg = '-s 100m -k 23'
-params.cfg = '-p 12'
-// 'SRR065390'
 orgTable = [
-    'EcoliK12MG1655'  : 'E. coli K-12 MG1655',
-    // 'SauresMW2'       : 'S. aureus MW2',
-    'CelegansWS222'   : 'C. elegans WS222'
-]
+    'CelegansWS222'   : 'C. elegans',
+    'EcoliK12MG1655'  : 'E. coli K-12 MG1655'
+] 
 
 genomeTable = [ 
+    'CelegansWS222' :
+      'ftp://ftp.wormbase.org/pub/wormbase/species/c_elegans/sequence/genomic/c_elegans.WS222.genomic.fa.gz',
     'EcoliK12MG1655' :
-     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz', 
-    // 'SauresMW2'      :
-    //  'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/011/265/GCF_000011265.1_ASM1126v1/GCF_000011265.1_ASM1126v1_genomic.fna.gz', 
-    'CelegansWS222'   :
-      'ftp://ftp.wormbase.org/pub/wormbase/species/c_elegans/sequence/genomic/c_elegans.WS222.genomic.fa.gz'
+     'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz' 
 ]
 
 exptTable = [
-    'EcoliK12MG1655' : ['ERR022075'],
-//    'SauresMW2'      : ['SRR022866'],
-    'CelegansWS222' : ['SRR065390']
+    'CelegansWS222'  : ['SRR065390'],
+    'EcoliK12MG1655' : ['ERR022075']
 ]
 
 String[] parseExptID(String tx, String vx){
@@ -33,7 +24,7 @@ orgIds = Channel.from(exptTable.keySet()).map{
     org -> [org, orgTable[org], genomeTable[org]]
 }
 
-process genomeDownload {
+process GenomeDownload {
     tag{ orgDesc }
 
     storeDir params.genomedir
@@ -50,10 +41,10 @@ process genomeDownload {
     """
 }
 
-process bwamemIndex {
+process BWAIndex {
     tag{ orgDesc }
 
-storeDir "${params.genomedir}/bwa"
+    storeDir "${params.genomedir}/bwa"
 
     input:
     set orgId, orgDesc, gnmFile from orgChan
@@ -89,34 +80,39 @@ exptChan = idxChan.flatMap {
 //     println it
 // }
 
-process sraFetch {
+process SRAFetch {
     tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
 
     input:
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId from exptChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}*.fastq") into pseqChan
+    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}*.fastq.gz") into pseqChan
 
     """
     prefetch ${sraId}
     vdb-validate '${sraId}'
-    fastq-dump -I --split-files '${sraId}'
+    fastq-dump -I --split-files --gzip '${sraId}'
     """
 }
 
-process catPariedEndFiles{
+process ConcatPariedEndFiles{
     tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
 
     input:
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file(pairedFiles) from pseqChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fq") into fseqChan
+    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq") into fseqChan
  
+    if(params.nthreads < 5)
     """
-    cat ${pairedFiles} > ${sraId}.fq
+    gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t " " -S 64G | tr "\t" "\n" > ${sraId}.fastq
+    """ 
+    else
     """
+    gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t " " -S 64G --parallel=${params.nthreads - 3} | tr "\t" "\n" > ${sraId}.fastq
+    """ 
 }
 
 oexptChan = fseqChan.map{ 
@@ -124,56 +120,37 @@ oexptChan = fseqChan.map{
         [orgId.toString() + "-" + exptId.toString(),
          orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile] 
 }
-.groupTuple()
-.map{
-    orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, sraFiles -> 
-        [orgExptId, orgId[0], orgDesc[0], gnmFile[0],
-         idxFiles[0], exptId[0], sraIds, sraFiles]
-}
 
-// oexptChan.subscribe{
-//     println it
-// }
 
-process catSRAFiles{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
-    
-    input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(sraFiles) from oexptChan
+(beforeChan1, beforeChan2) = oexptChan.into(2)
 
-    output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fq") into cseqChan
-
-    script:
-    if(sraIds.size() == 1)
-        """
-        mv ${sraFiles} beforeEC.fq
-        """
-    else
-        """
-        cat ${sraFiles} > beforeEC.fq
-        """
-}
-
-(beforeChan1, beforeChan2) = cseqChan.into(2)
-
-process runMusket{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+process Musket{
+    tag { orgId.toString() + " > " + exptId.toString() }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fq") into ecChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("afterEC.fastq") into ecChan
 
     //check params and root directory and fa/fq
+    if(params.nthreads < 5)
     """
-    musket ${params.cfg} ${beforeEC} -o afterEC.fq
+    musket -p ${params.nthreads}  ${beforeEC} -o tmp.fastq
+    cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G | tr "\t" "\n" > afterEC.fastq
+    rm tmp.fastq
+    """ 
+    else
+    """
+    musket -p ${params.nthreads}  ${beforeEC} -o tmp.fastq
+    cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G --parallel=${params.nthreads - 3} | tr "\t" "\n" > afterEC.fastq
+    rm tmp.fastq
     """ 
 }
 
-process runBWABefore{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+
+process BWABefore{
+    tag { orgId.toString() + " > " + exptId.toString() }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
@@ -182,42 +159,37 @@ process runBWABefore{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sam
-    """ 
-}
-
-process runBWAAfter{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
-
-    input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
-
-    output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.sam") into afterSAMChan
-
-    """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} > afterEC.sam
+    bwa aln -t ${params.nthreads} -n 4 -o 0 ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sai
+    bwa samse -t ${params.nthreads}  ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai | samtools view -bSh -F 0x900 - > bx.bam
+    samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam
+    rm -rf bx.bam bx.sorted* beforeEC.sai 
+    samtools view -h  -o beforeEC.sam
     """ 
 }
 
 mergedSAMChan = beforeSAMChan
-    .merge(afterSAMChan)
+    .join(ecChan)
     .map {
-        orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC1, beforeSAM,
-        orgExptId2, orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, beforeEC2, afterSAM ->
-        [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
-          exptId1, sraIds1, beforeEC1, beforeSAM, afterSAM  ]
+        orgExptId,
+            orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
+            orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC ->
+        [ orgExptId,
+            orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1,
+            beforeEC, beforeSAM, afterEC  ]
     }
 
-/*
-processEvalEC{
+process EvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
     input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
+    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds,
+        file(beforeEC), file(beforeSAM), file(afterEC) from mergedSAMChan
 
     output:
-    set orgExptId, orgId, orgDesc, exptId, file("eval.json")
+    file("result.txt") into result_channel1
+
+    """
+    cat x > result.txt
+    """
 
 }
-*/
