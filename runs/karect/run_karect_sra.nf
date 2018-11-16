@@ -1,4 +1,3 @@
-
 orgTable = [
     'HPylori'  : 'H. pylori v225d',
     'Zmobilis'     : 'Z. mobilis subsp. mobilis ATCC 31821',
@@ -16,7 +15,7 @@ genomeTable = [
     'EColiMG1655' : // https://www.ncbi.nlm.nih.gov/genome/167?genome_assembly_id=161521
         'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz',
     'SaureusUSA300' :  // https://www.ncbi.nlm.nih.gov/genome/154?genome_assembly_id=299284
-        'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/017/085/GCF_000017085.1_ASM1708v1/GCF_000017085.1_ASM1708v1_genomic.fna.gz'
+        'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/017/085/GCF_000017085.1_ASM1708v1/GCF_000017085.1_ASM1708v1_genomic.fna.gz',
     'ScerevisiaeNCBI' : // https://www.ncbi.nlm.nih.gov/genome/15?genome_assembly_id=22535
         'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz',
     'CelegansWS241'  :
@@ -31,23 +30,23 @@ exptTable = [
     'ScerevisiaeNCBI'   : ['SRR352384']
 ]
 
-paramsKarect {
-    'HPylori' : ' -matchtype=edit -celltype=haploid ',
-    'Zmobilis' : ' -matchtype=edit -celltype=haploid ',
-    'CelegansWS241' : ' -matchtype=hamming -celltype=diploid ',
-    'EColiMG1655' : ' -matchtype=hamming -celltype=haploid ',
-    'SaureusUSA300' : ' -matchtype=hamming -celltype=haploid ',
-    'ScerevisiaeNCBI' : ' -matchtype=hamming -celltype=haploid '
-}
+paramsKarect = [
+    'SRR023794,SRR023796' : ' -matchtype=edit -celltype=haploid ',
+    'SRR017972,SRR029606' : ' -matchtype=edit -celltype=haploid ',
+    'SRR065390' : ' -matchtype=hamming -celltype=diploid ',
+    'ERR008613' : ' -matchtype=hamming -celltype=haploid ',
+    'SRR022866' : ' -matchtype=hamming -celltype=haploid ',
+    'SRR352384' : ' -matchtype=hamming -celltype=haploid '
+]
 
-paramsKarectAlign {
-    'HPylori' : ' -matchtype=edit ',
-    'Zmobilis' : ' -matchtype=edit ',
-    'CelegansWS241' : ' -matchtype=hamming ',
-    'EColiMG1655' : ' -matchtype=hamming ',
-    'SaureusUSA300' : ' -matchtype=hamming ',
-    'ScerevisiaeNCBI' : ' -matchtype=hamming '
-}
+paramsKarectAlign  = [
+    'SRR023794,SRR023796' : ' -matchtype=edit  ',
+    'SRR017972,SRR029606' : ' -matchtype=edit  ',
+    'SRR065390' : ' -matchtype=hamming  ',
+    'ERR008613' : ' -matchtype=hamming  ',
+    'SRR022866' : ' -matchtype=hamming  ',
+    'SRR352384' : ' -matchtype=hamming  '
+]
 
 String[] parseExptID(String tx, String vx){
     tx.split(vx)
@@ -69,12 +68,13 @@ process GenomeDownload {
     set orgId, orgDesc, file("${orgId}.fa") into orgChan
 
     """
-    wget ${gnmURL} -O ${orgId}.fa.gz
-    gunzip ${orgId}.fa.gz
+    wget ${gnmURL} -O tmp.fa.gz
+    gunzip tmp.fa.gz
+    cat tmp.fa | tr [acgtn] [ACGTN]  > ${orgId}.fa
     """
 }
 
-exptChan = idxChan.flatMap {
+exptChan = orgChan.flatMap {
     orgId, orgDesc, gnmFile -> exptTable[orgId].collect {
         [orgId, orgDesc, gnmFile, it]
     }
@@ -96,7 +96,7 @@ process SRAFetch {
     set orgId, orgDesc, gnmFile, exptId, sraId from exptChan
 
     output:
-    set orgId, orgDesc, gnmFile, exptId, sraId, file("${sraId}*.fastq") into pseqChan
+    set orgId, orgDesc, gnmFile, exptId, sraId, file("${sraId}*.fastq.gz") into pseqChan
 
     """
     prefetch ${sraId}
@@ -128,7 +128,7 @@ oexptChan = fseqChan.map{
 .map{
     orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, sraFiles -> 
         [orgExptId, orgId[0], orgDesc[0], gnmFile[0],
-         idxFiles[0], exptId[0], sraIds, sraFiles]
+          exptId[0], sraIds, sraFiles]
 }
 
 // oexptChan.subscribe{
@@ -167,7 +167,7 @@ process Karect{
     set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file(beforeEC) from beforeChan1
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file("karect_.fastq") into ecChan
+    set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file("karect_*.fastq") into ecChan
 
     """
     karect -correct -threads=${params.nthreads} ${paramsKarect[exptId]} -inputfile=${beforeEC} 
@@ -193,27 +193,26 @@ mergedSAMChan = beforeSAMChan
     .join(ecChan)
     .map {
         orgExptId,
-            orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC, beforeSAM,
-            orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, afterEC ->
-        [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
-          exptId1, sraIds1, beforeEC, beforeSAM, afterEC  ]
+            orgId1, orgDesc1, gnmFile1, exptId1, sraIds1, beforeEC, beforeSAM,
+            orgId2, orgDesc2, gnmFile2, exptId2, sraIds2, afterEC ->
+        [ orgExptId, orgId1, orgDesc1, gnmFile1, exptId1, sraIds1,
+           beforeEC, beforeSAM, afterEC  ]
     }
 
-processEvalEC{
+process EvalEC{
     tag{ orgExptId.replace('-SRR', ' > SRR') }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file(beforeEC), file(beforeSAM), file(afterEC) from mergedSAMChan
 
     output:
-    file("result.txt") into result_channel1
+    file("result1") into result_channel1
 
-// -eval -threads=${num threads} -matchtype=${match type} 
-// -inputfile=${input file} -resultfile=${result file} -refgenomefile=${ref file} \
-// -alignfile=${align file} -evalfile=${eval file}
     """
     karect -eval -threads=${params.nthreads}  ${paramsKarectAlign[exptId]}  -inputfile=$beforeEC  -resultfile=$afterEC -refgenomefile=$gnmFile -alignfile=$beforeSAM -evalfile=result.txt
-    echo "DATASET : " $exptId  " ORGANISM : " $orgDesc  >> result.txt
+    echo "DATASET : " $exptId  " ORGANISM : " $orgDesc  > result1
+    tail -n 20 result.txt >> result1
+    rm result.txt
     """
 
 }
