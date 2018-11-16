@@ -12,7 +12,7 @@ genomeTable = [
 ]
 
 exptTable = [
-    'CelegansWS222'  : ['SRR065390'],
+//    'CelegansWS222'  : ['SRR065390'],
     'EcoliK12MG1655' : ['ERR022075']
 ]
 
@@ -23,6 +23,8 @@ String[] parseExptID(String tx, String vx){
 orgIds = Channel.from(exptTable.keySet()).map{
     org -> [org, orgTable[org], genomeTable[org]]
 }
+
+sortThreads = params.nthreads - 3 
 
 process GenomeDownload {
     tag{ orgDesc }
@@ -104,15 +106,16 @@ process ConcatPariedEndFiles{
 
     output:
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq") into fseqChan
- 
-    if(params.nthreads < 5)
-    """
-    gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t " " -S 64G | tr "\t" "\n" > ${sraId}.fastq
-    """ 
+
+    script: 
+    if (sortThreads < 2)
+        """
+        gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t ' ' -S 64G | tr '\t' '\n' > ${sraId}.fastq
+        """ 
     else
-    """
-    gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t " " -S 64G --parallel=${params.nthreads - 3} | tr "\t" "\n" > ${sraId}.fastq
-    """ 
+        """
+        gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t ' ' -S 64G --parallel=${sortThreads} | tr '\t' '\n' > ${sraId}.fastq
+        """ 
 }
 
 oexptChan = fseqChan.map{ 
@@ -133,19 +136,19 @@ process Musket{
     output:
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("afterEC.fastq") into ecChan
 
-    //check params and root directory and fa/fq
-    if(params.nthreads < 5)
-    """
-    musket -p ${params.nthreads}  ${beforeEC} -o tmp.fastq
-    cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G | tr "\t" "\n" > afterEC.fastq
-    rm tmp.fastq
-    """ 
+    script:
+    if (sortThreads < 2)
+        """
+        musket -p ${params.nthreads}  ${beforeEC} -o tmp.fastq
+        cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G | tr "\t" "\n" > afterEC.fastq
+        rm tmp.fastq
+        """ 
     else
-    """
-    musket -p ${params.nthreads}  ${beforeEC} -o tmp.fastq
-    cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G --parallel=${params.nthreads - 3} | tr "\t" "\n" > afterEC.fastq
-    rm tmp.fastq
-    """ 
+        """
+        musket -p ${params.nthreads}  ${beforeEC} -o tmp.fastq
+        cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G --parallel=${sortThreads} | tr "\t" "\n" > afterEC.fastq
+        rm tmp.fastq
+        """ 
 }
 
 
@@ -193,3 +196,4 @@ process EvalEC{
     """
 
 }
+/**/
