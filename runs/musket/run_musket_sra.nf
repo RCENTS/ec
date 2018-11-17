@@ -163,10 +163,11 @@ process BWABefore{
 
     """
     bwa aln -t ${params.nthreads} -n 4 -o 0 ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sai
-    bwa samse ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai | samtools view -bSh -F 0x900 - > bx.bam
+    bwa samse ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai  ${beforeEC} | samtools view -bSh -F 0x900 - > bx.bam
     samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam
     rm -rf bx.bam bx.sorted* beforeEC.sai 
-    samtools view -h  -o beforeEC.sam
+    samtools view -H beforeEC.bam > beforeEC.sam
+    samtools view beforeEC.bam | sort -k1,1 -t ' ' -T ./ -S64G  >>  beforeEC.sam
     """ 
 }
 
@@ -194,7 +195,8 @@ process EvalEC{
     """
     sam-analysis.py -a ambig.lst -t alntrim.lst $beforeSAM align.tef unmapped.lst
     quake-analy.py -f $beforeEC -c $afterEC -o correction.tef -t cortrim.lst
-    comp2pcalign correction.tef align.tef unmapped.lst 4 result.txt trim.lst 
+    cat ambig.lst unmapped.lst | sort > ua.lst
+    comp2pcalign correction.tef align.tef ua.lst 4 result.txt alntrim.lst 
     echo "DATASET : " $exptId  " ORGANISM : " $orgDesc  > result1
     cat result.txt >> result1
     """
