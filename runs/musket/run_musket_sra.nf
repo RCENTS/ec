@@ -12,8 +12,13 @@ genomeTable = [
 ]
 
 exptTable = [
-//    'CelegansWS222'  : ['SRR065390'],
+    'CelegansWS222'  : ['SRR065390'],
     'EcoliK12MG1655' : ['ERR022075']
+]
+
+errTable = [
+    'SRR065390' : '4',
+    'ERR022075' : '4'
 ]
 
 String[] parseExptID(String tx, String vx){
@@ -110,11 +115,11 @@ process ConcatPariedEndFiles{
     script: 
     if (sortThreads < 2)
         """
-        gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t ' ' -S 64G | tr '\t' '\n' > ${sraId}.fastq
+        gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t ' ' -S 64G -T ./ | tr '\t' '\n' > ${sraId}.fastq
         """ 
     else
         """
-        gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t ' ' -S 64G --parallel=${sortThreads} | tr '\t' '\n' > ${sraId}.fastq
+        gunzip -c ${pairedFiles} | paste - - - - | sort -k1,1 -t ' ' -S 64G -T ./ --parallel=${sortThreads} | tr '\t' '\n' > ${sraId}.fastq
         """ 
 }
 
@@ -140,13 +145,13 @@ process Musket{
     if (sortThreads < 2)
         """
         musket -p ${params.nthreads}  ${beforeEC} -o tmp.fastq
-        cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G | tr "\t" "\n" > afterEC.fastq
+        cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G -T ./ | tr "\t" "\n" > afterEC.fastq
         rm tmp.fastq
         """ 
     else
         """
         musket -p ${params.nthreads}  ${beforeEC} -o tmp.fastq
-        cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G --parallel=${sortThreads} | tr "\t" "\n" > afterEC.fastq
+        cat tmp.fastq | paste - - - - | sort -k1,1 -t " " -S 64G -T ./ --parallel=${sortThreads} | tr "\t" "\n" > afterEC.fastq
         rm tmp.fastq
         """ 
 }
@@ -162,10 +167,8 @@ process BWABefore{
     set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
 
     """
-    bwa aln -t ${params.nthreads} -n 4 -o 0 ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sai
-    bwa samse ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai  ${beforeEC} | samtools view -bSh -F 0x900 - > bx.bam
-    samtools sort -T bx.sorted -n -o beforeEC.bam bx.bam
-    rm -rf bx.bam bx.sorted* beforeEC.sai 
+    bwa aln -t ${params.nthreads} -n ${errTable[exptId]} -o 0 ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sai
+    bwa samse ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai  ${beforeEC} | samtools view -bSh -F 0x900 - > beforeEC.bam
     samtools view -H beforeEC.bam > beforeEC.sam
     samtools view beforeEC.bam | sort -k1,1 -t ' ' -T ./ -S64G  >>  beforeEC.sam
     """ 
@@ -196,7 +199,7 @@ process EvalEC{
     sam-analysis.py -a ambig.lst -t alntrim.lst $beforeSAM align.tef unmapped.lst
     quake-analy.py -f $beforeEC -c $afterEC -o correction.tef -t cortrim.lst
     cat ambig.lst unmapped.lst | sort > ua.lst
-    comp2pcalign correction.tef align.tef ua.lst 4 result.txt alntrim.lst 
+    comp2pcalign correction.tef align.tef ua.lst ${errTable[exptId]} result.txt alntrim.lst 
     echo "DATASET : " $exptId  " ORGANISM : " $orgDesc  > result1
     cat result.txt >> result1
     """
