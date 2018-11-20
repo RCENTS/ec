@@ -36,15 +36,29 @@ genomeNumTable = [
 ]
 
 exptTable = [
-    'EColiMG1655' : ['SRR519926', 
-                     'SRR522163'],
-    'MtuberculosisH37Rv' : ['SRR1200797'],
-    'SentericaSL476' : ['SRR1203044',
-                        'SRR1206093'],
-    'LmonocytogenesFSLR2561' : ['SRR1198952'],
-    'PsyringaeB728a' : ['SRR1119292'],
-    'BdentiumBd1' : ['SRR1151311'],
-    'OtsutsugamushiBor' : ['SRR1202083']
+    'EColiMG1655' : [
+        'SRR519926',  // M1
+        'SRR522163'   // M8
+    ],
+    'MtuberculosisH37Rv' : [
+        'SRR1200797'  // M2
+    ],
+    'SentericaSL476' : [
+        'SRR1203044', // M3
+        'SRR1206093'  // M4
+    ],
+    'LmonocytogenesFSLR2561' : [
+        'SRR1198952'  // M5
+    ],
+    'PsyringaeB728a' : [
+        'SRR1119292'  // M6
+    ],
+    'BdentiumBd1' : [
+        'SRR1151311'  // M7
+    ],
+    'OtsutsugamushiBor' : [
+        'SRR1202083'  // M9
+     ]
 ]
 
 String[] parseExptID(String tx, String vx){
@@ -72,7 +86,7 @@ process GenomeDownload {
     """
 }
 
-exptChan = idxChan.flatMap {
+exptChan = orgChan.flatMap {
     orgId, orgDesc, gnmFile -> exptTable[orgId].collect {
         [orgId, orgDesc, gnmFile, it]
     }
@@ -157,7 +171,7 @@ process ACE{
     set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file(beforeEC), file("afterEC.fastq") into ecChan
 
     """
-    ACE ${genomeNumTable[orgId]} ${beforeEC} afterEC.fastq ${params.lognthreads}
+    ace ${genomeNumTable[orgId]} ${beforeEC} afterEC.fastq ${params.nthreads}
     """ 
 }
 
@@ -165,7 +179,7 @@ process ACE{
 
 
 process EvalECReads {
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
+    tag { orgDesc.toString() + " > " + exptId.toString() }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file(beforeEC), file(afterEC) from evalChan1
@@ -182,8 +196,8 @@ process EvalECReads {
 }
 
 
-process EvalECReads {
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
+process EvalECBases {
+    tag { orgDesc.toString() + " > " + exptId.toString() }
 
     input:
     set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file(beforeEC), file(afterEC) from evalChan2
