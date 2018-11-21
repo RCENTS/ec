@@ -1,0 +1,58 @@
+task_id	tag	name	cpus	status	exit	duration	realtime	%cpu	rss
+3	M. tuberculosis H37Rv	GenomeDownload (M. tuberculosis H37Rv)	16	COMPLETED	0	1m 19s	1.4s	0.0%	3.9 MB
+4	S. enterica subsp. enterica serovar Heidelberg str. SL476	GenomeDownload (S. enterica subsp. enterica serovar Heidelberg str. SL476)	16	COMPLETED	0	9.9s	801ms	0.0%	4 MB
+5	L. monocytogenes FSL R2-561	GenomeDownload (L. monocytogenes FSL R2-561)	16	COMPLETED	0	9.9s	596ms	0.0%	4 MB
+7	B. dentium Bd1	GenomeDownload (B. dentium Bd1)	16	COMPLETED	0	14.9s	608ms	4.6%	3.9 MB
+2	E. coli K-12 MG1655 > SRR519926 > SRR519926	SRAFetch (E. coli K-12 MG1655 > SRR519926 > SRR519926)	16	COMPLETED	0	1m 59s	45.3s	102.4%	163.5 MB
+8	O. tsutsugamushi str. Boryong	GenomeDownload (O. tsutsugamushi str. Boryong)	16	COMPLETED	0	14.9s	698ms	0.0%	4 MB
+9	E. coli K-12 MG1655 > SRR519926 > SRR519926	ConcatPariedEndFiles (E. coli K-12 MG1655 > SRR519926 > SRR519926)	16	COMPLETED	0	19.8s	7.1s	191.5%	2.9 MB
+10	E. coli K-12 MG1655 > SRR522163 > SRR522163	SRAFetch (E. coli K-12 MG1655 > SRR522163 > SRR522163)	16	COMPLETED	0	8m 25s	8m 20s	104.8%	179.1 MB
+11	M. tuberculosis H37Rv > SRR1200797 > SRR1200797	SRAFetch (M. tuberculosis H37Rv > SRR1200797 > SRR1200797)	16	COMPLETED	0	1m 15s	1m 4s	102.2%	72 MB
+12	E. coli K-12 MG1655 > SRR522163 > SRR522163	ConcatPariedEndFiles (E. coli K-12 MG1655 > SRR522163 > SRR522163)	16	COMPLETED	0	1m 45s	1m 37s	193.0%	2.9 MB
+14	M. tuberculosis H37Rv > SRR1200797 > SRR1200797	ConcatPariedEndFiles (M. tuberculosis H37Rv > SRR1200797 > SRR1200797)	16	COMPLETED	0	19.9s	11s	192.8%	2.9 MB
+13	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044 > SRR1203044	SRAFetch (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044 > SRR1203044)	16	COMPLETED	0	2m 45s	2m 37s	101.4%	12.6 MB
+16	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044 > SRR1203044	ConcatPariedEndFiles (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044 > SRR1203044)	16	COMPLETED	0	29.8s	19.5s	192.1%	2.9 MB
+15	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093 > SRR1206093	SRAFetch (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093 > SRR1206093)	16	COMPLETED	0	3m	2m 49s	101.0%	12.6 MB
+18	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093 > SRR1206093	ConcatPariedEndFiles (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093 > SRR1206093)	16	COMPLETED	0	1m 35s	21.6s	192.2%	2.9 MB
+17	L. monocytogenes FSL R2-561 > SRR1198952 > SRR1198952	SRAFetch (L. monocytogenes FSL R2-561 > SRR1198952 > SRR1198952)	16	COMPLETED	0	4m 25s	3m 11s	101.3%	14.9 MB
+20	L. monocytogenes FSL R2-561 > SRR1198952 > SRR1198952	ConcatPariedEndFiles (L. monocytogenes FSL R2-561 > SRR1198952 > SRR1198952)	16	COMPLETED	0	34.7s	23s	192.4%	2.9 MB
+19	P. syringae pv. syringae B728a > SRR1119292 > SRR1119292	SRAFetch (P. syringae pv. syringae B728a > SRR1119292 > SRR1119292)	16	COMPLETED	0	3m 55s	3m 49s	101.2%	12.7 MB
+22	P. syringae pv. syringae B728a > SRR1119292 > SRR1119292	ConcatPariedEndFiles (P. syringae pv. syringae B728a > SRR1119292 > SRR1119292)	16	COMPLETED	0	39.7s	28.8s	191.6%	2.9 MB
+21	B. dentium Bd1 > SRR1151311 > SRR1151311	SRAFetch (B. dentium Bd1 > SRR1151311 > SRR1151311)	16	COMPLETED	0	5m 55s	5m 47s	101.3%	12.9 MB
+24	B. dentium Bd1 > SRR1151311 > SRR1151311	ConcatPariedEndFiles (B. dentium Bd1 > SRR1151311 > SRR1151311)	16	COMPLETED	0	49.8s	42.7s	190.9%	2.9 MB
+23	O. tsutsugamushi str. Boryong > SRR1202083 > SRR1202083	SRAFetch (O. tsutsugamushi str. Boryong > SRR1202083 > SRR1202083)	16	COMPLETED	0	16m 25s	16m 12s	101.3%	12.3 MB
+25	O. tsutsugamushi str. Boryong > SRR1202083 > SRR1202083	ConcatPariedEndFiles (O. tsutsugamushi str. Boryong > SRR1202083 > SRR1202083)	16	COMPLETED	0	4m 30s	2m 7s	191.9%	2.9 MB
+26	E. coli K-12 MG1655 > SRR519926	ConcatSRAFiles (E. coli K-12 MG1655 > SRR519926)	16	COMPLETED	0	1m 10s	4s	101.2%	2.1 MB
+28	E. coli K-12 MG1655 > SRR522163	ConcatSRAFiles (E. coli K-12 MG1655 > SRR522163)	16	COMPLETED	0	1m 5s	54.8s	105.3%	2.1 MB
+29	M. tuberculosis H37Rv > SRR1200797	ConcatSRAFiles (M. tuberculosis H37Rv > SRR1200797)	16	COMPLETED	0	19.9s	6.2s	100.3%	2.1 MB
+30	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044	ConcatSRAFiles (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044)	16	COMPLETED	0	20s	10.6s	101.3%	2.1 MB
+31	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093	ConcatSRAFiles (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093)	16	COMPLETED	0	24.9s	11.8s	104.6%	2.1 MB
+32	L. monocytogenes FSL R2-561 > SRR1198952	ConcatSRAFiles (L. monocytogenes FSL R2-561 > SRR1198952)	16	COMPLETED	0	24.9s	12.5s	101.1%	2.1 MB
+33	P. syringae pv. syringae B728a > SRR1119292	ConcatSRAFiles (P. syringae pv. syringae B728a > SRR1119292)	16	COMPLETED	0	24.9s	15.8s	105.0%	2.1 MB
+34	B. dentium Bd1 > SRR1151311	ConcatSRAFiles (B. dentium Bd1 > SRR1151311)	16	COMPLETED	0	35s	22.7s	102.0%	2.1 MB
+35	O. tsutsugamushi str. Boryong > SRR1202083	ConcatSRAFiles (O. tsutsugamushi str. Boryong > SRR1202083)	16	COMPLETED	0	1m 23s	1m 8s	100.9%	2.1 MB
+27	E. coli K-12 MG1655 > SRR519926	ACE (E. coli K-12 MG1655 > SRR519926)	16	COMPLETED	0	29m 58s	29m 49s	1949.4%	4.3 GB
+37	E. coli K-12 MG1655 > SRR519926	EvalECReads (E. coli K-12 MG1655 > SRR519926)	16	COMPLETED	0	1m 25s	2.6s	203.6%	114.1 MB
+38	E. coli K-12 MG1655 > SRR519926	EvalECBases (E. coli K-12 MG1655 > SRR519926)	16	COMPLETED	0	1m 35s	11.9s	1431.8%	531.9 MB
+36	E. coli K-12 MG1655 > SRR522163	ACE (E. coli K-12 MG1655 > SRR522163)	16	COMPLETED	0	5h 12m 11s	5h 10m 49s	1933.9%	27.2 GB
+40	E. coli K-12 MG1655 > SRR522163	EvalECReads (E. coli K-12 MG1655 > SRR522163)	16	COMPLETED	0	1m 50s	27.8s	645.8%	2.8 GB
+41	E. coli K-12 MG1655 > SRR522163	EvalECBases (E. coli K-12 MG1655 > SRR522163)	16	COMPLETED	0	3m 40s	2m 17s	1599.4%	639.6 MB
+39	M. tuberculosis H37Rv > SRR1200797	ACE (M. tuberculosis H37Rv > SRR1200797)	16	COMPLETED	0	13m 25s	12m	1922.3%	817.6 MB
+43	M. tuberculosis H37Rv > SRR1200797	EvalECReads (M. tuberculosis H37Rv > SRR1200797)	16	COMPLETED	0	14.8s	3.9s	211.1%	108.6 MB
+44	M. tuberculosis H37Rv > SRR1200797	EvalECBases (M. tuberculosis H37Rv > SRR1200797)	16	COMPLETED	0	34.8s	23.5s	1594.9%	634.3 MB
+42	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044	ACE (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044)	16	COMPLETED	0	21m 25s	21m 14s	1878.2%	1.8 GB
+46	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044	EvalECReads (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044)	16	COMPLETED	0	6m 43s	4.8s	189.6%	122.3 MB
+47	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044	EvalECBases (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044)	16	COMPLETED	0	6m 48s	24.6s	1600.0%	654.7 MB
+45	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093	ACE (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093)	16	COMPLETED	0	30m 33s	24m 8s	1834.8%	2.6 GB
+49	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093	EvalECReads (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093)	16	COMPLETED	0	1m 15s	5.1s	205.0%	122.3 MB
+50	S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093	EvalECBases (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093)	16	COMPLETED	0	1m 35s	24.3s	1600.0%	650 MB
+48	L. monocytogenes FSL R2-561 > SRR1198952	ACE (L. monocytogenes FSL R2-561 > SRR1198952)	16	COMPLETED	0	23m 5s	21m 52s	1945.1%	2.1 GB
+52	L. monocytogenes FSL R2-561 > SRR1198952	EvalECReads (L. monocytogenes FSL R2-561 > SRR1198952)	16	COMPLETED	0	2m	5.3s	127.2%	74.3 MB
+53	L. monocytogenes FSL R2-561 > SRR1198952	EvalECBases (L. monocytogenes FSL R2-561 > SRR1198952)	16	COMPLETED	0	2m 25s	30.9s	1604.1%	605.5 MB
+51	P. syringae pv. syringae B728a > SRR1119292	ACE (P. syringae pv. syringae B728a > SRR1119292)	16	COMPLETED	0	34m 30s	32m 31s	1680.0%	2.9 GB
+55	P. syringae pv. syringae B728a > SRR1119292	EvalECReads (P. syringae pv. syringae B728a > SRR1119292)	16	COMPLETED	0	1m 55s	6.8s	240.5%	822 MB
+56	P. syringae pv. syringae B728a > SRR1119292	EvalECBases (P. syringae pv. syringae B728a > SRR1119292)	16	COMPLETED	0	2m 20s	38.2s	1603.7%	671.2 MB
+54	B. dentium Bd1 > SRR1151311	ACE (B. dentium Bd1 > SRR1151311)	16	COMPLETED	0	43m 5s	41m 18s	1769.4%	1.8 GB
+58	B. dentium Bd1 > SRR1151311	EvalECReads (B. dentium Bd1 > SRR1151311)	16	COMPLETED	0	6m 49s	9.1s	276.9%	610.7 MB
+59	B. dentium Bd1 > SRR1151311	EvalECBases (B. dentium Bd1 > SRR1151311)	16	COMPLETED	0	7m 9s	46.9s	1603.8%	600.2 MB
+57	O. tsutsugamushi str. Boryong > SRR1202083	ACE (O. tsutsugamushi str. Boryong > SRR1202083)	16	FAILED	139	43m 54s	37m 29s	1677.9%	13.7 GB

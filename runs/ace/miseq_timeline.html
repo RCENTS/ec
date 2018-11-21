@@ -1,0 +1,258 @@
+<!doctype html>
+<!--
+  ~ Copyright (c) 2013-2018, Centre for Genomic Regulation (CRG).
+  ~ Copyright (c) 2013-2018, Paolo Di Tommaso and the respective authors.
+  ~
+  ~   This file is part of 'Nextflow'.
+  ~
+  ~   Nextflow is free software: you can redistribute it and/or modify
+  ~   it under the terms of the GNU General Public License as published by
+  ~   the Free Software Foundation, either version 3 of the License, or
+  ~   (at your option) any later version.
+  ~
+  ~   Nextflow is distributed in the hope that it will be useful,
+  ~   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~   GNU General Public License for more details.
+  ~
+  ~   You should have received a copy of the GNU General Public License
+  ~   along with Nextflow.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Cscript src='" + prot + "code.jquery.com/jquery-latest.min.js' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "d3js.org/d3.v3.min.js' charset='utf-8' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "cdn.rawgit.com/nextflow-io/d3-timeline/82622c4cc35bac7283b3a317826b0709ac1ae476/src/d3-timeline.js' type='text/javascript' %3E%3C/script%3E"));
+</script>
+<style type="text/css">
+* {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.axis path,
+.axis line {
+fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-size: 10px;
+}
+
+div#timeline g text {
+  font-size: 13px;
+}
+
+text.timeline-label {
+  font-size: 13px;
+}
+
+#timeline2 .axis {
+  transform: translate(0px,30px);
+  -ms-transform: translate(0px,30px); /* IE 9 */
+  -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+  -o-transform: translate(0px,30px); /* Opera */
+  -moz-transform: translate(0px,30px); /* Firefox */
+}
+
+.coloredDiv {
+  height:20px; width:20px; float:left;
+}
+
+#footer {
+  padding-top: 3em; color: #bfbfbf; font-size: 13px;
+}
+
+#footer a:visited {
+  color: #bfbfbf;
+  text-decoration: underline;
+}
+</style>
+<script type="text/javascript">
+var handler=null;
+// see https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c
+var colors = d3.scale.category20c().domain(d3.range(0,20)).range()
+
+function c0(index) { return "#9c9c9c"; }
+function c1(index) { return "#bdbdbd"; }
+function c2(index) { return colors[index % 16]; } // <-- note: uses only the first 16 colors
+
+var elapsed="10h 5m 55s"
+var beginningMillis=1542732012360;
+var endingMillis=1542768367503;
+var data=[
+{"label": "GenomeDownload (M. tuberculosis H37Rv)", "times": [{"starting_time": 1542732014229, "ending_time": 1542732018733, "color":c1(0)}, {"starting_time": 1542732018733, "ending_time": 1542732020180, "color":c2(0), "label": "1m 19s \/ 69.5 MB"}, {"starting_time": 1542732020180, "ending_time": 1542732093727, "color":c1(0)}]},
+{"label": "SRAFetch (E. coli K-12 MG1655 > SRR519926 > SRR519926)", "times": [{"starting_time": 1542732014312, "ending_time": 1542732018814, "color":c1(1)}, {"starting_time": 1542732018814, "ending_time": 1542732064107, "color":c2(1), "label": "1m 59s \/ 467.4 MB"}, {"starting_time": 1542732064107, "ending_time": 1542732133729, "color":c1(1)}]},
+{"label": "GenomeDownload (S. enterica subsp. enterica serovar Heidelberg str. SL476)", "times": [{"starting_time": 1542732093856, "ending_time": 1542732098726, "color":c1(0)}, {"starting_time": 1542732098726, "ending_time": 1542732099527, "color":c2(0), "label": "9.9s \/ 69.5 MB"}, {"starting_time": 1542732099527, "ending_time": 1542732103726, "color":c1(0)}]},
+{"label": "GenomeDownload (L. monocytogenes FSL R2-561)", "times": [{"starting_time": 1542732103814, "ending_time": 1542732108726, "color":c1(0)}, {"starting_time": 1542732108726, "ending_time": 1542732109322, "color":c2(0), "label": "9.9s \/ 69.5 MB"}, {"starting_time": 1542732109322, "ending_time": 1542732113727, "color":c1(0)}]},
+{"label": "GenomeDownload (B. dentium Bd1)", "times": [{"starting_time": 1542732113798, "ending_time": 1542732118727, "color":c1(0)}, {"starting_time": 1542732118727, "ending_time": 1542732119335, "color":c2(0), "label": "14.9s \/ 69.5 MB"}, {"starting_time": 1542732119335, "ending_time": 1542732128728, "color":c1(0)}]},
+{"label": "GenomeDownload (O. tsutsugamushi str. Boryong)", "times": [{"starting_time": 1542732128816, "ending_time": 1542732133823, "color":c1(0)}, {"starting_time": 1542732133823, "ending_time": 1542732134521, "color":c2(0), "label": "14.9s \/ 69.5 MB"}, {"starting_time": 1542732134521, "ending_time": 1542732143730, "color":c1(0)}]},
+{"label": "SRAFetch (E. coli K-12 MG1655 > SRR522163 > SRR522163)", "times": [{"starting_time": 1542732133874, "ending_time": 1542732138729, "color":c1(1)}, {"starting_time": 1542732138729, "ending_time": 1542732638476, "color":c2(1), "label": "8m 25s \/ 482.7 MB"}, {"starting_time": 1542732638476, "ending_time": 1542732638747, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (E. coli K-12 MG1655 > SRR519926 > SRR519926)", "times": [{"starting_time": 1542732133922, "ending_time": 1542732138734, "color":c1(2)}, {"starting_time": 1542732138734, "ending_time": 1542732145822, "color":c2(2), "label": "19.8s \/ 32.2 MB"}, {"starting_time": 1542732145822, "ending_time": 1542732153730, "color":c1(2)}]},
+{"label": "SRAFetch (M. tuberculosis H37Rv > SRR1200797 > SRR1200797)", "times": [{"starting_time": 1542732638870, "ending_time": 1542732643747, "color":c1(1)}, {"starting_time": 1542732643747, "ending_time": 1542732707485, "color":c2(1), "label": "1m 15s \/ 376.6 MB"}, {"starting_time": 1542732707485, "ending_time": 1542732713749, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (E. coli K-12 MG1655 > SRR522163 > SRR522163)", "times": [{"starting_time": 1542732638959, "ending_time": 1542732643751, "color":c1(2)}, {"starting_time": 1542732643751, "ending_time": 1542732740384, "color":c2(2), "label": "1m 45s \/ 32.2 MB"}, {"starting_time": 1542732740384, "ending_time": 1542732743750, "color":c1(2)}]},
+{"label": "SRAFetch (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044 > SRR1203044)", "times": [{"starting_time": 1542732713871, "ending_time": 1542732718749, "color":c1(1)}, {"starting_time": 1542732718749, "ending_time": 1542732875963, "color":c2(1), "label": "2m 45s \/ 165.6 MB"}, {"starting_time": 1542732875963, "ending_time": 1542732878756, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (M. tuberculosis H37Rv > SRR1200797 > SRR1200797)", "times": [{"starting_time": 1542732743841, "ending_time": 1542732748795, "color":c1(2)}, {"starting_time": 1542732748795, "ending_time": 1542732759769, "color":c2(2), "label": "19.9s \/ 32.2 MB"}, {"starting_time": 1542732759769, "ending_time": 1542732763752, "color":c1(2)}]},
+{"label": "SRAFetch (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093 > SRR1206093)", "times": [{"starting_time": 1542732878883, "ending_time": 1542732883755, "color":c1(1)}, {"starting_time": 1542732883755, "ending_time": 1542733053165, "color":c2(1), "label": "3m \/ 165.6 MB"}, {"starting_time": 1542733053165, "ending_time": 1542733058766, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044 > SRR1203044)", "times": [{"starting_time": 1542732878952, "ending_time": 1542732883760, "color":c1(2)}, {"starting_time": 1542732883760, "ending_time": 1542732903215, "color":c2(2), "label": "29.8s \/ 32.2 MB"}, {"starting_time": 1542732903215, "ending_time": 1542732908757, "color":c1(2)}]},
+{"label": "SRAFetch (L. monocytogenes FSL R2-561 > SRR1198952 > SRR1198952)", "times": [{"starting_time": 1542733058911, "ending_time": 1542733063765, "color":c1(1)}, {"starting_time": 1542733063765, "ending_time": 1542733254439, "color":c2(1), "label": "4m 25s \/ 166 MB"}, {"starting_time": 1542733254439, "ending_time": 1542733323775, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093 > SRR1206093)", "times": [{"starting_time": 1542733059002, "ending_time": 1542733063770, "color":c1(2)}, {"starting_time": 1542733063770, "ending_time": 1542733085331, "color":c2(2), "label": "1m 35s \/ 32.2 MB"}, {"starting_time": 1542733085331, "ending_time": 1542733153769, "color":c1(2)}]},
+{"label": "SRAFetch (P. syringae pv. syringae B728a > SRR1119292 > SRR1119292)", "times": [{"starting_time": 1542733323953, "ending_time": 1542733328775, "color":c1(1)}, {"starting_time": 1542733328775, "ending_time": 1542733558231, "color":c2(1), "label": "3m 55s \/ 165.7 MB"}, {"starting_time": 1542733558231, "ending_time": 1542733558786, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (L. monocytogenes FSL R2-561 > SRR1198952 > SRR1198952)", "times": [{"starting_time": 1542733324085, "ending_time": 1542733328778, "color":c1(2)}, {"starting_time": 1542733328778, "ending_time": 1542733351817, "color":c2(2), "label": "34.7s \/ 32.2 MB"}, {"starting_time": 1542733351817, "ending_time": 1542733358776, "color":c1(2)}]},
+{"label": "SRAFetch (B. dentium Bd1 > SRR1151311 > SRR1151311)", "times": [{"starting_time": 1542733558951, "ending_time": 1542733563786, "color":c1(1)}, {"starting_time": 1542733563786, "ending_time": 1542733911239, "color":c2(1), "label": "5m 55s \/ 165.9 MB"}, {"starting_time": 1542733911239, "ending_time": 1542733913801, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (P. syringae pv. syringae B728a > SRR1119292 > SRR1119292)", "times": [{"starting_time": 1542733559073, "ending_time": 1542733563789, "color":c1(2)}, {"starting_time": 1542733563789, "ending_time": 1542733592631, "color":c2(2), "label": "39.7s \/ 32.2 MB"}, {"starting_time": 1542733592631, "ending_time": 1542733598787, "color":c1(2)}]},
+{"label": "SRAFetch (O. tsutsugamushi str. Boryong > SRR1202083 > SRR1202083)", "times": [{"starting_time": 1542733913973, "ending_time": 1542733918801, "color":c1(1)}, {"starting_time": 1542733918801, "ending_time": 1542734891089, "color":c2(1), "label": "16m 25s \/ 165.4 MB"}, {"starting_time": 1542734891089, "ending_time": 1542734898838, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (B. dentium Bd1 > SRR1151311 > SRR1151311)", "times": [{"starting_time": 1542733914052, "ending_time": 1542733918804, "color":c1(2)}, {"starting_time": 1542733918804, "ending_time": 1542733961499, "color":c2(2), "label": "49.8s \/ 32.2 MB"}, {"starting_time": 1542733961499, "ending_time": 1542733963805, "color":c1(2)}]},
+{"label": "ConcatPariedEndFiles (O. tsutsugamushi str. Boryong > SRR1202083 > SRR1202083)", "times": [{"starting_time": 1542734898950, "ending_time": 1542734903838, "color":c1(2)}, {"starting_time": 1542734903838, "ending_time": 1542735030981, "color":c2(2), "label": "4m 30s \/ 32.2 MB"}, {"starting_time": 1542735030981, "ending_time": 1542735168843, "color":c1(2)}]},
+{"label": "ConcatSRAFiles (E. coli K-12 MG1655 > SRR519926)", "times": [{"starting_time": 1542735168950, "ending_time": 1542735173843, "color":c1(3)}, {"starting_time": 1542735173843, "ending_time": 1542735177869, "color":c2(3), "label": "1m 10s \/ 25.9 MB"}, {"starting_time": 1542735177869, "ending_time": 1542735238846, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (E. coli K-12 MG1655 > SRR522163)", "times": [{"starting_time": 1542735238947, "ending_time": 1542735243846, "color":c1(3)}, {"starting_time": 1542735243846, "ending_time": 1542735298643, "color":c2(3), "label": "1m 5s \/ 25.9 MB"}, {"starting_time": 1542735298643, "ending_time": 1542735303849, "color":c1(3)}]},
+{"label": "ACE (E. coli K-12 MG1655 > SRR519926)", "times": [{"starting_time": 1542735238992, "ending_time": 1542735243848, "color":c1(4)}, {"starting_time": 1542735243848, "ending_time": 1542737032356, "color":c2(4), "label": "29m 58s \/ 6.1 GB"}, {"starting_time": 1542737032356, "ending_time": 1542737037400, "color":c1(4)}]},
+{"label": "ConcatSRAFiles (M. tuberculosis H37Rv > SRR1200797)", "times": [{"starting_time": 1542735303987, "ending_time": 1542735308849, "color":c1(3)}, {"starting_time": 1542735308849, "ending_time": 1542735315021, "color":c2(3), "label": "19.9s \/ 25.9 MB"}, {"starting_time": 1542735315021, "ending_time": 1542735323850, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044)", "times": [{"starting_time": 1542735323924, "ending_time": 1542735328850, "color":c1(3)}, {"starting_time": 1542735328850, "ending_time": 1542735339447, "color":c2(3), "label": "20s \/ 25.9 MB"}, {"starting_time": 1542735339447, "ending_time": 1542735343886, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093)", "times": [{"starting_time": 1542735343977, "ending_time": 1542735348851, "color":c1(3)}, {"starting_time": 1542735348851, "ending_time": 1542735360608, "color":c2(3), "label": "24.9s \/ 25.9 MB"}, {"starting_time": 1542735360608, "ending_time": 1542735368853, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (L. monocytogenes FSL R2-561 > SRR1198952)", "times": [{"starting_time": 1542735368914, "ending_time": 1542735373853, "color":c1(3)}, {"starting_time": 1542735373853, "ending_time": 1542735386326, "color":c2(3), "label": "24.9s \/ 25.9 MB"}, {"starting_time": 1542735386326, "ending_time": 1542735393854, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (P. syringae pv. syringae B728a > SRR1119292)", "times": [{"starting_time": 1542735393913, "ending_time": 1542735398855, "color":c1(3)}, {"starting_time": 1542735398855, "ending_time": 1542735414608, "color":c2(3), "label": "24.9s \/ 25.9 MB"}, {"starting_time": 1542735414608, "ending_time": 1542735418855, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (B. dentium Bd1 > SRR1151311)", "times": [{"starting_time": 1542735418904, "ending_time": 1542735423856, "color":c1(3)}, {"starting_time": 1542735423856, "ending_time": 1542735446535, "color":c2(3), "label": "35s \/ 25.9 MB"}, {"starting_time": 1542735446535, "ending_time": 1542735453856, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (O. tsutsugamushi str. Boryong > SRR1202083)", "times": [{"starting_time": 1542735453927, "ending_time": 1542735458857, "color":c1(3)}, {"starting_time": 1542735458857, "ending_time": 1542735527061, "color":c2(3), "label": "1m 23s \/ 25.9 MB"}, {"starting_time": 1542735527061, "ending_time": 1542735537341, "color":c1(3)}]},
+{"label": "ACE (E. coli K-12 MG1655 > SRR522163)", "times": [{"starting_time": 1542737037482, "ending_time": 1542737042400, "color":c1(4)}, {"starting_time": 1542737042400, "ending_time": 1542755691340, "color":c2(4), "label": "5h 12m 11s \/ 35.3 GB"}, {"starting_time": 1542755691340, "ending_time": 1542755768066, "color":c1(4)}]},
+{"label": "EvalECReads (E. coli K-12 MG1655 > SRR519926)", "times": [{"starting_time": 1542737037568, "ending_time": 1542737042464, "color":c1(5)}, {"starting_time": 1542737042464, "ending_time": 1542737045015, "color":c2(5), "label": "1m 25s \/ 301.3 MB"}, {"starting_time": 1542737045015, "ending_time": 1542737122404, "color":c1(5)}]},
+{"label": "EvalECBases (E. coli K-12 MG1655 > SRR519926)", "times": [{"starting_time": 1542737037717, "ending_time": 1542737042465, "color":c1(6)}, {"starting_time": 1542737042465, "ending_time": 1542737054391, "color":c2(6), "label": "1m 35s \/ 718 MB"}, {"starting_time": 1542737054391, "ending_time": 1542737132404, "color":c1(6)}]},
+{"label": "ACE (M. tuberculosis H37Rv > SRR1200797)", "times": [{"starting_time": 1542755768194, "ending_time": 1542755773066, "color":c1(4)}, {"starting_time": 1542755773066, "ending_time": 1542756493459, "color":c2(4), "label": "13m 25s \/ 1.6 GB"}, {"starting_time": 1542756493459, "ending_time": 1542756573314, "color":c1(4)}]},
+{"label": "EvalECReads (E. coli K-12 MG1655 > SRR522163)", "times": [{"starting_time": 1542755768273, "ending_time": 1542755773092, "color":c1(5)}, {"starting_time": 1542755773092, "ending_time": 1542755800904, "color":c2(5), "label": "1m 50s \/ 3.9 GB"}, {"starting_time": 1542755800904, "ending_time": 1542755878294, "color":c1(5)}]},
+{"label": "EvalECBases (E. coli K-12 MG1655 > SRR522163)", "times": [{"starting_time": 1542755768346, "ending_time": 1542755773094, "color":c1(6)}, {"starting_time": 1542755773094, "ending_time": 1542755910433, "color":c2(6), "label": "3m 40s \/ 825.7 MB"}, {"starting_time": 1542755910433, "ending_time": 1542755988296, "color":c1(6)}]},
+{"label": "ACE (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044)", "times": [{"starting_time": 1542756573396, "ending_time": 1542756578314, "color":c1(4)}, {"starting_time": 1542756578314, "ending_time": 1542757852147, "color":c2(4), "label": "21m 25s \/ 2.7 GB"}, {"starting_time": 1542757852147, "ending_time": 1542757858364, "color":c1(4)}]},
+{"label": "EvalECReads (M. tuberculosis H37Rv > SRR1200797)", "times": [{"starting_time": 1542756573496, "ending_time": 1542756578316, "color":c1(5)}, {"starting_time": 1542756578316, "ending_time": 1542756582257, "color":c2(5), "label": "14.8s \/ 295.8 MB"}, {"starting_time": 1542756582257, "ending_time": 1542756588315, "color":c1(5)}]},
+{"label": "EvalECBases (M. tuberculosis H37Rv > SRR1200797)", "times": [{"starting_time": 1542756573562, "ending_time": 1542756578317, "color":c1(6)}, {"starting_time": 1542756578317, "ending_time": 1542756601768, "color":c2(6), "label": "34.8s \/ 820.5 MB"}, {"starting_time": 1542756601768, "ending_time": 1542756608317, "color":c1(6)}]},
+{"label": "ACE (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093)", "times": [{"starting_time": 1542757858506, "ending_time": 1542757863363, "color":c1(4)}, {"starting_time": 1542757863363, "ending_time": 1542759311259, "color":c2(4), "label": "30m 33s \/ 3.3 GB"}, {"starting_time": 1542759311259, "ending_time": 1542759691799, "color":c1(4)}]},
+{"label": "EvalECReads (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044)", "times": [{"starting_time": 1542757858639, "ending_time": 1542757863366, "color":c1(5)}, {"starting_time": 1542757863366, "ending_time": 1542757868136, "color":c2(5), "label": "6m 43s \/ 309.4 MB"}, {"starting_time": 1542757868136, "ending_time": 1542758261749, "color":c1(5)}]},
+{"label": "EvalECBases (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1203044)", "times": [{"starting_time": 1542757858772, "ending_time": 1542757863368, "color":c1(6)}, {"starting_time": 1542757863368, "ending_time": 1542757887982, "color":c2(6), "label": "6m 48s \/ 836 MB"}, {"starting_time": 1542757887982, "ending_time": 1542758266749, "color":c1(6)}]},
+{"label": "ACE (L. monocytogenes FSL R2-561 > SRR1198952)", "times": [{"starting_time": 1542759691900, "ending_time": 1542759696798, "color":c1(4)}, {"starting_time": 1542759696798, "ending_time": 1542761008443, "color":c2(4), "label": "23m 5s \/ 2.8 GB"}, {"starting_time": 1542761008443, "ending_time": 1542761076845, "color":c1(4)}]},
+{"label": "EvalECReads (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093)", "times": [{"starting_time": 1542759691977, "ending_time": 1542759696800, "color":c1(5)}, {"starting_time": 1542759696800, "ending_time": 1542759701927, "color":c2(5), "label": "1m 15s \/ 309.4 MB"}, {"starting_time": 1542759701927, "ending_time": 1542759766801, "color":c1(5)}]},
+{"label": "EvalECBases (S. enterica subsp. enterica serovar Heidelberg str. SL476 > SRR1206093)", "times": [{"starting_time": 1542759692036, "ending_time": 1542759696802, "color":c1(6)}, {"starting_time": 1542759696802, "ending_time": 1542759721098, "color":c2(6), "label": "1m 35s \/ 836 MB"}, {"starting_time": 1542759721098, "ending_time": 1542759786800, "color":c1(6)}]},
+{"label": "ACE (P. syringae pv. syringae B728a > SRR1119292)", "times": [{"starting_time": 1542761076990, "ending_time": 1542761081845, "color":c1(4)}, {"starting_time": 1542761081845, "ending_time": 1542763033000, "color":c2(4), "label": "34m 30s \/ 3.6 GB"}, {"starting_time": 1542763033000, "ending_time": 1542763146928, "color":c1(4)}]},
+{"label": "EvalECReads (L. monocytogenes FSL R2-561 > SRR1198952)", "times": [{"starting_time": 1542761077136, "ending_time": 1542761081847, "color":c1(5)}, {"starting_time": 1542761081847, "ending_time": 1542761087154, "color":c2(5), "label": "2m \/ 261.5 MB"}, {"starting_time": 1542761087154, "ending_time": 1542761196864, "color":c1(5)}]},
+{"label": "EvalECBases (L. monocytogenes FSL R2-561 > SRR1198952)", "times": [{"starting_time": 1542761077335, "ending_time": 1542761081848, "color":c1(6)}, {"starting_time": 1542761081848, "ending_time": 1542761112721, "color":c2(6), "label": "2m 25s \/ 791.6 MB"}, {"starting_time": 1542761112721, "ending_time": 1542761221865, "color":c1(6)}]},
+{"label": "ACE (B. dentium Bd1 > SRR1151311)", "times": [{"starting_time": 1542763147091, "ending_time": 1542763151928, "color":c1(4)}, {"starting_time": 1542763151928, "ending_time": 1542765629712, "color":c2(4), "label": "43m 5s \/ 2.6 GB"}, {"starting_time": 1542765629712, "ending_time": 1542765732016, "color":c1(4)}]},
+{"label": "EvalECReads (P. syringae pv. syringae B728a > SRR1119292)", "times": [{"starting_time": 1542763147244, "ending_time": 1542763151930, "color":c1(5)}, {"starting_time": 1542763151930, "ending_time": 1542763158758, "color":c2(5), "label": "1m 55s \/ 1.9 GB"}, {"starting_time": 1542763158758, "ending_time": 1542763261931, "color":c1(5)}]},
+{"label": "EvalECBases (P. syringae pv. syringae B728a > SRR1119292)", "times": [{"starting_time": 1542763147376, "ending_time": 1542763151931, "color":c1(6)}, {"starting_time": 1542763151931, "ending_time": 1542763190096, "color":c2(6), "label": "2m 20s \/ 857.1 MB"}, {"starting_time": 1542763190096, "ending_time": 1542763286930, "color":c1(6)}]},
+{"label": "ACE (O. tsutsugamushi str. Boryong > SRR1202083)", "times": [{"starting_time": 1542765732177, "ending_time": 1542765737015, "color":c1(4)}, {"starting_time": 1542765737015, "ending_time": 1542767985956, "color":c2(4), "label": "43m 54s \/ 15.5 GB"}, {"starting_time": 1542767985956, "ending_time": 1542768366075, "color":c1(4)}]},
+{"label": "EvalECReads (B. dentium Bd1 > SRR1151311)", "times": [{"starting_time": 1542765732296, "ending_time": 1542765737017, "color":c1(5)}, {"starting_time": 1542765737017, "ending_time": 1542765746142, "color":c2(5), "label": "6m 49s \/ 1.7 GB"}, {"starting_time": 1542765746142, "ending_time": 1542766141004, "color":c1(5)}]},
+{"label": "EvalECBases (B. dentium Bd1 > SRR1151311)", "times": [{"starting_time": 1542765732411, "ending_time": 1542765737018, "color":c1(6)}, {"starting_time": 1542765737018, "ending_time": 1542765783889, "color":c2(6), "label": "7m 9s \/ 786.2 MB"}, {"starting_time": 1542765783889, "ending_time": 1542766161005, "color":c1(6)}]}
+]
+
+
+function getTickFormat() {
+  var MIN = 1000 * 60
+  var HOUR = MIN * 60
+  var DAY = HOUR * 24
+  var delta = (endingMillis - beginningMillis)
+
+  if( delta < 2 * MIN ) {
+    return {
+      format: d3.time.format("%S"),
+      tickTime: d3.time.seconds,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * HOUR ) {
+    return {
+      format: d3.time.format("%M"),
+      tickTime: d3.time.minutes,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * DAY ) {
+    return {
+      format: d3.time.format("%H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 1,
+      tickSize: 6
+    }
+  }
+
+  if( delta <= 7 * DAY ) {
+    return {
+      format: d3.time.format("%b %e %H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 6,
+      tickSize: 6
+    }
+  }
+
+  return {
+    format: d3.time.format("%b %e"),
+    tickTime: d3.time.days,
+    tickInterval: 1,
+    tickSize: 6
+  }
+}
+
+function getLabelMargin(scale) {
+    $('<span class="labelSpan" style="display: none"></span>').appendTo('body');
+
+    var labelMargin = 0
+    $.each(data, function (key, value) {
+      labelMargin = Math.max(labelMargin, $('.labelSpan').html(value.label).width());
+    });
+
+    $('.labelSpan').remove();
+
+    return (labelMargin * scale);
+}
+
+function render() {
+  handler=null;
+  $("#timeline").empty()
+  $('#label_elapsed').text(elapsed)
+  $('#label_launch').text( d3.time.format('%d %b %Y %H:%M')(new Date(beginningMillis)) )
+
+  var width = $(window).width();
+  var chart = d3.timeline()
+    .stack() // toggles graph stacking
+    .margin({left:getLabelMargin(0.85), right:100, top:0, bottom:0})
+    .tickFormat( getTickFormat() )
+    .rowSeperators('#f5f5f5')
+    .showTimeAxisTick()
+    ;
+  var svg = d3.select("#timeline").append("svg").attr("width", width).datum(data).call(chart);
+}
+
+function hrz() {
+if( handler != null ) clearTimeout(handler)
+  handler = setTimeout(render, 150);
+}
+
+$(document).ready(render)
+$(window).resize(hrz); // resize the applet on window resize
+</script>
+</head>
+
+<body>
+<div>
+  <h3>Processes execution timeline</h3>
+  <p>
+    Launch time: <span id='label_launch'> </span><br>
+    Elapsed time: <span id='label_elapsed'> </span>
+  </p>
+  <div id="timeline"></div>
+</div>
+
+<div id='footer'>
+  Created with Nextflow -- <a href='http://www.nextflow.io' target='_blank'>http://nextflow.io</a>
+</div>
+
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Clink href='" + prot + "fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css' %3E%3C/link%3E"));
+</script>
+</body>
+</html>
