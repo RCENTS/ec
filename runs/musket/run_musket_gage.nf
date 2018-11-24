@@ -13,6 +13,9 @@ orgIds = Channel.from(orgTable.keySet()).map{
     org -> [org, orgTable[org], genomeTable[org] ]
 }
 
+
+sortThreads = params.nthreads - 3 
+
 process GenomeDownload {
     tag{ 'H. sapiens (chr14)' }
 
@@ -69,7 +72,7 @@ process BWABefore{
     """
     cat ${params.gagedatadir}/${params.gagedata} | paste - - - - | sort -k1,1 -t " " -S 64G -T ./ --parallel=${sortThreads} | tr "\t" "\n" > beforeEC.fastq
     bwa aln -t ${params.nthreads} -n ${params.hammingdist} -o 0 ${params.genomedir}/bwa/${orgId}.fa ${params.gagedatadir}/${params.gagedata}  > beforeEC.sai
-    bwa samse ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai  ${beforeEC} | samtools view -bSh -F 0x900 - > beforeEC.bam
+    bwa samse ${params.genomedir}/bwa/${orgId}.fa  beforeEC.sai  beforeEC.fastq | samtools view -bSh -F 0x900 - > beforeEC.bam
     samtools view -H beforeEC.bam > beforeEC.sam
     samtools view beforeEC.bam | sort -k1,1 -t ' ' -T ./ -S64G  >>  beforeEC.sam
     """ 
@@ -118,7 +121,7 @@ process EvalEC{
 
     input:
     set orgId, orgDesc, gnmFile, idxFiles, 
-        file(beforeEC),  file(beforeSAM), file(afterEC) from mergedChan1
+        file(beforeEC),  file(beforeSAM), file(afterEC) from mergedSAMChan
 
     output:
     file("result1") into result_channel1
@@ -128,7 +131,7 @@ process EvalEC{
     quake-analy.py -f $beforeEC -c $afterEC -o correction.tef -t cortrim.lst
     cat ambig.lst unmapped.lst | sort > ua.lst
     comp2pcalign correction.tef align.tef ua.lst ${params.hammingdist} result.txt alntrim.lst 
-    echo "DATASET : " $exptId  " ORGANISM : " $orgDesc  > result1
+    echo "DATASET :  GAGE  ORGANISM : H. Sapiens Chr 14"  > result1
     cat result.txt >> result1
     """
 

@@ -1,0 +1,25 @@
+DATASET :  GAGE  ORGANISM : H. Sapiens Chr 14
+Notations: 
+---------------------------
+FP: exist in tar but not ref
+FN: exist in ref but not tar
+TP: exist in both tar and ref
+---------------------------
+Total Err (TP, FN):	-1917638653
+
+TP	0
+
+FP	31357213
+
+FN	-1917638653
+
+EBA	0
+
+Sensitivity = -0
+
+Gain = 0.016352
+
+Total Errs Corrected in tar reads that cannot be uniquely mappedby pre-correction alignment (-m = 4) : 0
+
+Approximate ambiguous correction false rate: 0 out of 0 ( -nan % ) 
+

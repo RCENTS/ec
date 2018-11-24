@@ -1,0 +1,4 @@
+task_id	tag	name	cpus	status	exit	duration	realtime	%cpu	rss
+4	Musket Run	Musket (Musket Run)	12	COMPLETED	0	31m 29s	30m 31s	1347.0%	12.2 GB
+3	BWA Before Musket	BWABefore (BWA Before Musket)	12	COMPLETED	0	31m 39s	30m 39s	1049.6%	19.1 GB
+5	Musket Eval Read	EvalEC (Musket Eval Read)	12	COMPLETED	0	3h 25m 45s	3h 24m 43s	559.8%	42.5 GB
