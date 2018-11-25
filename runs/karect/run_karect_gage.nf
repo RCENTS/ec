@@ -70,11 +70,11 @@ process Karect{
     set orgId, orgDesc, gnmFile from beforeChan2
 
     output:
-    set orgId, orgDesc, gnmFile, file("afterEC.fastq") into ecChan
+    set orgId, orgDesc, gnmFile, file("karect_*.fastq") into ecChan
 
 
     """
-    karect -correct -threads=${params.nthreads} ${paramsKarect[orgId]} -inputfile=${beforeEC} 
+    karect -correct -threads=${params.nthreads} ${paramsKarect[orgId]} -inputfile=${params.gagedatadir}/${dataTable[orgId]} 
     """ 
 }
 
@@ -85,7 +85,7 @@ mergedSAMChan = beforeSAMChan
         orgId1, 
             orgDesc1, gnmFile1, beforeSAM,
             orgDesc2, gnmFile2, afterEC ->
-        [ orgId1, orgDesc1, gnmFile1, idxFiles1, beforeSAM, afterEC ]
+        [ orgId1, orgDesc1, gnmFile1, beforeSAM, afterEC ]
     }
 
 
@@ -95,7 +95,7 @@ process EvalEC{
 
     input:
     set orgId, orgDesc, gnmFile, 
-        file(beforeEC),  file(beforeSAM), file(afterEC) from mergedSAMChan
+          file(beforeSAM), file(afterEC) from mergedSAMChan
 
     output:
     file("result1") into result_channel1

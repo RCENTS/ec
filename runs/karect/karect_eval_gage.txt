@@ -1,0 +1,42 @@
+DATASET : GAGE   ORGANISM :  H. sapiens chr14
+Whole Read Statistics:
+TN) num_correct_stayed_correct      = 8480718 [of 14152787] (59.922600 %)
+TP) num_wrong_correctly_fixed       = 4079651 [of 14152787] (28.825778 %)
+FP) num_correct_wrongly_fixed       = 6053 [of 14152787] (0.042769 %)
+FN) num_wrong_stayed_wrong          = 1586365 [of 14152787] (11.208852 %)
+*) Recall (Sensitivity)             = 72.002109 %
+*) Precision                        = 99.851849 %
+*) FScore                           = 83.670388 %
+*) Gain                             = 71.895279 %
+-------------------------------------------------------------------------------
+Bases Statistics:
+TN) num_correct_stayed_correct      = 1412792578 [of 1429431487] (98.835977 %)
+TP) num_wrong_correctly_fixed       = 12574990 [of 1429431487] (0.879720 %)
+FP) num_correct_wrongly_fixed       = 52528 [of 1429431487] (0.003675 %)
+FN) num_wrong_stayed_wrong          = 4011391 [of 1429431487] (0.280628 %)
+*) Recall (Sensitivity)             = 75.815152 %
+*) Precision                        = 99.584020 %
+*) FScore                           = 86.089091 %
+*) Gain                             = 75.498459 %
+-------------------------------------------------------------------------------
+DATASET : GAGE   ORGANISM :  S. aureus GAGE
+Whole Read Statistics:
+TN) num_correct_stayed_correct      = 382088 [of 1012315] (37.743983 %)
+TP) num_wrong_correctly_fixed       = 622844 [of 1012315] (61.526699 %)
+FP) num_correct_wrongly_fixed       = 93 [of 1012315] (0.009187 %)
+FN) num_wrong_stayed_wrong          = 7290 [of 1012315] (0.720132 %)
+*) Recall (Sensitivity)             = 98.843103 %
+*) Precision                        = 99.985071 %
+*) FScore                           = 99.410808 %
+*) Gain                             = 98.828344 %
+-------------------------------------------------------------------------------
+Bases Statistics:
+TN) num_correct_stayed_correct      = 99625597 [of 102243815] (97.439241 %)
+TP) num_wrong_correctly_fixed       = 2602242 [of 102243815] (2.545134 %)
+FP) num_correct_wrongly_fixed       = 2015 [of 102243815] (0.001971 %)
+FN) num_wrong_stayed_wrong          = 13961 [of 102243815] (0.013655 %)
+*) Recall (Sensitivity)             = 99.466364 %
+*) Precision                        = 99.922627 %
+*) FScore                           = 99.693973 %
+*) Gain                             = 99.389344 %
+-------------------------------------------------------------------------------

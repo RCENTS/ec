@@ -1,0 +1,7 @@
+task_id	tag	name	cpus	status	exit	duration	realtime	%cpu	rss
+4	S. aureus GAGE	KarectAlignBefore (S. aureus GAGE)	12	COMPLETED	0	1m 29s	1m 18s	1177.8%	216.4 MB
+3	S. aureus GAGE	Karect (S. aureus GAGE)	12	COMPLETED	0	3m 19s	3m 7s	1249.4%	2.6 GB
+7	S. aureus GAGE	EvalEC (S. aureus GAGE)	12	COMPLETED	0	14.8s	6.7s	192.8%	9.6 MB
+6	H. sapiens chr14	Karect (H. sapiens chr14)	12	COMPLETED	0	35m 49s	35m 39s	1173.9%	81.3 GB
+5	H. sapiens chr14	KarectAlignBefore (H. sapiens chr14)	12	COMPLETED	0	1d 8h 31m 12s	1d 8h 30m 59s	1457.7%	10.1 GB
+8	H. sapiens chr14	EvalEC (H. sapiens chr14)	12	COMPLETED	0	3m 45s	2m 24s	135.0%	211 MB
