@@ -8,7 +8,8 @@ orgTable = [
     'OtsutsugamushiBor' : 'O. tsutsugamushi str. Boryong',
     'ScerevisiaeS288C' : 'S. cerevisiae S288C',
     'CelegansWS222' : 'C. elegans WS222',
-    'DmelanogasterR618' : 'D. melanogaster R6.18'
+    'DmelanogasterR618' : 'D. melanogaster R6.18',
+    'HSapiensGrCh38' : 'H. Sapiens GrCh38'
 ]
 
 genomeTable = [
@@ -31,7 +32,9 @@ genomeTable = [
     'CelegansWS222' :
       'ftp://ftp.wormbase.org/pub/wormbase/species/c_elegans/sequence/genomic/c_elegans.WS222.genomic.fa.gz',
     'DmelanogasterR618' :
-      'ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r6.24_FB2018_05/fasta/dmel-all-chromosome-r6.24.fasta.gz'
+      'ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r6.24_FB2018_05/fasta/dmel-all-chromosome-r6.24.fasta.gz',
+    'HSapiensGrCh38' : // https://www.ncbi.nlm.nih.gov/genome/51?genome_assembly_id=368248
+      'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.38_GRCh38.p12/GCF_000001405.38_GRCh38.p12_genomic.fna.gz'
 ]
 
 genomeNumTable = [
@@ -44,7 +47,8 @@ genomeNumTable = [
     'OtsutsugamushiBor' : '2127051',
     'ScerevisiaeS288C' : '12071326',
     'CelegansWS222' : '100286070',
-    'DmelanogasterR618' : '120381546'
+    'DmelanogasterR618' : '120381546',
+    'HSapiensGrCh38' : '3209286105'
 ]
 
 exptTable = [
@@ -71,6 +75,11 @@ exptTable = [
     'DmelanogasterR618' : [
         'SRR823377',
         'SRR988075'
+    ],
+    'HSapiensGrCh38' : [
+        'ERR091787,ERR091788,ERR091789,ERR091790', // ERX069715 
+        'ERR091567,ERR091568,ERR091569,ERR091570', // ERX069504 
+        'ERR091571,ERR091572,ERR091573,ERR091574'  // ERX069505 
     ]
 ]
 
