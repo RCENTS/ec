@@ -58,16 +58,6 @@ exptTable = [
     'SentericaSL476' : [
         'ERR230402'
     ],
-    'LmonocytogenesFSLR2561' : [
-        'SRR1198952'
-    ],
-    'ScerevisiaeS288C' : [
-        'ERR422544'
-    ],
-    'CelegansWS222' : [
-        'SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852', // SRX218989 
-        'SRR543736'
-    ],
     'DmelanogasterR618' : [
         'SRR823377',
         'SRR988075'
@@ -121,57 +111,23 @@ process SRAFetch {
     set orgId, orgDesc, gnmFile, exptId, sraId from exptChan
 
     output:
-    set orgId, orgDesc, gnmFile, exptId, sraId, file("${sraId}*.fastq.gz") into pseqChan
+    set orgId, orgDesc, gnmFile, exptId, sraId, file("${sraId}.fastq") into pseqChan
 
     """
     prefetch ${sraId}
     vdb-validate '${sraId}'
     fastq-dump -I --split-files --gzip '${sraId}'
+    gunzip -c ${sraId}_*.fastq.gz  > ${sraId}.fastq
+    rm -f ${sraId}_1.fastq.gz
+    rm -f ${sraId}_2.fastq.gz
     """
 }
 
-process ConcatPariedEndFiles{
-    tag { orgDesc.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
 
-    input:
-    set orgId, orgDesc, gnmFile, exptId, sraId, file(pairedFiles) from pseqChan
-
-    output:
-    set orgId, orgDesc, gnmFile, exptId, sraId, file("${sraId}.fastq.gz") into fseqChan
- 
-    """
-    gunzip -c ${pairedFiles}  | gzip -1 > ${sraId}.fastq.gz
-    """
-}
-
-oexptChan = fseqChan.map{ 
+cseqChan = pseqChan.map{ 
     orgId, orgDesc, gnmFile, exptId, sraId, sraFile -> 
         [orgDesc.toString() + "-" + exptId.toString(),
          orgId, orgDesc, gnmFile, exptId, sraId, sraFile] 
-}
-.groupTuple()
-.map{
-    orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, sraFiles -> 
-        [orgExptId, orgId[0], orgDesc[0], gnmFile[0],
-         exptId[0], sraIds, sraFiles]
-}
-
-//oexptChan.subscribe{
-//     println it
-//}
-
-process ConcatSRAFiles{
-    tag { orgDesc.toString() + " > " + exptId.toString() }
-    
-    input:
-    set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file(sraFiles) from oexptChan
-
-    output:
-    set orgExptId, orgId, orgDesc, gnmFile, exptId, sraIds, file("beforeEC.fastq") into cseqChan
-
-    """
-    gunzip -c ${sraFiles} > beforeEC.fastq
-    """
 }
 
 process ACE{
@@ -229,13 +185,13 @@ process EvalECBases {
 
 result_channel1.map{
     it.text
-}.collectFile(name: 'ace_eval_reads_hiseq.txt',
+}.collectFile(name: 'ace_eval_reads_hiseq_I.txt',
               storeDir: "${workflow.projectDir}",
               newLine: false)
 
 result_channel2.map{
     it.text
-}.collectFile(name: 'ace_eval_bases_hiseq.txt',
+}.collectFile(name: 'ace_eval_bases_hiseq_I.txt',
               storeDir: "${workflow.projectDir}",
               newLine: false)
 

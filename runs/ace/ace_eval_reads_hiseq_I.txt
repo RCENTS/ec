@@ -1,0 +1,324 @@
+DATASET :  ERR400373  ORGANISM :  M. tuberculosis H37Rv
+
+Processing genome file ... completed (0 seconds)
+Genome length = 4411532
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (1 seconds)
+Searching for original reads ... completed (2 seconds)
+Searching for corrected reads ... completed (1 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              151
+                          Number of reads =          2092946
+                         Total base pairs =        316034846
+                                 Coverage =          71.6383
+
+              Base pairs in correct reads =        253302953
+            Base pairs in erroneous reads =         62731893
+   Percent of base pairs in correct reads =         80.1503%
+ Percent of base pairs in erroneous reads =         19.8497%
+            Estimated mean per-base error =        0.146427%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =        316034846
+                                 Coverage =          71.6383
+
+              Base pairs in correct reads =        293210290
+            Base pairs in erroneous reads =         22824556
+   Percent of base pairs in correct reads =         92.7778%
+   Percent of base pairs in correct reads =         7.22216%
+            Estimated mean per-base error =       0.0496317%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =         22824556
+ Percent of base pairs in erroneous reads =         7.22216%
+
+ ========================== Accuracy =========================== 
+                        TP =         39926514
+                        FP =            19177
+                        FN =         22805379
+                        TN =        253283776
+                      Gain =         63.6157%
+               Sensitivity =         63.6463%
+               Specificity =         99.9924%
+
+ ======================== Unique Reads ========================= 
+                        TP =           165786
+                        FP =              125
+                        FN =          2882201
+                        TN =          1328356
+                      Gain =          5.4351%
+
+                Total time = 4 seconds
+-----END-----
+DATASET :  SRR1191655  ORGANISM :  E. coli K-12 MG1655
+
+Processing genome file ... completed (0 seconds)
+Genome length = 4641652
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (1 seconds)
+Searching for original reads ... completed (9 seconds)
+Searching for corrected reads ... completed (7 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              101
+                          Number of reads =         11726414
+                         Total base pairs =       1184367814
+                                 Coverage =          255.161
+
+              Base pairs in correct reads =        566514555
+            Base pairs in erroneous reads =        617853259
+   Percent of base pairs in correct reads =         47.8327%
+ Percent of base pairs in erroneous reads =         52.1673%
+            Estimated mean per-base error =        0.727501%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =       1184367814
+                                 Coverage =          255.161
+
+              Base pairs in correct reads =        651823397
+            Base pairs in erroneous reads =        532544417
+   Percent of base pairs in correct reads =         55.0356%
+   Percent of base pairs in correct reads =         44.9644%
+            Estimated mean per-base error =        0.589533%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =        532544417
+ Percent of base pairs in erroneous reads =         44.9644%
+
+ ========================== Accuracy =========================== 
+                        TP =         85496197
+                        FP =           187355
+                        FN =        532357062
+                        TN =        566327200
+                      Gain =         13.8073%
+               Sensitivity =         13.8376%
+               Specificity =         99.9669%
+
+ ======================== Unique Reads ========================= 
+                        TP =           105737
+                        FP =             1862
+                        FN =          2161659
+                        TN =          2319585
+                      Gain =         4.58125%
+
+                Total time = 17 seconds
+-----END-----
+DATASET :  SRR490124  ORGANISM :  E. coli K-12 MG1655
+
+Processing genome file ... completed (0 seconds)
+Genome length = 4641652
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (0 seconds)
+Searching for original reads ... completed (16 seconds)
+Searching for corrected reads ... completed (11 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              100
+                          Number of reads =         21553358
+                         Total base pairs =       2155335800
+                                 Coverage =          464.347
+
+              Base pairs in correct reads =       1090031500
+            Base pairs in erroneous reads =       1065304300
+   Percent of base pairs in correct reads =         50.5736%
+ Percent of base pairs in erroneous reads =         49.4264%
+            Estimated mean per-base error =        0.679421%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =       2155335800
+                                 Coverage =          464.347
+
+              Base pairs in correct reads =       2073793000
+            Base pairs in erroneous reads =         81542800
+   Percent of base pairs in correct reads =         96.2167%
+   Percent of base pairs in correct reads =          3.7833%
+            Estimated mean per-base error =       0.0385598%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =         81542800
+ Percent of base pairs in erroneous reads =          3.7833%
+
+ ========================== Accuracy =========================== 
+                        TP =        983763400
+                        FP =             1900
+                        FN =         81540900
+                        TN =       1090029600
+                      Gain =         92.3456%
+               Sensitivity =         92.3458%
+               Specificity =         99.9998%
+
+ ======================== Unique Reads ========================= 
+                        TP =           797372
+                        FP =               13
+                        FN =           135136
+                        TN =          3656189
+                      Gain =         85.5069%
+
+                Total time = 27 seconds
+-----END-----
+DATASET :  SRR823377  ORGANISM :  D. melanogaster R6.18
+
+Processing genome file ... completed (1 seconds)
+Genome length = 143726002
+Number of N's in the genome file = 1152978
+Building suffix array and LCP of genome ... completed (27 seconds)
+Searching for original reads ... completed (55 seconds)
+Searching for corrected reads ... completed (40 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              100
+                          Number of reads =         63014762
+                         Total base pairs =       6301476200
+                                 Coverage =          43.8437
+
+              Base pairs in correct reads =       3351417300
+            Base pairs in erroneous reads =       2950058900
+   Percent of base pairs in correct reads =         53.1846%
+ Percent of base pairs in erroneous reads =         46.8154%
+            Estimated mean per-base error =        0.629411%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =       6301476200
+                                 Coverage =          43.8437
+
+              Base pairs in correct reads =       4070318700
+            Base pairs in erroneous reads =       2231157500
+   Percent of base pairs in correct reads =         64.5931%
+   Percent of base pairs in correct reads =         35.4069%
+            Estimated mean per-base error =        0.436109%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =       2231157500
+ Percent of base pairs in erroneous reads =         35.4069%
+
+ ========================== Accuracy =========================== 
+                        TP =        739721800
+                        FP =         20820400
+                        FN =       2210337100
+                        TN =       3330596900
+                      Gain =         24.3691%
+               Sensitivity =         25.0748%
+               Specificity =         99.3788%
+
+ ======================== Unique Reads ========================= 
+                        TP =          4659942
+                        FP =           203975
+                        FN =        101257388
+                        TN =         24357770
+                      Gain =         4.20702%
+
+                Total time = 124 seconds
+-----END-----
+DATASET :  SRR988075  ORGANISM :  D. melanogaster R6.18
+
+Processing genome file ... completed (1 seconds)
+Genome length = 143726002
+Number of N's in the genome file = 1152978
+Building suffix array and LCP of genome ... completed (27 seconds)
+Searching for original reads ... completed (66 seconds)
+Searching for corrected reads ... completed (47 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              101
+                          Number of reads =         75938276
+                         Total base pairs =       7669765876
+                                 Coverage =          53.3638
+
+              Base pairs in correct reads =       3703657779
+            Base pairs in erroneous reads =       3966108097
+   Percent of base pairs in correct reads =         48.2891%
+ Percent of base pairs in erroneous reads =         51.7109%
+            Estimated mean per-base error =        0.718166%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =       7669765876
+                                 Coverage =          53.3638
+
+              Base pairs in correct reads =       5066744790
+            Base pairs in erroneous reads =       2603021086
+   Percent of base pairs in correct reads =         66.0613%
+   Percent of base pairs in correct reads =         33.9387%
+            Estimated mean per-base error =        0.409641%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =       2603021086
+ Percent of base pairs in erroneous reads =         33.9387%
+
+ ========================== Accuracy =========================== 
+                        TP =       1386417506
+                        FP =         23330495
+                        FN =       2579690591
+                        TN =       3680327284
+                      Gain =         34.3684%
+               Sensitivity =         34.9566%
+               Specificity =         99.3701%
+
+ ======================== Unique Reads ========================= 
+                        TP =          8177833
+                        FP =           244949
+                        FN =         96223878
+                        TN =         25881580
+                      Gain =         7.59842%
+
+                Total time = 142 seconds
+-----END-----
+DATASET :  ERR230402  ORGANISM :  S. enterica subsp. enterica serovar Heidelberg str. SL476
+
+Processing genome file ... completed (0 seconds)
+Genome length = 4983515
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (0 seconds)
+Searching for original reads ... completed (3 seconds)
+Searching for corrected reads ... completed (2 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              100
+                          Number of reads =          3257972
+                         Total base pairs =        325797200
+                                 Coverage =           65.375
+
+              Base pairs in correct reads =        266940200
+            Base pairs in erroneous reads =         58857000
+   Percent of base pairs in correct reads =         81.9345%
+ Percent of base pairs in erroneous reads =         18.0655%
+            Estimated mean per-base error =        0.199052%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =        325797200
+                                 Coverage =           65.375
+
+              Base pairs in correct reads =        293378500
+            Base pairs in erroneous reads =         32418700
+   Percent of base pairs in correct reads =         90.0494%
+   Percent of base pairs in correct reads =         9.95058%
+            Estimated mean per-base error =        0.104757%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =         32418700
+ Percent of base pairs in erroneous reads =         9.95058%
+
+ ========================== Accuracy =========================== 
+                        TP =         26452300
+                        FP =            14000
+                        FN =         32404700
+                        TN =        266926200
+                      Gain =         44.9196%
+               Sensitivity =         44.9433%
+               Specificity =         99.9948%
+
+ ======================== Unique Reads ========================= 
+                        TP =           133407
+                        FP =              141
+                        FN =          2887541
+                        TN =          1924562
+                      Gain =          4.4114%
+
+                Total time = 5 seconds
+-----END-----

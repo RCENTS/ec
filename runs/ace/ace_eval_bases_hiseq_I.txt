@@ -1,0 +1,360 @@
+DATASET :  ERR400373  ORGANISM :  M. tuberculosis H37Rv
+*******************************************************************
+*                       Genome File Results                       *
+*******************************************************************
+                           Length of the genome =        4411532
+               Number of N's in the genome file =              0
+       Number of chromosomes in the genome file =              1
+
+          Number of unique k-mers in the genome =        4324061
+      Number of k-mers appearing more than once =          46459
+  Number of k-mers appearing more than 10 times =           1533
+  Number of k-mers appearing more than 50 times =              4
+ Number of k-mers appearing more than 100 times =              0
+
+*******************************************************************
+*                  Original Reads File Results                    *
+*******************************************************************
+        Total k-mers found in the original file =        259129462
+    Total k-mers not found in the original file =         17139410
+              Total k-mers in the original file =        276268872
+    Percent of good k-mers in the original file =         93.7961%
+
+               Total k-mers in the genome found =          4260932
+   Percent of k-mers found in the original file =         98.5401%
+
+*******************************************************************
+*                  Corrected Reads File Results                   *
+*******************************************************************
+       Total k-mers found in the corrected file =        270734286
+   Total k-mers not found in the corrected file =          5534586
+             Total k-mers in the corrected file =        276268872
+   Percent of good k-mers in the corrected file =         97.9967%
+
+               Total k-mers in the genome found =          4256517
+  Percent of k-mers found in the corrected file =         98.4379%
+
+*******************************************************************
+*                          k-mer Results                          *
+*******************************************************************
+                      TP =         11808002
+                      FP =           203178
+                      FN =          5331408
+                      TN =        258926284
+                    Gain =         67.7084%
+             Sensitivity =         68.8939%
+             Specificity =         99.9216%
+
+*******************************************************************
+*                      Unique k-mer Results                       *
+*******************************************************************
+                      TP =              281
+                      FP =             4696
+                      FN =            62848
+                      TN =          4256236
+                    Gain =        -6.99362%
+
+    Total time to build the hash table =        2 seconds
+  Total time to find the k-mer results =       19 seconds
+
+-----END-----
+DATASET :  SRR1191655  ORGANISM :  E. coli K-12 MG1655
+*******************************************************************
+*                       Genome File Results                       *
+*******************************************************************
+                           Length of the genome =        4641652
+               Number of N's in the genome file =              0
+       Number of chromosomes in the genome file =              1
+
+          Number of unique k-mers in the genome =        4542190
+      Number of k-mers appearing more than once =          34430
+  Number of k-mers appearing more than 10 times =           1258
+  Number of k-mers appearing more than 50 times =             19
+ Number of k-mers appearing more than 100 times =              0
+
+*******************************************************************
+*                  Original Reads File Results                    *
+*******************************************************************
+        Total k-mers found in the original file =        687818277
+    Total k-mers not found in the original file =        273747671
+              Total k-mers in the original file =        961565948
+    Percent of good k-mers in the original file =         71.5311%
+
+               Total k-mers in the genome found =          3819236
+   Percent of k-mers found in the original file =         84.0836%
+
+*******************************************************************
+*                  Corrected Reads File Results                   *
+*******************************************************************
+       Total k-mers found in the corrected file =        713767515
+   Total k-mers not found in the corrected file =        247798433
+             Total k-mers in the corrected file =        961565948
+   Percent of good k-mers in the corrected file =         74.2297%
+
+               Total k-mers in the genome found =          3728556
+  Percent of k-mers found in the corrected file =         82.0872%
+
+*******************************************************************
+*                          k-mer Results                          *
+*******************************************************************
+                      TP =         26091884
+                      FP =           142646
+                      FN =        247655787
+                      TN =        687675631
+                    Gain =         9.47925%
+             Sensitivity =         9.53136%
+             Specificity =         99.9793%
+
+*******************************************************************
+*                      Unique k-mer Results                       *
+*******************************************************************
+                      TP =              106
+                      FP =            90786
+                      FN =           722848
+                      TN =          3728450
+                    Gain =         -12.543%
+
+    Total time to build the hash table =        2 seconds
+  Total time to find the k-mer results =       53 seconds
+
+-----END-----
+DATASET :  SRR823377  ORGANISM :  D. melanogaster R6.18
+*******************************************************************
+*                       Genome File Results                       *
+*******************************************************************
+                           Length of the genome =      143726002
+               Number of N's in the genome file =        1152978
+       Number of chromosomes in the genome file =           1870
+
+          Number of unique k-mers in the genome =      119197314
+      Number of k-mers appearing more than once =        4020089
+  Number of k-mers appearing more than 10 times =         527909
+  Number of k-mers appearing more than 50 times =          64746
+ Number of k-mers appearing more than 100 times =          21864
+
+*******************************************************************
+*                  Original Reads File Results                    *
+*******************************************************************
+        Total k-mers found in the original file =       4294095199
+    Total k-mers not found in the original file =        810100523
+              Total k-mers in the original file =       5104195722
+    Percent of good k-mers in the original file =         84.1287%
+
+               Total k-mers in the genome found =        109982722
+   Percent of k-mers found in the original file =         92.2695%
+
+*******************************************************************
+*                  Corrected Reads File Results                   *
+*******************************************************************
+       Total k-mers found in the corrected file =       4530358906
+   Total k-mers not found in the corrected file =        573836816
+             Total k-mers in the corrected file =       5104195722
+   Percent of good k-mers in the corrected file =         88.7575%
+
+               Total k-mers in the genome found =        107699525
+  Percent of k-mers found in the corrected file =          90.354%
+
+*******************************************************************
+*                          k-mer Results                          *
+*******************************************************************
+                      TP =        251930470
+                      FP =         15666763
+                      FN =        558170053
+                      TN =       4278428436
+                    Gain =         29.1647%
+             Sensitivity =         31.0987%
+             Specificity =         99.6352%
+
+*******************************************************************
+*                      Unique k-mer Results                       *
+*******************************************************************
+                      TP =            31924
+                      FP =          2315121
+                      FN =          9182668
+                      TN =        107667601
+                    Gain =        -24.7781%
+
+    Total time to build the hash table =       49 seconds
+  Total time to find the k-mer results =      281 seconds
+
+-----END-----
+DATASET :  SRR988075  ORGANISM :  D. melanogaster R6.18
+*******************************************************************
+*                       Genome File Results                       *
+*******************************************************************
+                           Length of the genome =      143726002
+               Number of N's in the genome file =        1152978
+       Number of chromosomes in the genome file =           1870
+
+          Number of unique k-mers in the genome =      119197314
+      Number of k-mers appearing more than once =        4020089
+  Number of k-mers appearing more than 10 times =         527909
+  Number of k-mers appearing more than 50 times =          64746
+ Number of k-mers appearing more than 100 times =          21864
+
+*******************************************************************
+*                  Original Reads File Results                    *
+*******************************************************************
+        Total k-mers found in the original file =       5256928317
+    Total k-mers not found in the original file =        970010315
+              Total k-mers in the original file =       6226938632
+    Percent of good k-mers in the original file =         84.4224%
+
+               Total k-mers in the genome found =        113874457
+   Percent of k-mers found in the original file =         95.5344%
+
+*******************************************************************
+*                  Corrected Reads File Results                   *
+*******************************************************************
+       Total k-mers found in the corrected file =       5615663374
+   Total k-mers not found in the corrected file =        611275258
+             Total k-mers in the corrected file =       6226938632
+   Percent of good k-mers in the corrected file =         90.1834%
+
+               Total k-mers in the genome found =        111574491
+  Percent of k-mers found in the corrected file =         93.6049%
+
+*******************************************************************
+*                          k-mer Results                          *
+*******************************************************************
+                      TP =        372502524
+                      FP =         13767467
+                      FN =        597507791
+                      TN =       5243160850
+                    Gain =         36.9826%
+             Sensitivity =         38.4019%
+             Specificity =         99.7381%
+
+*******************************************************************
+*                      Unique k-mer Results                       *
+*******************************************************************
+                      TP =            18225
+                      FP =          2318191
+                      FN =          5304632
+                      TN =        111556266
+                    Gain =        -43.2092%
+
+    Total time to build the hash table =       49 seconds
+  Total time to find the k-mer results =      343 seconds
+
+-----END-----
+DATASET :  SRR490124  ORGANISM :  E. coli K-12 MG1655
+*******************************************************************
+*                       Genome File Results                       *
+*******************************************************************
+                           Length of the genome =        4641652
+               Number of N's in the genome file =              0
+       Number of chromosomes in the genome file =              1
+
+          Number of unique k-mers in the genome =        4542190
+      Number of k-mers appearing more than once =          34430
+  Number of k-mers appearing more than 10 times =           1258
+  Number of k-mers appearing more than 50 times =             19
+ Number of k-mers appearing more than 100 times =              0
+
+*******************************************************************
+*                  Original Reads File Results                    *
+*******************************************************************
+        Total k-mers found in the original file =       1504287290
+    Total k-mers not found in the original file =        241534708
+              Total k-mers in the original file =       1745821998
+    Percent of good k-mers in the original file =          86.165%
+
+               Total k-mers in the genome found =          4540394
+   Percent of k-mers found in the original file =         99.9605%
+
+*******************************************************************
+*                  Corrected Reads File Results                   *
+*******************************************************************
+       Total k-mers found in the corrected file =       1722247284
+   Total k-mers not found in the corrected file =         23574714
+             Total k-mers in the corrected file =       1745821998
+   Percent of good k-mers in the corrected file =         98.6496%
+
+               Total k-mers in the genome found =          4540246
+  Percent of k-mers found in the corrected file =         99.9572%
+
+*******************************************************************
+*                          k-mer Results                          *
+*******************************************************************
+                      TP =        218154400
+                      FP =           194406
+                      FN =         23380308
+                      TN =       1504092884
+                    Gain =         90.2396%
+             Sensitivity =         90.3201%
+             Specificity =         99.9871%
+
+*******************************************************************
+*                      Unique k-mer Results                       *
+*******************************************************************
+                      TP =                0
+                      FP =              148
+                      FN =             1796
+                      TN =          4540246
+                    Gain =        -8.24053%
+
+    Total time to build the hash table =        2 seconds
+  Total time to find the k-mer results =       97 seconds
+
+-----END-----
+DATASET :  ERR230402  ORGANISM :  S. enterica subsp. enterica serovar Heidelberg str. SL476
+*******************************************************************
+*                       Genome File Results                       *
+*******************************************************************
+                           Length of the genome =        4983515
+               Number of N's in the genome file =              0
+       Number of chromosomes in the genome file =              3
+
+          Number of unique k-mers in the genome =        4912830
+      Number of k-mers appearing more than once =          29925
+  Number of k-mers appearing more than 10 times =             34
+  Number of k-mers appearing more than 50 times =              0
+ Number of k-mers appearing more than 100 times =              0
+
+*******************************************************************
+*                  Original Reads File Results                    *
+*******************************************************************
+        Total k-mers found in the original file =        245402986
+    Total k-mers not found in the original file =         18492746
+              Total k-mers in the original file =        263895732
+    Percent of good k-mers in the original file =         92.9924%
+
+               Total k-mers in the genome found =          4531626
+   Percent of k-mers found in the original file =         92.2406%
+
+*******************************************************************
+*                  Corrected Reads File Results                   *
+*******************************************************************
+       Total k-mers found in the corrected file =        251847669
+   Total k-mers not found in the corrected file =         12048063
+             Total k-mers in the corrected file =        263895732
+   Percent of good k-mers in the corrected file =         95.4345%
+
+               Total k-mers in the genome found =          4524607
+  Percent of k-mers found in the corrected file =         92.0978%
+
+*******************************************************************
+*                          k-mer Results                          *
+*******************************************************************
+                      TP =          6462894
+                      FP =            18211
+                      FN =         12029852
+                      TN =        245384775
+                    Gain =         34.8498%
+             Sensitivity =         34.9483%
+             Specificity =         99.9926%
+
+*******************************************************************
+*                      Unique k-mer Results                       *
+*******************************************************************
+                      TP =               28
+                      FP =             7047
+                      FN =           381176
+                      TN =          4524579
+                    Gain =        -1.84127%
+
+    Total time to build the hash table =        2 seconds
+  Total time to find the k-mer results =       17 seconds
+
+-----END-----
