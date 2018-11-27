@@ -1,0 +1,235 @@
+<!doctype html>
+<!--
+  ~ Copyright (c) 2013-2018, Centre for Genomic Regulation (CRG).
+  ~ Copyright (c) 2013-2018, Paolo Di Tommaso and the respective authors.
+  ~
+  ~   This file is part of 'Nextflow'.
+  ~
+  ~   Nextflow is free software: you can redistribute it and/or modify
+  ~   it under the terms of the GNU General Public License as published by
+  ~   the Free Software Foundation, either version 3 of the License, or
+  ~   (at your option) any later version.
+  ~
+  ~   Nextflow is distributed in the hope that it will be useful,
+  ~   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~   GNU General Public License for more details.
+  ~
+  ~   You should have received a copy of the GNU General Public License
+  ~   along with Nextflow.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Cscript src='" + prot + "code.jquery.com/jquery-latest.min.js' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "d3js.org/d3.v3.min.js' charset='utf-8' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "cdn.rawgit.com/nextflow-io/d3-timeline/82622c4cc35bac7283b3a317826b0709ac1ae476/src/d3-timeline.js' type='text/javascript' %3E%3C/script%3E"));
+</script>
+<style type="text/css">
+* {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.axis path,
+.axis line {
+fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-size: 10px;
+}
+
+div#timeline g text {
+  font-size: 13px;
+}
+
+text.timeline-label {
+  font-size: 13px;
+}
+
+#timeline2 .axis {
+  transform: translate(0px,30px);
+  -ms-transform: translate(0px,30px); /* IE 9 */
+  -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+  -o-transform: translate(0px,30px); /* Opera */
+  -moz-transform: translate(0px,30px); /* Firefox */
+}
+
+.coloredDiv {
+  height:20px; width:20px; float:left;
+}
+
+#footer {
+  padding-top: 3em; color: #bfbfbf; font-size: 13px;
+}
+
+#footer a:visited {
+  color: #bfbfbf;
+  text-decoration: underline;
+}
+</style>
+<script type="text/javascript">
+var handler=null;
+// see https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c
+var colors = d3.scale.category20c().domain(d3.range(0,20)).range()
+
+function c0(index) { return "#9c9c9c"; }
+function c1(index) { return "#bdbdbd"; }
+function c2(index) { return colors[index % 16]; } // <-- note: uses only the first 16 colors
+
+var elapsed="7h 53m 43s"
+var beginningMillis=1543311377310;
+var endingMillis=1543339800762;
+var data=[
+{"label": "SRAFetch (L. monocytogenes FSL R2-561 > SRR1198952 > SRR1198952)", "times": [{"starting_time": 1543311379188, "ending_time": 1543311383675, "color":c1(0)}, {"starting_time": 1543311383675, "ending_time": 1543311575198, "color":c2(0), "label": "3m 19s \/ 165.6 MB"}, {"starting_time": 1543311575198, "ending_time": 1543311578675, "color":c1(0)}]},
+{"label": "SRAFetch (S. cerevisiae S288C > ERR422544 > ERR422544)", "times": [{"starting_time": 1543311379262, "ending_time": 1543311383777, "color":c1(0)}, {"starting_time": 1543311383777, "ending_time": 1543311491301, "color":c2(0), "label": "1m 59s \/ 713.9 MB"}, {"starting_time": 1543311491301, "ending_time": 1543311498675, "color":c1(0)}]},
+{"label": "SRAFetch (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651847)", "times": [{"starting_time": 1543311498830, "ending_time": 1543311503673, "color":c1(0)}, {"starting_time": 1543311503673, "ending_time": 1543311653418, "color":c2(0), "label": "2m 40s \/ 183.9 MB"}, {"starting_time": 1543311653418, "ending_time": 1543311658677, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (S. cerevisiae S288C > ERR422544 > ERR422544)", "times": [{"starting_time": 1543311498991, "ending_time": 1543311503678, "color":c1(1)}, {"starting_time": 1543311503678, "ending_time": 1543311521133, "color":c2(1), "label": "29.7s \/ 32.2 MB"}, {"starting_time": 1543311521133, "ending_time": 1543311528676, "color":c1(1)}]},
+{"label": "SRAFetch (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651848)", "times": [{"starting_time": 1543311578808, "ending_time": 1543311583676, "color":c1(0)}, {"starting_time": 1543311583676, "ending_time": 1543311809218, "color":c2(0), "label": "3m 55s \/ 189.8 MB"}, {"starting_time": 1543311809218, "ending_time": 1543311813689, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (L. monocytogenes FSL R2-561 > SRR1198952 > SRR1198952)", "times": [{"starting_time": 1543311578921, "ending_time": 1543311583684, "color":c1(1)}, {"starting_time": 1543311583684, "ending_time": 1543311606566, "color":c2(1), "label": "34.8s \/ 32.2 MB"}, {"starting_time": 1543311606566, "ending_time": 1543311613678, "color":c1(1)}]},
+{"label": "SRAFetch (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651849)", "times": [{"starting_time": 1543311658819, "ending_time": 1543311663677, "color":c1(0)}, {"starting_time": 1543311663677, "ending_time": 1543311767533, "color":c2(0), "label": "1m 55s \/ 183.5 MB"}, {"starting_time": 1543311767533, "ending_time": 1543311773686, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651847)", "times": [{"starting_time": 1543311658911, "ending_time": 1543311663682, "color":c1(1)}, {"starting_time": 1543311663682, "ending_time": 1543311685197, "color":c2(1), "label": "34.8s \/ 32.2 MB"}, {"starting_time": 1543311685197, "ending_time": 1543311693680, "color":c1(1)}]},
+{"label": "SRAFetch (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651850)", "times": [{"starting_time": 1543311773801, "ending_time": 1543311778685, "color":c1(0)}, {"starting_time": 1543311778685, "ending_time": 1543311901499, "color":c2(0), "label": "3m 30s \/ 183.4 MB"}, {"starting_time": 1543311901499, "ending_time": 1543311983696, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651849)", "times": [{"starting_time": 1543311773931, "ending_time": 1543311778689, "color":c1(1)}, {"starting_time": 1543311778689, "ending_time": 1543311794132, "color":c2(1), "label": "1m 40s \/ 32.2 MB"}, {"starting_time": 1543311794132, "ending_time": 1543311873690, "color":c1(1)}]},
+{"label": "SRAFetch (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651851)", "times": [{"starting_time": 1543311813820, "ending_time": 1543311818689, "color":c1(0)}, {"starting_time": 1543311818689, "ending_time": 1543312002158, "color":c2(0), "label": "3m 50s \/ 184.2 MB"}, {"starting_time": 1543312002158, "ending_time": 1543312043699, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651848)", "times": [{"starting_time": 1543311813941, "ending_time": 1543311818694, "color":c1(1)}, {"starting_time": 1543311818694, "ending_time": 1543311851322, "color":c2(1), "label": "1m 20s \/ 32.2 MB"}, {"starting_time": 1543311851322, "ending_time": 1543311893690, "color":c1(1)}]},
+{"label": "SRAFetch (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651852)", "times": [{"starting_time": 1543311983796, "ending_time": 1543311988730, "color":c1(0)}, {"starting_time": 1543311988730, "ending_time": 1543312316587, "color":c2(0), "label": "5m 40s \/ 184.1 MB"}, {"starting_time": 1543312316587, "ending_time": 1543312323717, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651850)", "times": [{"starting_time": 1543311983883, "ending_time": 1543311988734, "color":c1(1)}, {"starting_time": 1543311988734, "ending_time": 1543312006368, "color":c2(1), "label": "29.8s \/ 32.2 MB"}, {"starting_time": 1543312006368, "ending_time": 1543312013700, "color":c1(1)}]},
+{"label": "SRAFetch (C. elegans WS222 > SRR543736 > SRR543736)", "times": [{"starting_time": 1543312043799, "ending_time": 1543312048734, "color":c1(0)}, {"starting_time": 1543312048734, "ending_time": 1543314013938, "color":c2(0), "label": "32m 55s \/ 468.9 MB"}, {"starting_time": 1543314013938, "ending_time": 1543314018790, "color":c1(0)}]},
+{"label": "ConcatPariedEndFiles (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651851)", "times": [{"starting_time": 1543312043890, "ending_time": 1543312048737, "color":c1(1)}, {"starting_time": 1543312048737, "ending_time": 1543312076454, "color":c2(1), "label": "39.8s \/ 32.2 MB"}, {"starting_time": 1543312076454, "ending_time": 1543312083703, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852 > SRR651852)", "times": [{"starting_time": 1543312323824, "ending_time": 1543312328716, "color":c1(1)}, {"starting_time": 1543312328716, "ending_time": 1543312377951, "color":c2(1), "label": "59.9s \/ 32.2 MB"}, {"starting_time": 1543312377951, "ending_time": 1543312383721, "color":c1(1)}]},
+{"label": "ConcatPariedEndFiles (C. elegans WS222 > SRR543736 > SRR543736)", "times": [{"starting_time": 1543314018960, "ending_time": 1543314023790, "color":c1(1)}, {"starting_time": 1543314023790, "ending_time": 1543314291788, "color":c2(1), "label": "5m 55s \/ 32.2 MB"}, {"starting_time": 1543314291788, "ending_time": 1543314373803, "color":c1(1)}]},
+{"label": "ConcatSRAFiles (S. cerevisiae S288C > ERR422544)", "times": [{"starting_time": 1543314373956, "ending_time": 1543314378802, "color":c1(2)}, {"starting_time": 1543314378802, "ending_time": 1543314388908, "color":c2(2), "label": "19.8s \/ 25.9 MB"}, {"starting_time": 1543314388908, "ending_time": 1543314393804, "color":c1(2)}]},
+{"label": "ConcatSRAFiles (L. monocytogenes FSL R2-561 > SRR1198952)", "times": [{"starting_time": 1543314374060, "ending_time": 1543314378805, "color":c1(2)}, {"starting_time": 1543314378805, "ending_time": 1543314391436, "color":c2(2), "label": "24.7s \/ 25.9 MB"}, {"starting_time": 1543314391436, "ending_time": 1543314398804, "color":c1(2)}]},
+{"label": "ConcatSRAFiles (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852)", "times": [{"starting_time": 1543314393915, "ending_time": 1543314398827, "color":c1(2)}, {"starting_time": 1543314398827, "ending_time": 1543314495401, "color":c2(2), "label": "1m 45s \/ 25.9 MB"}, {"starting_time": 1543314495401, "ending_time": 1543314498807, "color":c1(2)}]},
+{"label": "ACE (S. cerevisiae S288C > ERR422544)", "times": [{"starting_time": 1543314393950, "ending_time": 1543314398897, "color":c1(3)}, {"starting_time": 1543314398897, "ending_time": 1543315461945, "color":c2(3), "label": "17m 50s \/ 2.6 GB"}, {"starting_time": 1543315461945, "ending_time": 1543315463831, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (C. elegans WS222 > SRR543736)", "times": [{"starting_time": 1543314398879, "ending_time": 1543314403804, "color":c1(2)}, {"starting_time": 1543314403804, "ending_time": 1543314568297, "color":c2(2), "label": "2m 55s \/ 25.9 MB"}, {"starting_time": 1543314568297, "ending_time": 1543314573809, "color":c1(2)}]},
+{"label": "ACE (L. monocytogenes FSL R2-561 > SRR1198952)", "times": [{"starting_time": 1543314398926, "ending_time": 1543314403807, "color":c1(3)}, {"starting_time": 1543314403807, "ending_time": 1543315714642, "color":c2(3), "label": "22m \/ 2.8 GB"}, {"starting_time": 1543315714642, "ending_time": 1543315718840, "color":c1(3)}]},
+{"label": "ACE (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852)", "times": [{"starting_time": 1543315463944, "ending_time": 1543315468831, "color":c1(3)}, {"starting_time": 1543315468831, "ending_time": 1543329741344, "color":c2(3), "label": "3h 58m 55s \/ 21.9 GB"}, {"starting_time": 1543329741344, "ending_time": 1543329799393, "color":c1(3)}]},
+{"label": "EvalECReads (S. cerevisiae S288C > ERR422544)", "times": [{"starting_time": 1543315464075, "ending_time": 1543315468834, "color":c1(4)}, {"starting_time": 1543315468834, "ending_time": 1543315477218, "color":c2(4), "label": "1m 10s \/ 1.9 GB"}, {"starting_time": 1543315477218, "ending_time": 1543315533833, "color":c1(4)}]},
+{"label": "EvalECBases (S. cerevisiae S288C > ERR422544)", "times": [{"starting_time": 1543315464154, "ending_time": 1543315468836, "color":c1(5)}, {"starting_time": 1543315468836, "ending_time": 1543315494122, "color":c2(5), "label": "1m 25s \/ 677.7 MB"}, {"starting_time": 1543315494122, "ending_time": 1543315548833, "color":c1(5)}]},
+{"label": "ACE (C. elegans WS222 > SRR543736)", "times": [{"starting_time": 1543315718958, "ending_time": 1543315723840, "color":c1(3)}, {"starting_time": 1543315723840, "ending_time": 1543339435171, "color":c2(3), "label": "6h 35m 21s \/ 29.6 GB"}, {"starting_time": 1543339435171, "ending_time": 1543339439582, "color":c1(3)}]},
+{"label": "EvalECBases (L. monocytogenes FSL R2-561 > SRR1198952)", "times": [{"starting_time": 1543315719045, "ending_time": 1543315723842, "color":c1(5)}, {"starting_time": 1543315723842, "ending_time": 1543315754753, "color":c2(5), "label": "39.8s \/ 791.6 MB"}, {"starting_time": 1543315754753, "ending_time": 1543315758842, "color":c1(5)}]},
+{"label": "EvalECReads (L. monocytogenes FSL R2-561 > SRR1198952)", "times": [{"starting_time": 1543315719125, "ending_time": 1543315723843, "color":c1(4)}, {"starting_time": 1543315723843, "ending_time": 1543315729136, "color":c2(4), "label": "14.7s \/ 261.5 MB"}, {"starting_time": 1543315729136, "ending_time": 1543315733841, "color":c1(4)}]},
+{"label": "EvalECReads (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852)", "times": [{"starting_time": 1543329799482, "ending_time": 1543329804393, "color":c1(4)}, {"starting_time": 1543329804393, "ending_time": 1543329870222, "color":c2(4), "label": "2m 20s \/ 4.3 GB"}, {"starting_time": 1543329870222, "ending_time": 1543329939396, "color":c1(4)}]},
+{"label": "EvalECBases (C. elegans WS222 > SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852)", "times": [{"starting_time": 1543329799552, "ending_time": 1543329804395, "color":c1(5)}, {"starting_time": 1543329804395, "ending_time": 1543329982024, "color":c2(5), "label": "4m 10s \/ 3.1 GB"}, {"starting_time": 1543329982024, "ending_time": 1543330049399, "color":c1(5)}]},
+{"label": "EvalECReads (C. elegans WS222 > SRR543736)", "times": [{"starting_time": 1543339439679, "ending_time": 1543339444582, "color":c1(4)}, {"starting_time": 1543339444582, "ending_time": 1543339544391, "color":c2(4), "label": "2m 50s \/ 4.6 GB"}, {"starting_time": 1543339544391, "ending_time": 1543339609590, "color":c1(4)}]},
+{"label": "EvalECBases (C. elegans WS222 > SRR543736)", "times": [{"starting_time": 1543339439755, "ending_time": 1543339444585, "color":c1(5)}, {"starting_time": 1543339444585, "ending_time": 1543339735793, "color":c2(5), "label": "6m \/ 3.1 GB"}, {"starting_time": 1543339735793, "ending_time": 1543339799594, "color":c1(5)}]}
+]
+
+
+function getTickFormat() {
+  var MIN = 1000 * 60
+  var HOUR = MIN * 60
+  var DAY = HOUR * 24
+  var delta = (endingMillis - beginningMillis)
+
+  if( delta < 2 * MIN ) {
+    return {
+      format: d3.time.format("%S"),
+      tickTime: d3.time.seconds,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * HOUR ) {
+    return {
+      format: d3.time.format("%M"),
+      tickTime: d3.time.minutes,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * DAY ) {
+    return {
+      format: d3.time.format("%H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 1,
+      tickSize: 6
+    }
+  }
+
+  if( delta <= 7 * DAY ) {
+    return {
+      format: d3.time.format("%b %e %H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 6,
+      tickSize: 6
+    }
+  }
+
+  return {
+    format: d3.time.format("%b %e"),
+    tickTime: d3.time.days,
+    tickInterval: 1,
+    tickSize: 6
+  }
+}
+
+function getLabelMargin(scale) {
+    $('<span class="labelSpan" style="display: none"></span>').appendTo('body');
+
+    var labelMargin = 0
+    $.each(data, function (key, value) {
+      labelMargin = Math.max(labelMargin, $('.labelSpan').html(value.label).width());
+    });
+
+    $('.labelSpan').remove();
+
+    return (labelMargin * scale);
+}
+
+function render() {
+  handler=null;
+  $("#timeline").empty()
+  $('#label_elapsed').text(elapsed)
+  $('#label_launch').text( d3.time.format('%d %b %Y %H:%M')(new Date(beginningMillis)) )
+
+  var width = $(window).width();
+  var chart = d3.timeline()
+    .stack() // toggles graph stacking
+    .margin({left:getLabelMargin(0.85), right:100, top:0, bottom:0})
+    .tickFormat( getTickFormat() )
+    .rowSeperators('#f5f5f5')
+    .showTimeAxisTick()
+    ;
+  var svg = d3.select("#timeline").append("svg").attr("width", width).datum(data).call(chart);
+}
+
+function hrz() {
+if( handler != null ) clearTimeout(handler)
+  handler = setTimeout(render, 150);
+}
+
+$(document).ready(render)
+$(window).resize(hrz); // resize the applet on window resize
+</script>
+</head>
+
+<body>
+<div>
+  <h3>Processes execution timeline</h3>
+  <p>
+    Launch time: <span id='label_launch'> </span><br>
+    Elapsed time: <span id='label_elapsed'> </span>
+  </p>
+  <div id="timeline"></div>
+</div>
+
+<div id='footer'>
+  Created with Nextflow -- <a href='http://www.nextflow.io' target='_blank'>http://nextflow.io</a>
+</div>
+
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Clink href='" + prot + "fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css' %3E%3C/link%3E"));
+</script>
+</body>
+</html>
