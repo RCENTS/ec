@@ -1,0 +1,217 @@
+DATASET :  ERR422544  ORGANISM :  S. cerevisiae S288C
+
+Processing genome file ... completed (0 seconds)
+Genome length = 12157105
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (1 seconds)
+Searching for original reads ... completed (4 seconds)
+Searching for corrected reads ... completed (2 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              100
+                          Number of reads =          4776774
+                         Total base pairs =        477677400
+                                 Coverage =           39.292
+
+              Base pairs in correct reads =        402719700
+            Base pairs in erroneous reads =         74957700
+   Percent of base pairs in correct reads =         84.3079%
+ Percent of base pairs in erroneous reads =         15.6921%
+            Estimated mean per-base error =        0.170549%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =        477677400
+                                 Coverage =           39.292
+
+              Base pairs in correct reads =        433008800
+            Base pairs in erroneous reads =         44668600
+   Percent of base pairs in correct reads =         90.6488%
+   Percent of base pairs in correct reads =         9.35121%
+            Estimated mean per-base error =       0.0981294%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =         44668600
+ Percent of base pairs in erroneous reads =         9.35121%
+
+ ========================== Accuracy =========================== 
+                        TP =         30313500
+                        FP =            24400
+                        FN =         44644200
+                        TN =        402695300
+                      Gain =         40.4083%
+               Sensitivity =         40.4408%
+               Specificity =         99.9939%
+
+ ======================== Unique Reads ========================= 
+                        TP =           194049
+                        FP =              256
+                        FN =          8472620
+                        TN =          3118912
+                      Gain =         2.23607%
+
+                Total time = 8 seconds
+-----END-----
+DATASET :  SRR543736  ORGANISM :  C. elegans WS222
+
+Processing genome file ... completed (1 seconds)
+Genome length = 100286070
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (19 seconds)
+Searching for original reads ... completed (46 seconds)
+Searching for corrected reads ... completed (34 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              101
+                          Number of reads =         57721732
+                         Total base pairs =       5829894932
+                                 Coverage =          58.1326
+
+              Base pairs in correct reads =       4063569461
+            Base pairs in erroneous reads =       1766325471
+   Percent of base pairs in correct reads =         69.7023%
+ Percent of base pairs in erroneous reads =         30.2977%
+            Estimated mean per-base error =        0.356726%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =       5829894932
+                                 Coverage =          58.1326
+
+              Base pairs in correct reads =       4522205512
+            Base pairs in erroneous reads =       1307689420
+   Percent of base pairs in correct reads =         77.5692%
+   Percent of base pairs in correct reads =         22.4308%
+            Estimated mean per-base error =        0.251168%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =       1307689420
+ Percent of base pairs in erroneous reads =         22.4308%
+
+ ========================== Accuracy =========================== 
+                        TP =        496835867
+                        FP =         38199816
+                        FN =       1269489604
+                        TN =       4025369645
+                      Gain =         25.9655%
+               Sensitivity =         28.1282%
+               Specificity =         99.0599%
+
+ ======================== Unique Reads ========================= 
+                        TP =          2863345
+                        FP =           359247
+                        FN =         64702991
+                        TN =         30480806
+                      Gain =         3.70613%
+
+                Total time = 101 seconds
+-----END-----
+DATASET :  SRR1198952  ORGANISM :  L. monocytogenes FSL R2-561
+
+Processing genome file ... completed (0 seconds)
+Genome length = 2973801
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (1 seconds)
+Searching for original reads ... completed (2 seconds)
+Searching for corrected reads ... completed (2 seconds)
+
+ ======================== Original Reads ======================== 
+                     Shortest read length =               35
+                      Longest read length =              251
+                          Number of reads =          2177790
+                         Total base pairs =        507711040
+                                 Coverage =          170.728
+
+              Base pairs in correct reads =         11941148
+            Base pairs in erroneous reads =        495769892
+   Percent of base pairs in correct reads =         2.35196%
+ Percent of base pairs in erroneous reads =          97.648%
+            Estimated mean per-base error =         1.59563%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =        507711040
+                                 Coverage =          170.728
+
+              Base pairs in correct reads =         16334094
+            Base pairs in erroneous reads =        491376946
+   Percent of base pairs in correct reads =          3.2172%
+   Percent of base pairs in correct reads =         96.7828%
+            Estimated mean per-base error =         1.46332%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =        491376946
+ Percent of base pairs in erroneous reads =         96.7828%
+
+ ========================== Accuracy =========================== 
+                        TP =          4559516
+                        FP =           166570
+                        FN =        491210376
+                        TN =         11774578
+                      Gain =        0.886086%
+               Sensitivity =        0.919684%
+               Specificity =         98.6051%
+
+ ======================== Unique Reads ========================= 
+                        TP =             3524
+                        FP =              709
+                        FN =          2926881
+                        TN =            24871
+                      Gain =       0.0960618%
+
+                Total time = 5 seconds
+-----END-----
+DATASET :  SRR651847,SRR651848,SRR651849,SRR651850,SRR651851,SRR651852  ORGANISM :  C. elegans WS222
+
+Processing genome file ... completed (1 seconds)
+Genome length = 100286070
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (19 seconds)
+Searching for original reads ... completed (28 seconds)
+Searching for corrected reads ... completed (20 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              100
+                          Number of reads =         31642176
+                         Total base pairs =       3164217600
+                                 Coverage =          31.5519
+
+              Base pairs in correct reads =       2155659300
+            Base pairs in erroneous reads =       1008558300
+   Percent of base pairs in correct reads =         68.1261%
+ Percent of base pairs in erroneous reads =         31.8739%
+            Estimated mean per-base error =        0.383074%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =       3164217600
+                                 Coverage =          31.5519
+
+              Base pairs in correct reads =       2688483200
+            Base pairs in erroneous reads =        475734400
+   Percent of base pairs in correct reads =         84.9652%
+   Percent of base pairs in correct reads =         15.0348%
+            Estimated mean per-base error =        0.162796%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =        475734400
+ Percent of base pairs in erroneous reads =         15.0348%
+
+ ========================== Accuracy =========================== 
+                        TP =        541810500
+                        FP =          8986600
+                        FN =        466747800
+                        TN =       2146672700
+                      Gain =         52.8303%
+               Sensitivity =         53.7213%
+               Specificity =         99.5831%
+
+ ======================== Unique Reads ========================= 
+                        TP =          3764194
+                        FP =            86783
+                        FN =         76838319
+                        TN =         17699810
+                      Gain =          4.5624%
+
+                Total time = 69 seconds
+-----END-----
