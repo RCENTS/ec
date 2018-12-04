@@ -1,0 +1,225 @@
+<!doctype html>
+<!--
+  ~ Copyright 2013-2018, Centre for Genomic Regulation (CRG)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Cscript src='" + prot + "code.jquery.com/jquery-latest.min.js' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "d3js.org/d3.v3.min.js' charset='utf-8' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "cdn.rawgit.com/nextflow-io/d3-timeline/82622c4cc35bac7283b3a317826b0709ac1ae476/src/d3-timeline.js' type='text/javascript' %3E%3C/script%3E"));
+</script>
+<style type="text/css">
+* {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.axis path,
+.axis line {
+fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-size: 10px;
+}
+
+div#timeline g text {
+  font-size: 13px;
+}
+
+text.timeline-label {
+  font-size: 13px;
+}
+
+#timeline2 .axis {
+  transform: translate(0px,30px);
+  -ms-transform: translate(0px,30px); /* IE 9 */
+  -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+  -o-transform: translate(0px,30px); /* Opera */
+  -moz-transform: translate(0px,30px); /* Firefox */
+}
+
+.coloredDiv {
+  height:20px; width:20px; float:left;
+}
+
+#footer {
+  padding-top: 3em; color: #bfbfbf; font-size: 13px;
+}
+
+#footer a:visited {
+  color: #bfbfbf;
+  text-decoration: underline;
+}
+</style>
+<script type="text/javascript">
+var handler=null;
+// see https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c
+var colors = d3.scale.category20c().domain(d3.range(0,20)).range()
+
+function c0(index) { return "#9c9c9c"; }
+function c1(index) { return "#bdbdbd"; }
+function c2(index) { return colors[index % 16]; } // <-- note: uses only the first 16 colors
+
+var elapsed="5h 56m 57s"
+var beginningMillis=1543854512937;
+var endingMillis=1543875929975;
+var data=[
+{"label": "SRAFetch (EcoliK12MG1655 > SRR000868 > SRR000868)", "times": [{"starting_time": 1543854514908, "ending_time": 1543854519327, "color":c1(0)}, {"starting_time": 1543854519327, "ending_time": 1543854541543, "color":c2(0), "label": "1m 29s \/ 172.1 MB"}, {"starting_time": 1543854541543, "ending_time": 1543854604317, "color":c1(0)}]},
+{"label": "SRAFetch (Scerevisae > SRR096469,SRR096470 > SRR096469)", "times": [{"starting_time": 1543854604449, "ending_time": 1543854609316, "color":c1(0)}, {"starting_time": 1543854609316, "ending_time": 1543854638384, "color":c2(0), "label": "39.9s \/ 171 MB"}, {"starting_time": 1543854638384, "ending_time": 1543854644318, "color":c1(0)}]},
+{"label": "SRAFetch (Scerevisae > SRR096469,SRR096470 > SRR096470)", "times": [{"starting_time": 1543854644450, "ending_time": 1543854649316, "color":c1(0)}, {"starting_time": 1543854649316, "ending_time": 1543854678245, "color":c2(0), "label": "39.9s \/ 171.1 MB"}, {"starting_time": 1543854678245, "ending_time": 1543854684318, "color":c1(0)}]},
+{"label": "SRAFetch (SauresLGA251 > SRR070596 > SRR070596)", "times": [{"starting_time": 1543854684420, "ending_time": 1543854689318, "color":c1(0)}, {"starting_time": 1543854689318, "ending_time": 1543854718635, "color":c2(0), "label": "39.9s \/ 171.9 MB"}, {"starting_time": 1543854718635, "ending_time": 1543854724321, "color":c1(0)}]},
+{"label": "SRAFetch (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844 > SRR034841)", "times": [{"starting_time": 1543854724444, "ending_time": 1543854729321, "color":c1(0)}, {"starting_time": 1543854729321, "ending_time": 1543854962897, "color":c2(0), "label": "4m \/ 172.3 MB"}, {"starting_time": 1543854962897, "ending_time": 1543854964333, "color":c1(0)}]},
+{"label": "SRAFetch (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844 > SRR034842)", "times": [{"starting_time": 1543854964430, "ending_time": 1543854969332, "color":c1(0)}, {"starting_time": 1543854969332, "ending_time": 1543855211158, "color":c2(0), "label": "4m 10s \/ 172.1 MB"}, {"starting_time": 1543855211158, "ending_time": 1543855214344, "color":c1(0)}]},
+{"label": "SRAFetch (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844 > SRR034843)", "times": [{"starting_time": 1543855214455, "ending_time": 1543855219344, "color":c1(0)}, {"starting_time": 1543855219344, "ending_time": 1543855298244, "color":c2(0), "label": "1m 30s \/ 172 MB"}, {"starting_time": 1543855298244, "ending_time": 1543855304347, "color":c1(0)}]},
+{"label": "SRAFetch (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844 > SRR034844)", "times": [{"starting_time": 1543855304470, "ending_time": 1543855309347, "color":c1(0)}, {"starting_time": 1543855309347, "ending_time": 1543855558371, "color":c2(0), "label": "4m 20s \/ 171.9 MB"}, {"starting_time": 1543855558371, "ending_time": 1543855564361, "color":c1(0)}]},
+{"label": "ConcatSRAFiles (EcoliK12MG1655 > SRR000868)", "times": [{"starting_time": 1543855564528, "ending_time": 1543855569361, "color":c1(1)}, {"starting_time": 1543855569361, "ending_time": 1543855570698, "color":c2(1), "label": "1m 5s \/ 25.9 MB"}, {"starting_time": 1543855570698, "ending_time": 1543855629362, "color":c1(1)}]},
+{"label": "ConcatSRAFiles (Scerevisae > SRR096469,SRR096470)", "times": [{"starting_time": 1543855629450, "ending_time": 1543855634362, "color":c1(1)}, {"starting_time": 1543855634362, "ending_time": 1543855637841, "color":c2(1), "label": "9.9s \/ 25.9 MB"}, {"starting_time": 1543855637841, "ending_time": 1543855639363, "color":c1(1)}]},
+{"label": "Fiona (EcoliK12MG1655 > SRR000868)", "times": [{"starting_time": 1543855629563, "ending_time": 1543855634366, "color":c1(2)}, {"starting_time": 1543855634366, "ending_time": 1543855751423, "color":c2(2), "label": "2m 5s \/ 1.6 GB"}, {"starting_time": 1543855751423, "ending_time": 1543855754368, "color":c1(2)}]},
+{"label": "BWABefore (EcoliK12MG1655 > SRR000868)", "times": [{"starting_time": 1543855629602, "ending_time": 1543855634382, "color":c1(3)}, {"starting_time": 1543855634382, "ending_time": 1543855666036, "color":c2(3), "label": "39.8s \/ 7.4 GB"}, {"starting_time": 1543855666036, "ending_time": 1543855669365, "color":c1(3)}]},
+{"label": "ConcatSRAFiles (SauresLGA251 > SRR070596)", "times": [{"starting_time": 1543855639421, "ending_time": 1543855644363, "color":c1(1)}, {"starting_time": 1543855644363, "ending_time": 1543855646510, "color":c2(1), "label": "9.9s \/ 25.9 MB"}, {"starting_time": 1543855646510, "ending_time": 1543855649364, "color":c1(1)}]},
+{"label": "ConcatSRAFiles (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844)", "times": [{"starting_time": 1543855649434, "ending_time": 1543855654364, "color":c1(1)}, {"starting_time": 1543855654364, "ending_time": 1543855716050, "color":c2(1), "label": "1m 10s \/ 25.9 MB"}, {"starting_time": 1543855716050, "ending_time": 1543855719367, "color":c1(1)}]},
+{"label": "BWABefore (Scerevisae > SRR096469,SRR096470)", "times": [{"starting_time": 1543855669429, "ending_time": 1543855674401, "color":c1(3)}, {"starting_time": 1543855674401, "ending_time": 1543855781212, "color":c2(3), "label": "1m 55s \/ 7.4 GB"}, {"starting_time": 1543855781212, "ending_time": 1543855784369, "color":c1(3)}]},
+{"label": "Fiona (Scerevisae > SRR096469,SRR096470)", "times": [{"starting_time": 1543855754514, "ending_time": 1543855759369, "color":c1(2)}, {"starting_time": 1543855759369, "ending_time": 1543856488948, "color":c2(2), "label": "12m 20s \/ 2.3 GB"}, {"starting_time": 1543856488948, "ending_time": 1543856494401, "color":c1(2)}]},
+{"label": "BWAAfter (EcoliK12MG1655 > SRR000868)", "times": [{"starting_time": 1543855754586, "ending_time": 1543855759373, "color":c1(4)}, {"starting_time": 1543855759373, "ending_time": 1543855786448, "color":c2(4), "label": "34.8s \/ 893.9 MB"}, {"starting_time": 1543855786448, "ending_time": 1543855789370, "color":c1(4)}]},
+{"label": "BWABefore (SauresLGA251 > SRR070596)", "times": [{"starting_time": 1543855784454, "ending_time": 1543855789424, "color":c1(3)}, {"starting_time": 1543855789424, "ending_time": 1543855837562, "color":c2(3), "label": "54.9s \/ 7.4 GB"}, {"starting_time": 1543855837562, "ending_time": 1543855839371, "color":c1(3)}]},
+{"label": "EvalEC (EcoliK12MG1655 > SRR000868)", "times": [{"starting_time": 1543855789479, "ending_time": 1543855794409, "color":c1(5)}, {"starting_time": 1543855794409, "ending_time": 1543855827058, "color":c2(5), "label": "39.9s \/ 1.8 GB"}, {"starting_time": 1543855827058, "ending_time": 1543855829371, "color":c1(5)}]},
+{"label": "BWABefore (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844)", "times": [{"starting_time": 1543855839470, "ending_time": 1543855844371, "color":c1(3)}, {"starting_time": 1543855844371, "ending_time": 1543858247737, "color":c2(3), "label": "40m 15s \/ 7.5 GB"}, {"starting_time": 1543858247737, "ending_time": 1543858254467, "color":c1(3)}]},
+{"label": "Fiona (SauresLGA251 > SRR070596)", "times": [{"starting_time": 1543856494518, "ending_time": 1543856499401, "color":c1(2)}, {"starting_time": 1543856499401, "ending_time": 1543857067104, "color":c2(2), "label": "10m 25s \/ 1.8 GB"}, {"starting_time": 1543857067104, "ending_time": 1543857119424, "color":c1(2)}]},
+{"label": "BWAAfter (Scerevisae > SRR096469,SRR096470)", "times": [{"starting_time": 1543856494608, "ending_time": 1543856499404, "color":c1(4)}, {"starting_time": 1543856499404, "ending_time": 1543856604119, "color":c2(4), "label": "2m 45s \/ 992.6 MB"}, {"starting_time": 1543856604119, "ending_time": 1543856659407, "color":c1(4)}]},
+{"label": "EvalEC (Scerevisae > SRR096469,SRR096470)", "times": [{"starting_time": 1543856659533, "ending_time": 1543856664407, "color":c1(5)}, {"starting_time": 1543856664407, "ending_time": 1543856800606, "color":c2(5), "label": "2m 30s \/ 1.8 GB"}, {"starting_time": 1543856800606, "ending_time": 1543856809409, "color":c1(5)}]},
+{"label": "Fiona (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844)", "times": [{"starting_time": 1543857119546, "ending_time": 1543857124468, "color":c1(2)}, {"starting_time": 1543857124468, "ending_time": 1543870962970, "color":c2(2), "label": "3h 50m 50s \/ 15.2 GB"}, {"starting_time": 1543870962970, "ending_time": 1543870969940, "color":c1(2)}]},
+{"label": "BWAAfter (SauresLGA251 > SRR070596)", "times": [{"starting_time": 1543857119621, "ending_time": 1543857124471, "color":c1(4)}, {"starting_time": 1543857124471, "ending_time": 1543857167144, "color":c2(4), "label": "54.8s \/ 920.3 MB"}, {"starting_time": 1543857167144, "ending_time": 1543857174426, "color":c1(4)}]},
+{"label": "EvalEC (SauresLGA251 > SRR070596)", "times": [{"starting_time": 1543857174542, "ending_time": 1543857179426, "color":c1(5)}, {"starting_time": 1543857179426, "ending_time": 1543857305062, "color":c2(5), "label": "2m 15s \/ 2 GB"}, {"starting_time": 1543857305062, "ending_time": 1543857309429, "color":c1(5)}]},
+{"label": "BWAAfter (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844)", "times": [{"starting_time": 1543870970329, "ending_time": 1543870974940, "color":c1(4)}, {"starting_time": 1543870974940, "ending_time": 1543873289728, "color":c2(4), "label": "40m 18s \/ 7.5 GB"}, {"starting_time": 1543873289728, "ending_time": 1543873388520, "color":c1(4)}]},
+{"label": "EvalEC (Dmelanogaster > SRR034841,SRR034842,SRR034843,SRR034844)", "times": [{"starting_time": 1543873388636, "ending_time": 1543873393520, "color":c1(5)}, {"starting_time": 1543873393520, "ending_time": 1543875848751, "color":c2(5), "label": "42m 20s \/ 2.3 GB"}, {"starting_time": 1543875848751, "ending_time": 1543875928603, "color":c1(5)}]}
+]
+
+
+function getTickFormat() {
+  var MIN = 1000 * 60
+  var HOUR = MIN * 60
+  var DAY = HOUR * 24
+  var delta = (endingMillis - beginningMillis)
+
+  if( delta < 2 * MIN ) {
+    return {
+      format: d3.time.format("%S"),
+      tickTime: d3.time.seconds,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * HOUR ) {
+    return {
+      format: d3.time.format("%M"),
+      tickTime: d3.time.minutes,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * DAY ) {
+    return {
+      format: d3.time.format("%H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 1,
+      tickSize: 6
+    }
+  }
+
+  if( delta <= 7 * DAY ) {
+    return {
+      format: d3.time.format("%b %e %H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 6,
+      tickSize: 6
+    }
+  }
+
+  return {
+    format: d3.time.format("%b %e"),
+    tickTime: d3.time.days,
+    tickInterval: 1,
+    tickSize: 6
+  }
+}
+
+function getLabelMargin(scale) {
+    $('<span class="labelSpan" style="display: none"></span>').appendTo('body');
+
+    var labelMargin = 0
+    $.each(data, function (key, value) {
+      labelMargin = Math.max(labelMargin, $('.labelSpan').html(value.label).width());
+    });
+
+    $('.labelSpan').remove();
+
+    return (labelMargin * scale);
+}
+
+function render() {
+  handler=null;
+  $("#timeline").empty()
+  $('#label_elapsed').text(elapsed)
+  $('#label_launch').text( d3.time.format('%d %b %Y %H:%M')(new Date(beginningMillis)) )
+
+  var width = $(window).width();
+  var chart = d3.timeline()
+    .stack() // toggles graph stacking
+    .margin({left:getLabelMargin(0.85), right:100, top:0, bottom:0})
+    .tickFormat( getTickFormat() )
+    .rowSeperators('#f5f5f5')
+    .showTimeAxisTick()
+    ;
+  var svg = d3.select("#timeline").append("svg").attr("width", width).datum(data).call(chart);
+}
+
+function hrz() {
+if( handler != null ) clearTimeout(handler)
+  handler = setTimeout(render, 150);
+}
+
+$(document).ready(render)
+$(window).resize(hrz); // resize the applet on window resize
+</script>
+</head>
+
+<body>
+<div>
+  <h3>Processes execution timeline</h3>
+  <p>
+    Launch time: <span id='label_launch'> </span><br>
+    Elapsed time: <span id='label_elapsed'> </span>
+  </p>
+  <div id="timeline"></div>
+</div>
+
+<div id='footer'>
+  Created with Nextflow -- <a href='http://www.nextflow.io' target='_blank'>http://nextflow.io</a>
+</div>
+
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Clink href='" + prot + "fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css' %3E%3C/link%3E"));
+</script>
+</body>
+</html>

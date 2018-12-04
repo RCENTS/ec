@@ -134,30 +134,16 @@ process SRAFetch {
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId from exptChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}*.fastq.gz") into pseqChan
+    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq.gz") into pseqChan
 
     """
     prefetch ${sraId}
     vdb-validate '${sraId}'
-    fastq-dump -I --split-files --gzip '${sraId}'
+    fastq-dump -I --gzip '${sraId}'
     """
 }
 
-process ConcatPariedEndFiles{
-    tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
-
-    input:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file(pairedFiles) from pseqChan
-
-    output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq.gz") into fseqChan
- 
-    """
-    gunzip -c ${pairedFiles} | gzip -1  > ${sraId}.fastq.gz
-    """
-}
-
-oexptChan = fseqChan.map{ 
+oexptChan = pseqChan.map{ 
     orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile -> 
         [orgId.toString() + "-" + exptId.toString(),
          orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile] 
@@ -267,6 +253,6 @@ process EvalEC{
 
 result_channel1.map{
     it.text
-}.collectFile(name: 'fiona_compute_gain_output.txt',
+}.collectFile(name: 'fiona_compute_gain_454_output.txt',
               storeDir: "${workflow.projectDir}",
               newLine: false)
