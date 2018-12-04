@@ -34,7 +34,7 @@ orgIds = Channel.from(exptTable.keySet()).map{
     org -> [org, orgTable[org], genomeTable[org]]
 }
 
-process genomeDownload {
+process GenomeDownload {
     tag{ orgDesc }
 
     storeDir params.genomedir
@@ -51,157 +51,72 @@ process genomeDownload {
     """
 }
 
-process bwamemIndex {
-    tag{ orgDesc }
-
-storeDir "${params.genomedir}/bwa"
-
-    input:
-    set orgId, orgDesc, gnmFile from orgChan
-
-    output:
-    set orgId, orgDesc, gnmFile, file("${orgId}.fa.*") into idxChan
-
-    """
-    bwa index ${params.genomedir}/${orgId}.fa -p /tmp/${orgId}.fa
-    cp /tmp/${orgId}.fa.bwt ${orgId}.fa.bwt
-    cp /tmp/${orgId}.fa.pac ${orgId}.fa.pac
-    cp /tmp/${orgId}.fa.ann ${orgId}.fa.ann
-    cp /tmp/${orgId}.fa.bwt ${orgId}.fa.bwt
-    cp /tmp/${orgId}.fa.amb ${orgId}.fa.amb
-    cp /tmp/${orgId}.fa.sa ${orgId}.fa.sa
-    rm /tmp/${orgId}.fa.*
-    """
-
-}
-
-exptChan = idxChan.flatMap {
-    orgId, orgDesc, gnmFile, idxFiles -> exptTable[orgId].collect {
-        [orgId, orgDesc, gnmFile, idxFiles, it]
+exptChan = orgChan.flatMap {
+    orgId, orgDesc, gnmFile -> exptTable[orgId].collect {
+        [orgId, orgDesc, gnmFile, it]
     }
-}.flatMap{
-    orgId, orgDesc, gnmFile, idxFiles , exptId  ->
-        sraIds = parseExptID(exptId, ',')
-        sraIds.collect{
-            [orgId, orgDesc, gnmFile, idxFiles , exptId, it]
-        }
 }
 // .subscribe{
 //     println it
 // }
 
-process sraFetch {
-    tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
+process SRAFetch {
+    tag { orgDesc.toString() + " > " + sraId.toString() }
 
     input:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId from exptChan
+    set orgId, orgDesc, gnmFile, sraId from exptChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq.gz") into pseqChan
+    set orgId, orgDesc, gnmFile, sraId, file("${sraId}.fastq") into pseqChan
 
     """
     prefetch ${sraId}
     vdb-validate '${sraId}'
     fastq-dump -I --split-files --gzip '${sraId}'
-    gunzip -c ${pairedFiles} | gzip -1 > ${sraId}.fastq.gz
+    gunzip -c ${pairedFiles} > ${sraId}.fastq
     rm -rf ${sraId}_1.fastq.gz
     rm -rf ${sraId}_2.fastq.gz
     """
 }
 
-oexptChan = pseqChan.map{ 
-    orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile -> 
-        [orgId.toString() + "-" + exptId.toString(),
-         orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile] 
-}
-.groupTuple()
-.map{
-    orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, sraFiles -> 
-        [orgExptId, orgId[0], orgDesc[0], gnmFile[0],
-         idxFiles[0], exptId[0], sraIds, sraFiles]
-}
 
-// oexptChan.subscribe{
-//     println it
-// }
+//(beforeChan1, beforeChan2) = pseqChan.into(2)
 
-process catSRAFiles{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
-    
-    input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(sraFiles) from oexptChan
-
-    output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file("beforeEC.fastq") into cseqChan
-
-    """
-    gunzip -c ${sraFiles} > beforeEC.fastq
-    """
-}
-
-(beforeChan1, beforeChan2) = cseqChan.into(2)
-
-process runHiTEC{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+process HiTEC{
+    tag { orgDesc.toString() + " > " + sraId.toString() }
 
     input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan1
+    set orgId, orgDesc, gnmFile, sraId, file(beforeEC) from pseqChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.fastq") into ecChan
+    set orgId, orgDesc, gnmFile, sraId, file(beforeEC), file("afterEC.fastq") into ecChan
 
     //check params and root directory and fa/fq
     """
-    hitec ${beforeEC} afterEC.fastq ${paramsTable[exptId]}
+    hitec ${beforeEC} afterEC.fastq ${paramsTable[sraId]}
     """ 
 }
 
-process runBWABefore{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
+
+process EvalEC{
+    tag { orgDesc.toString() + " > " + sraId.toString() }
 
     input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC) from beforeChan2
+    set orgId, orgDesc, gnmFile, sraId, file(beforeEC), file(afterEC) from mergedSAMChan
 
     output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
+    file(result) into result_channel
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sam
+    echo  "DATASET : " $sraId " ORGANISM : " $orgDesc > result
+    readSearch $gnmFile $beforeEC $afterEC  >> result
     """ 
-}
-
-process runBWAAfter{
-    tag { orgExptId.replace('-SRR', ' > SRR') }
-
-    input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC) from ecChan
-
-    output:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file("afterEC.sam") into afterSAMChan
-
-    """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} > afterEC.sam
-    """ 
-}
-
-mergedSAMChan = beforeSAMChan
-    .merge(afterSAMChan)
-    .map {
-        orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1, exptId1, sraIds1, beforeEC1, beforeSAM,
-        orgExptId2, orgId2, orgDesc2, gnmFile2, idxFiles2, exptId2, sraIds2, beforeEC2, afterSAM ->
-        [ orgExptId1, orgId1, orgDesc1, gnmFile1, idxFiles1,
-          exptId1, sraIds1, beforeEC1, beforeSAM, afterSAM  ]
-    }
-
-/*
-processEvalEC{
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
-
-    input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
-
-    output:
-    set orgExptId, orgId, orgDesc, exptId, file("eval.json")
 
 }
-*/
+
+
+result_channel.map{
+    it.text
+}.collectFile(name: 'hitec_sra_gain.txt',
+              storeDir: "${workflow.projectDir}",
+              newLine: false)

@@ -1,9 +1,4 @@
 
-params.data = '/data'
-params.genomedir = '/data/genomes/'
-//params.cfg = '-s 100m -k 23'
-params.cfg = '-p 12'
-// 'SRR065390'
 orgTable = [
     'SaureusMW2'  : 'Staphylococcus aureus',
     'Hacinonychis':'Helicobacter acinonychis str. Sheeba'
@@ -35,7 +30,7 @@ orgIds = Channel.from(exptTable.keySet()).map{
     org -> [org, orgTable[org], genomeTable[org]]
 }
 
-process genomeDownload {
+process GenomeDownload {
     tag{ orgDesc }
 
     storeDir params.genomedir
@@ -52,38 +47,15 @@ process genomeDownload {
     """
 }
 
-process bwamemIndex {
-    tag{ orgDesc }
-
-    storeDir "${params.genomedir}/bwa"
-
-    input:
-    set orgId, orgDesc, gnmFile from orgChan
-
-    output:
-    set orgId, orgDesc, gnmFile, file("${orgId}.fa.*") into idxChan
-
-    """
-    bwa index ${params.genomedir}/${orgId}.fa -p /tmp/${orgId}.fa
-    cp /tmp/${orgId}.fa.bwt ${orgId}.fa.bwt
-    cp /tmp/${orgId}.fa.pac ${orgId}.fa.pac
-    cp /tmp/${orgId}.fa.ann ${orgId}.fa.ann
-    cp /tmp/${orgId}.fa.bwt ${orgId}.fa.bwt
-    cp /tmp/${orgId}.fa.amb ${orgId}.fa.amb
-    cp /tmp/${orgId}.fa.sa ${orgId}.fa.sa
-    rm /tmp/${orgId}.fa.*
-    """
-
-}
 
 process SeqDownload {
     tag{ orgDesc }
 
     input:
-    set orgId, orgDesc, gnmFile, idxFiles from idxChan
+    set orgId, orgDesc, gnmFile, from orgChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, file("${exptId}.fasta") into pseqChan
+    set orgId, orgDesc, gnmFile, file("${exptId}.fasta") into pseqChan
 
     """
     wget ${exptTable[exptId]} -O ${exptId}.fasta.gz
@@ -91,70 +63,39 @@ process SeqDownload {
     """
 }
 
-(beforeChan1, beforeChan2) = pseqChan.into(2)
-
-process runHiTEC{
+process HiTEC{
     tag{ orgDesc }
 
     input:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC) from beforeChan1
+    set orgId, orgDesc, gnmFile, file(beforeEC) from pseqChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC), file("afterEC.fasta") into ecChan
+    set orgId, orgDesc, gnmFile, file(beforeEC), file("afterEC.fasta") into ecChan
 
-    //check params and root directory and fa/fq
     """
     hitec ${beforeEC} afterEC.fasta ${paramsTable[orgId]}
     """ 
 }
 
-process runBWABefore{
-    tag{ orgDesc }
-
-    input:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC) from beforeChan2
-
-    output:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC), file("beforeEC.sam") into beforeSAMChan
-
-    """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${beforeEC} > beforeEC.sam
-    """ 
-}
-
-process runBWAAfter{
+process EvalEC{
     tag{ orgDesc }
 
     input:
     set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC), file(afterEC) from ecChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC), file("afterEC.sam") into afterSAMChan
+    file(result) into result_channel
 
     """
-    bwa mem ${params.genomedir}/bwa/${orgId}.fa ${afterEC} > afterEC.sam
+    echo  "DATASET : " $orgDesc > result
+    readSearch $gnmFile $beforeEC $afterEC  >> result
     """ 
-}
-
-mergedSAMChan = beforeSAMChan
-    .join(afterSAMChan)
-    .map {
-        orgId1,
-           orgDesc1, gnmFile1, idxFiles1, beforeEC, beforeSAM,
-           orgDesc2, gnmFile2, idxFiles2, afterEC, afterSAM ->
-        [ orgId1, orgDesc1, gnmFile1, idxFiles1,
-          beforeEC, afterEC, beforeSAM, afterSAM  ]
-    }
-
-/*
-processEvalEC{
-    tag{ orgExptId.replace('-SRR', ' > SRR') }
-
-    input:
-    set orgExptId, orgId, orgDesc, gnmFile, idxFiles, exptId, sraIds, file(beforeEC), file(afterEC), file(beforeSAM), file(afterSAM) from mergedSAMChan
-
-    output:
-    set orgExptId, orgId, orgDesc, exptId, file("eval.json")
 
 }
-*/
+
+
+result_channel.map{
+    it.text
+}.collectFile(name: 'hitec_online_gain.txt',
+              storeDir: "${workflow.projectDir}",
+              newLine: false)
