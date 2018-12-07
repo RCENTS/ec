@@ -35,15 +35,13 @@ genomeTable = [
 ]
 
 exptTable = [
-     'Bpertussis18323' : [
+    'Bpertussis18323' : [
          'ERR161541'
-     ],
+    ],
     'EcoliK12MG1655'  : [
         'SRR620425',
-        'SRR000868',
         'ERR039477',
-        'SRR611140',
-        'ERR022075'
+        'SRR611140'
     ],
     'EcoliO104H4'     : [
         'SRR254209'
@@ -51,67 +49,36 @@ exptTable = [
     'HSapiensGRCh38'    : [
         'SRR1238539'
     ],
-    'PsyringaeB728a'    : [
-        'ERR005143'
-    ],
     'Pfalciparum3D7'  : [
        'ERR161543'
     ],
-    'Scerevisae'      : [
-        'SRR031259',
-        'SRR096469,SRR096470' // SRX039441
-    ],
     'SauresLGA251'    : [
-        'ERR236069',
-        'SRR070596'
-    ],
-    'Celegans'        : [
-         'SRR443373'
-    ],
-    'Dmelanogaster'   : [
-         'SRR492060',
-         'SRR034841,SRR034842,SRR034843,SRR034844' // SRX016210
+        'ERR236069'
     ]
 ]
 
 runFiona = [
     'ERR161541' : 'fiona -g 4043846 ',
-    'ERR022075' : 'fiona_illumina -g 4639675 ',
-    'SRR000868' : 'fiona -g 4639675 ',
     'ERR039477' : 'fiona -g 4639675 ',
     'SRR611140' : 'fiona -g 4639675 ',
     'SRR620425' : 'fiona -g 4639675 ',
     'SRR254209' : 'fiona -g 5273097 ',
     'SRR1238539' : 'fiona -g 2861343787 ',
-    'ERR005143' : 'fiona_illumina -g 6093698 ',
     'ERR161543' : 'fiona -g  23264338 ',
-    'SRR031259' : 'fiona_illumina -g 12156676 ',
-    'SRR096469,SRR096470' : 'fiona -g 12156676 ', // SRX039441
     'ERR236069' : 'fiona -g 2799725 ',
-    'SRR070596' : 'fiona -g 2799725 ',
-    'SRR443373' : 'fiona_illumina -g 100286070 ',
-    'SRR492060' : 'fiona_illumina -g 120381546 ',
-    'SRR034841,SRR034842,SRR034843,SRR034844' : 'fiona -g 120381546 ' // SRX016210
+    'SRR070596' : 'fiona -g 2799725 '
 ]
 
 runBWA = [
     'ERR161541' : 'bwa bwasw ',
-    'ERR022075' : 'bwa mem ',
-    'SRR000868' : 'bwa bwasw ',
     'ERR039477' : 'bwa bwasw ',
     'SRR611140' : 'bwa bwasw ',
     'SRR620425' : 'bwa bwasw ',
     'SRR254209' : 'bwa bwasw ',
     'SRR1238539' : 'bwa bwasw ',
-    'ERR005143' : 'bwa mem  ',
     'ERR161543' : 'bwa bwasw ',
-    'SRR031259' : 'bwa mem  ',
-    'SRR096469,SRR096470' : 'bwa bwasw ', // SRX039441
     'ERR236069' : 'bwa bwasw ',
-    'SRR070596' : 'bwa bwasw ',
-    'SRR443373' : 'bwa mem  ',
-    'SRR492060' : 'bwa mem  ',
-    'SRR034841,SRR034842,SRR034843,SRR034844' : 'bwa bwasw ' // SRX016210
+    'SRR070596' : 'bwa bwasw '
 ]
 
 String[] parseExptID(String tx, String vx){
@@ -185,30 +152,16 @@ process SRAFetch {
     set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId from exptChan
 
     output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}*.fastq.gz") into pseqChan
+    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq.gz") into pseqChan
 
     """
     prefetch ${sraId}
     vdb-validate '${sraId}'
-    fastq-dump -I --split-files --gzip '${sraId}'
+    fastq-dump -I --gzip '${sraId}'
     """
 }
 
-process ConcatPariedEndFiles{
-    tag { orgId.toString() + " > " + exptId.toString() + " > " + sraId.toString() }
-
-    input:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file(pairedFiles) from pseqChan
-
-    output:
-    set orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, file("${sraId}.fastq.gz") into fseqChan
- 
-    """
-    gunzip -c ${pairedFiles} | gzip -1  > ${sraId}.fastq.gz
-    """
-}
-
-oexptChan = fseqChan.map{ 
+oexptChan = pseqChan.map{ 
     orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile -> 
         [orgId.toString() + "-" + exptId.toString(),
          orgId, orgDesc, gnmFile, idxFiles, exptId, sraId, sraFile] 
@@ -318,6 +271,6 @@ process EvalEC{
 
 result_channel1.map{
     it.text
-}.collectFile(name: 'fiona_compute_gain_output.txt',
+}.collectFile(name: 'fiona_compute_gain_ion_output.txt',
               storeDir: "${workflow.projectDir}",
               newLine: false)
