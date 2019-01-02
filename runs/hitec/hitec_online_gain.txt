@@ -1,0 +1,53 @@
+DATASET :  Staphylococcus aureus
+
+Processing genome file ... completed (0 seconds)
+Genome length = 2820462
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (0 seconds)
+Searching for original reads ... completed (2 seconds)
+Searching for corrected reads ... completed (1 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =               35
+                          Number of reads =          3857879
+                         Total base pairs =        135025765
+                                 Coverage =          47.8736
+
+              Base pairs in correct reads =         92255380
+            Base pairs in erroneous reads =         42770385
+   Percent of base pairs in correct reads =         68.3243%
+ Percent of base pairs in erroneous reads =         31.6757%
+            Estimated mean per-base error =          1.0824%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =        135025765
+                                 Coverage =          47.8736
+
+              Base pairs in correct reads =        124114025
+            Base pairs in erroneous reads =         10911740
+   Percent of base pairs in correct reads =         91.9188%
+   Percent of base pairs in correct reads =         8.08123%
+            Estimated mean per-base error =        0.240467%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =         10911740
+ Percent of base pairs in erroneous reads =         8.08123%
+
+ ========================== Accuracy =========================== 
+                        TP =         39235595
+                        FP =          7376950
+                        FN =          3534790
+                        TN =         84878430
+                      Gain =         74.4876%
+               Sensitivity =         91.7354%
+               Specificity =         92.0038%
+
+ ======================== Unique Reads ========================= 
+                        TP =           260991
+                        FP =            12058
+                        FN =           925646
+                        TN =          1589588
+                      Gain =          20.978%
+
+                Total time = 3 seconds

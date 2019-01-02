@@ -12,8 +12,8 @@ genomeTable = [
 ]
 
 exptTable = [
-    'SaureusMW2' : 'http://www.genomic.ch/edena/mw2Reads.seq.gz',
-    'Hacinonychis':'http://sharcgs.molgen.mpg.de/data/reads_seq.gz'
+    // 'Hacinonychis':'http://sharcgs.molgen.mpg.de/data/reads_seq.gz',
+    'SaureusMW2' : 'http://www.genomic.ch/edena/mw2Reads.seq.gz'
 ]
 
 
@@ -52,14 +52,14 @@ process SeqDownload {
     tag{ orgDesc }
 
     input:
-    set orgId, orgDesc, gnmFile, from orgChan
+    set orgId, orgDesc, gnmFile from orgChan
 
     output:
-    set orgId, orgDesc, gnmFile, file("${exptId}.fasta") into pseqChan
+    set orgId, orgDesc, gnmFile, file("${orgId}.fasta") into pseqChan
 
     """
-    wget ${exptTable[exptId]} -O ${exptId}.fasta.gz
-    gunzip ${exptId}.fasta.gz
+    wget ${exptTable[orgId]} -O ${orgId}.fasta.gz
+    gunzip ${orgId}.fasta.gz
     """
 }
 
@@ -81,7 +81,7 @@ process EvalEC{
     tag{ orgDesc }
 
     input:
-    set orgId, orgDesc, gnmFile, idxFiles, file(beforeEC), file(afterEC) from ecChan
+    set orgId, orgDesc, gnmFile, file(beforeEC), file(afterEC) from ecChan
 
     output:
     file(result) into result_channel
