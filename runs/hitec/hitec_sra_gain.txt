@@ -1,0 +1,106 @@
+DATASET :  ERR008613  ORGANISM :  E. coli K-12 MG1655
+
+Processing genome file ... completed (0 seconds)
+Genome length = 4641652
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (1 seconds)
+Searching for original reads ... completed (22 seconds)
+Searching for corrected reads ... completed (13 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =              100
+                          Number of reads =         28428648
+                         Total base pairs =       2842864800
+                                 Coverage =          612.468
+
+              Base pairs in correct reads =       1619198700
+            Base pairs in erroneous reads =       1223666100
+   Percent of base pairs in correct reads =         56.9566%
+ Percent of base pairs in erroneous reads =         43.0434%
+            Estimated mean per-base error =          0.5613%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =       2842864800
+                                 Coverage =          612.468
+
+              Base pairs in correct reads =       2712494800
+            Base pairs in erroneous reads =        130370000
+   Percent of base pairs in correct reads =         95.4141%
+   Percent of base pairs in correct reads =         4.58587%
+            Estimated mean per-base error =       0.0469325%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =        130370000
+ Percent of base pairs in erroneous reads =         4.58587%
+
+ ========================== Accuracy =========================== 
+                        TP =       1164083800
+                        FP =         70787700
+                        FN =         59582300
+                        TN =       1548411000
+                      Gain =         89.3459%
+               Sensitivity =         95.1308%
+               Specificity =         95.6282%
+
+ ======================== Unique Reads ========================= 
+                        TP =           340420
+                        FP =              159
+                        FN =            44499
+                        TN =          4203632
+                      Gain =         88.3981%
+
+                Total time = 36 seconds
+DATASET :  SRR001665  ORGANISM :  E. coli K-12 MG1655
+
+Processing genome file ... completed (0 seconds)
+Genome length = 4641652
+Number of N's in the genome file = 0
+Building suffix array and LCP of genome ... completed (0 seconds)
+Searching for original reads ... completed (13 seconds)
+Searching for corrected reads ... completed (7 seconds)
+
+ ======================== Original Reads ======================== 
+                              Read length =               36
+                          Number of reads =         20816448
+                         Total base pairs =        749392128
+                                 Coverage =          161.449
+
+              Base pairs in correct reads =        636351948
+            Base pairs in erroneous reads =        113040180
+   Percent of base pairs in correct reads =         84.9158%
+ Percent of base pairs in erroneous reads =         15.0842%
+            Estimated mean per-base error =        0.453166%
+
+ ======================= Corrected Reads ======================= 
+                         Total base pairs =        749392128
+                                 Coverage =          161.449
+
+              Base pairs in correct reads =        734297796
+            Base pairs in erroneous reads =         15094332
+   Percent of base pairs in correct reads =         97.9858%
+   Percent of base pairs in correct reads =         2.01421%
+            Estimated mean per-base error =       0.0565055%
+
+       Total base pairs that were removed =                0
+  Percent of base pairs that were removed =               0%
+      Total base pairs in erroneous reads =         15094332
+ Percent of base pairs in erroneous reads =         2.01421%
+
+ ========================== Accuracy =========================== 
+                        TP =        110655720
+                        FP =         12709872
+                        FN =          2384460
+                        TN =        623642076
+                      Gain =         86.6469%
+               Sensitivity =         97.8906%
+               Specificity =         98.0027%
+
+ ======================== Unique Reads ========================= 
+                        TP =            70066
+                        FP =               18
+                        FN =            79621
+                        TN =          4424044
+                      Gain =         46.7963%
+
+                Total time = 20 seconds

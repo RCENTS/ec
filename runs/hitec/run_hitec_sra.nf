@@ -73,7 +73,7 @@ process SRAFetch {
     prefetch ${sraId}
     vdb-validate '${sraId}'
     fastq-dump -I --split-files --gzip '${sraId}'
-    gunzip -c ${pairedFiles} > ${sraId}.fastq
+    gunzip -c ${sraId}_*.fastq.gz > ${sraId}.fastq
     rm -rf ${sraId}_1.fastq.gz
     rm -rf ${sraId}_2.fastq.gz
     """
@@ -102,7 +102,7 @@ process EvalEC{
     tag { orgDesc.toString() + " > " + sraId.toString() }
 
     input:
-    set orgId, orgDesc, gnmFile, sraId, file(beforeEC), file(afterEC) from mergedSAMChan
+    set orgId, orgDesc, gnmFile, sraId, file(beforeEC), file(afterEC) from ecChan
 
     output:
     file(result) into result_channel
