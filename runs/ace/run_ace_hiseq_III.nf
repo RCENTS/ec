@@ -47,7 +47,7 @@ genomeNumTable = [
     'OtsutsugamushiBor' : '2127051',
     'ScerevisiaeS288C' : '12071326',
     'CelegansWS222' : '100286070',
-    'DmelanogasterR618' : '120381546'
+    'DmelanogasterR618' : '120381546',
     'HSapiensGrCh38' : '3209286105'
 ]
 
@@ -107,10 +107,10 @@ process SRAFetch {
     set orgId, orgDesc, gnmFile, exptId, sraId, file("${sraId}.fastq.gz") into pseqChan
 
     """
-    prefetch ${sraId}
+    prefetch -X 50G ${sraId}
     vdb-validate '${sraId}'
     fastq-dump -I --split-files --gzip '${sraId}'
-    gunzip -c ${pairedFiles}  | gzip -1 > ${sraId}.fastq.gz
+    gunzip -c ${sraId}_*.fastq.gz  | gzip -1 > ${sraId}.fastq.gz
     rm -f ${sraId}_1.fastq.gz
     rm -f ${sraId}_2.fastq.gz
     """
